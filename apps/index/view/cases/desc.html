@@ -1,0 +1,249 @@
+{include file="public:header" /}
+<div class="row row-default bg-default">
+    <div class="col-sm-12">
+        <div class="ibox">
+            <div class="ibox-title">
+                <h5><span class="sign green ma-ri-10">CASE</span>{$cases.casesName}<em class="ma-le-20">ID:{$cases.id}</em></h5>
+                <div class="ibox-tools">
+                    <a href="../cases/createcase?casesid={$cases.id}" class="ma-ri-10" title="编辑"><i class="fa fa-pencil"></i></a>
+                    <!--<a href="" class="ma-ri-10" title="复制"><i class="fa fa-copy"></i></a>-->
+                    <a href="javascript:;" class="ma-ri-10" title="删除" onclick="del('cases','{$cases.id}')"><i class="fa fa-trash"></i></a>
+                    <a href="../cases/desc.html?caseid={$prev}" class="ma-ri-10" style="font-size: 12px;">上一条</a>
+                    <a href="../cases/desc.html?caseid={$next}" class="ma-ri-10" style="font-size: 12px;">下一条</a>
+                </div>
+            </div>
+            <div class="ibox-content">
+                <div class="row">
+                    <div class="col-md-9 col-sm-12">
+                        <div class="tabs-container">
+                            <ul class="nav nav-tabs ">
+                                <li class="bg-gray active">
+                                    <a id="Detail" href="javascript:;" onclick="tabchoose(this)">详细信息</a>
+                                </li>
+                                <li class="bg-gray">
+                                    <a id="SubStory" href="javascript:;" onclick="tabchoose(this)" >需求（{$cases.neednum}）</a>
+                                </li>
+                                <li class="bg-gray">
+                                    <a id="LinkBugs" href="javascript:;" onclick="tabchoose(this)" >缺陷（{$cases.bugnum}）</a>
+                                </li>
+                                <li class="bg-gray">
+                                    <a id="History" href="javascript:;" onclick="tabchoose(this)">变更历史（{$cases.historynum}）</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div id="Detail-div" class="tab-pane active" style="min-height: 300px;">
+                                    {include file="cases:detail" /}
+                                </div>
+                                <div id="SubStory-div" class="tab-pane" style="min-height: 300px;">
+                                    {include file="cases:substory" /}
+                                </div>
+                                <div id="LinkBugs-div" class="tab-pane " style="min-height: 300px;">
+                                    {include file="cases:linkbug" /}
+                                </div>
+                               <div id="History-div" class="tab-pane" style="min-height: 300px;">
+                                    {include file="cases:history" /}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div id="uploader" class="wu-example col-sm-12" style="padding: 20px 0 10px 40px;">
+                                <span style="font-size:18px;width: 40px; display: inline-block;line-height: 30px; vertical-align: top">附件</span>
+                                <div id="picker" style="display: inline-block; height: 30px;"><i class="fa fa-plus-circle font-ye ma-le-10" style="font-size: 12px">添加附件</i></div>
+                                <div id="thelist" class="uploader-list"></div>
+                                <a id="upFile" class="btn btn-warning btn-sm" style="display: none">上传</a>
+                                <input name="files" type="text" value="" hidden/>
+                            </div>
+                            <div class="col-sm-12" id="files" style="line-height: 30px; vertical-align: middle; padding-left: 50px;">
+                                {foreach name="filelist" item="vo"}
+                                {foreach name="vo" item="vv"}
+                                <p>
+                                    <a href="{$vv.path}{$vv.title}" style="padding: 7px 10px;">{$vv.title}</a>
+                                    <em class="ma-le-20">{$vv.upby}</em>
+                                    <em class="ma-le-20">{$vv.size}</em>
+                                    <em class="ma-le-20">{$vv.uptime}</em>
+                                </p>
+                                {/foreach}
+                                {/foreach}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12" style="padding: 20px 0px 10px 40px;">
+                                <span style="font-size:18px;width: 80px">评论</span>
+                                <a href="javascript:;" onclick="openframe('{$cases.id}','cases')"><i class="fa fa-pencil font-ye ma-le-10" style="font-size: 12px">添加/查看更多评论</i></a>
+                            </div>
+							<div class="col-sm-12">
+								<div class="chat-discussion">
+									{foreach name="commentlist" item="vo"}
+									<div class="chat-message">
+                                        {if $vo['header'] neq null}
+                                        <img class="message-avatar" src="{$vo.header}">
+                                        {else/}
+                                        <img class="message-avatar" src="{:IND_URL}img/user-icon.jpg">
+                                        {/if}
+										<div class="message">
+											<em class="message-author font-primary">{$vo.user}{$vo.addwhere}</em>
+											<span class="message-date"> {$vo.time} </span>
+											<span class="message-content">
+												{$vo.comment}
+											</span>
+										</div>
+									</div>
+									{/foreach}            
+								</div>        
+							</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading" style="background-color: #F9FAFC">
+                                <i class="fa fa-info-circle ma-ri-10"></i>基本信息
+                            </div>
+                            <div class="panel-body">
+                                <dl class="dl-horizontal dl-default">
+                                    <dt>状态：</dt>
+                                    <dd>
+                                        <span class="label label-success">{$cases.status}</span>
+                                    </dd>
+                                    <dt>用例类型：</dt>
+                                    <dd>{$cases.type}</dd>
+                                    <dt>用例目录：</dt>
+                                    <dd>{$cases.list}</dd>
+                                    <dt>用例等级：</dt>
+                                    <dd>{$cases.grade}</dd>
+                                    <dt>功能点：</dt>
+                                    <dd>{$cases.point}</dd>
+                                    <dt>创建人：</dt>
+                                    <dd>{$cases.creatName}</dd>
+                                    <dt>创建于：</dt>
+                                    <dd>{$cases.creatTime}</dd>
+                                    <dt>最后修改人：</dt>
+                                    <dd>{$cases.endName}</dd>
+                                    <dt>最后修改时间：</dt>
+                                    <dd>{$cases.endTime}</dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{:IND_URL}plugins/webuploader/dist/webuploader.js"></script>
+<script>
+	$(document).ready(function(){
+        $('head').append('<link href="{:IND_URL}plugins/webuploader/css/webuploader.css" type="text/css" rel="stylesheet"/>');
+		$('.edit_pencil').mouseenter(function(){
+			$(this).css({'background-color':'#F0F5FA'});
+			$(this).find('.e-pen').show();
+		}).mouseleave(function(){
+			$(this).css({'background':'none'});
+			$(this).find('.e-pen').hide();
+		});
+
+        var maxwidth = $('.panel-body').width();
+        $('.panel-body').find('img').each(function(){
+            if($(this).width() > maxwidth){
+                $(this).css({'width':'100%'},{'max-width':maxwidth});
+            }
+        });
+    });
+   
+
+    var uploader = WebUploader.create({
+        swf: "{:IND_URL}plugins/webuploader" + '/dist/Uploader.swf',
+        // 文件接收服务端。
+        server: "../action/webuploader",
+        // 选择文件的按钮。可选。
+        pick: '#picker',
+        // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+        resize: false,
+        fileSizeLimit: 2* 1024 * 1024,
+        auto:true,
+        fileNumLimit: 2,
+        accept:{
+            title:'files',
+            extensions: 'xls,xlsx'
+        },
+        formData :{
+            ta: 'cases'
+        }
+    });
+    // 当有文件被添加进队列的时候
+    uploader.on( 'fileQueued', function( file ){
+        $('#thelist').append('<h5 class="info">已选择文件：' + file.name + '<i class="fa fa-times-circle font-red ma-le-10 dele" style="cursor: pointer"></i></h5>');
+        $(".dele").click(function(){
+            uploader.reset();
+            if(uploader.getFiles().length<1){
+                $('#upFile').hide();
+            }
+            $(this).parent().remove();
+        });
+        $('#upFile').show();
+    });
+    // 文件上传过程中创建进度条实时显示。
+    uploader.on( 'uploadProgress', function( file, percentage ){
+        var $li = $( '#'+file.id ),
+                $percent = $li.find('.progress .progress-bar');
+        // 避免重复创建
+        if ( !$percent.length ){
+            $percent = $('<div class="progress progress-striped active">' +
+                    '<div class="progress-bar" role="progressbar" style="width: 0%">' +
+                    '</div>' +
+                    '</div>').appendTo( $li ).find('.progress-bar');
+        }
+        $percent.css( 'width', percentage * 100 + '%' );
+    });
+
+    uploader.on( 'uploadSuccess', function(file,response) {
+        if(response.status == 1){
+            var files='';
+            var $data;
+            files = $('input[name=files]').val();
+            if(response.data){
+                $data = JSON.stringify(response.data);
+                if(files == ''){
+                    $('input[name=files]').val($data);
+                }else{
+                    files = files + '|' + $data;
+                    $('input[name=files]').val(files);
+                }
+            }
+        }else{
+            layer.msg(response.msg,{icon:2});
+        }
+    });
+
+    uploader.on( 'uploadError', function(file,reason) {
+        layer.msg(reason.msg,{icon:2});
+    });
+
+    uploader.on( 'uploadComplete', function( file ) {
+        $( '#'+file.id ).find('.progress').fadeOut();
+    });
+    uploader.on('error',function(type){
+        var msg;
+        if(type == 'Q_EXCEED_NUM_LIMIT'){
+            msg = '上传文件个数受限';
+        }else if(type == 'Q_TYPE_DENIED'){
+            msg = '请选择.xls或.xlsx文件';
+        }else{
+            msg = '文件大小不能超过2M';
+        }
+        layer.msg(msg,{icon:2});
+    });
+    $("#upFile").click(function(){
+        var data = {};
+        data['upload'] = $('input[name=files]').val();
+        data['id'] = '{$cases.id}';
+        data['ta'] = 'cases';
+        if(data['upload']){
+            var jump_url = '../cases/desc?caseid='+'{$cases.id}';
+            var up_url = '../common/addfile';
+            handelData(up_url,data,jump_url)
+        }
+    });
+
+
+</script>
+{include file="public:footer" /}

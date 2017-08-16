@@ -1,0 +1,155 @@
+{include file="public:header" /}
+<div class="row row-default">
+    <div class="tree-frame" style="background-color: #fff;">
+        <div class="tree-left">
+            <div class="table-data-info table-data-info-plan">
+                <table class="table table-data table-plan" style="background-color:#ECF0F5">
+                    <tbody >
+                    <tr>
+                        <td><a href="javascript:;" class="getneed" attr_id="{$info.id}"><i class="fa fa-minus-square-o font-ye"></i></a></td>
+                        <td style="padding: 0"><a href="../iteration/plan?step=desc&id={$info.id}">{$info.iterationName}{if condition="$info['status'] eq '开启'"}<em class="ma-le-5 sign yellow" >{$info.status}</em>{else/}<em class="ma-le-5 sign gray" >{$info.status}</em>{/if}</a></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">时间：{$info.startTime}~{$info.endTime}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">总需求：<em class="font-red">{$info.neednum}</em>个，已完成：<em class="font-green">{$info.overneed}</em>个，总缺陷：<em class="font-red">{$info.bugnum}</em>个，已关闭：<em class="font-green">{$info.closebug}</em>个</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">李黄圆{$info.createName}&nbsp;&nbsp;创建于{$info.createTime}</td>
+                    </tr>
+                    </tbody>
+                </table>
+                <table class="table table-info" id="getneed"></table>
+            </div>
+        </div>
+        <div class="tree-right">
+            <div class="plan-ibox-content">
+                <div class="col-md-12 top-tool" >
+                    <ul class="top-tool-ul">
+                        <li>  <a href="javascript:;" class="btn btn-primary btn-xs btn-a" onclick="bindNeed('{$info.id}')">规划到迭代</a></li>
+                        <li class="shaili">
+                            <a href="javascript:;" class="drop-search" >筛选<i class="fa fa-angle-double-down"></i></a>
+                        </li>
+                        <li class="shaili" onclick="history.go(-1)" style="cursor: pointer"><i class="fa fa-angle-double-left font-gray"></i>返回</li>
+                    </ul>
+                </div>
+                <form id="searchForm" method="post" >
+                    <div class="drop-search-menu select-form" >
+                        <ul class="drop-search-menu-ul">
+                            <li><label>需求名称</label>
+                                <input type="text" name="needName" class="finput" value="">
+                            </li>
+                            <li><label>优先级</label>
+                                <select name="level" class="fselect select">
+                                    <option value="--">--</option>
+                                    <option value="极高">极高</option>
+                                    <option value="低">高</option>
+                                    <option value="中">中</option>
+                                    <option value="低">低</option>
+                                </select>
+                            </li>
+                            <li><label>需求状态</label>
+                                <select name="status" class="fselect select">
+                                    <option value="--">--</option>
+                                    <option value="新需求">新需求</option>
+                                    <option value="规划中">规划中</option>
+                                    <option value="实现中">实现中</option>
+                                    <option value="测试排期中">测试排期中</option>
+                                    <option value="已拒绝">已拒绝</option>
+                                    <option value="已实现">已实现</option>
+                                    <option value="测试中">测试中</option>
+                                    <option value="冒烟测试失败">冒烟测试失败</option>
+                                    <option value="测试通过">测试通过</option>
+                                </select>
+                            </li>
+                            <li><label>需求类型</label>
+                                <select name="type" class="fselect select">
+                                    <option value="--">--</option>
+                                    <option value="业务">业务</option>
+                                    <option value="技术">技术</option>
+                                </select>
+                            </li>
+                            <li><label>创建人</label>
+                                <input type="text" name="creatName" class="finput" value="">
+                            </li>
+                            <li><label>当前处理人</label>
+                                <input type="text" name="dealname" class="finput" value="">
+                            </li>
+                        </ul>
+                        <div class="fbtn">
+                            <span><a href="javascript:;" id="searchbutton">筛选/全部</a></span>
+                        </div>
+                    </div>
+                </form>
+                <div class="tree-content-table" style="margin-left: 0;">
+                    <table class="table" id="unbindneed">
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script src="{:IND_URL}js/tabletree.js"></script>
+<script>
+    var SCOPE = {
+        'search_url' : "{:url('Need/search')}",//搜索路径接口
+        'search_jump_url' : "{:url('Iteration/plan')}?id={$info.id}" //搜索成功后跳原路径
+    };
+    $(document).ready(function(){
+        $('.tree-frame').css({'height':$('.row-default').height()});
+        $('.drop-search').click(function(){
+            $('#searchForm').toggle();
+            $('#searchForm').find('.drop-search-menu').toggleClass('select-form');
+        });
+        var title_list = {"needName":"需求名称","status":"状态"};
+        var btn_text ={"add":"创建子需求","copy":"复制需求","edit":"编辑需求","del":"删除需求","creatlink":"{:url('Need/create')}?pidneed=","editlink":"{:url('Need/create')}?needid=","table":"need",'desclink':"{:url('Need/desc')}?needid="};
+        var data = {$bindneed};
+        $('#getneed').tableview({color:"#428bca",enableLinks:!0,showBorder:!1,data:data,btn_text:btn_text,title_list:title_list});
+        var bug = {$bindbug};
+        if(bug){
+            $.each(bug,function(){
+                var item = $('<tr class="pa"></tr>');
+                $(item).append('<td></td>');
+                $(item).append('<td><span class="sign red ma-ri-10">BUG</span><a href="../bugtrace/desc?bugid='+this.id+'">'+this.bugName+'</a></td>');
+                $(item).append('<td>'+this.status+'</td>');
+                $('#getneed').find('tbody').append(item);
+            });
+        }
+        var title = {"checkbox":"checkbox","needName":"需求名称","level":"优先级","status":"状态","dealname":"当前处理人"};
+        var info = {$unbindneed};
+        $('#unbindneed').tableview({color:"#428bca",enableLinks:!0,showBorder:!1,data:info,btn_text:btn_text,title_list:title});
+    });
+    function bindNeed(id){
+        var needid = '';
+        $('.checklist:checked').each(function(i){
+            if(needid == ''){
+                needid = $(this).val();
+            }else{
+                needid = needid+'|'+$(this).val();
+            }
+        })
+        if(needid == ''){
+            return layer.msg('请先勾选需求！',{icon:2});
+        }else{
+            $.ajax({
+                url:'../iteration/plan?step=play',
+                method:'post',
+                data:{id:id,needid:needid},
+                dataType:'json',
+                success:function(data){
+                    if(data.status == '1'){
+                        layer.msg('规划成功',function(){
+                            top.location.reload();
+                        });
+                    }else{
+                        return layer.error('规划需求到迭代出错');
+                    }
+                }
+
+            })
+        }
+    }
+</script>
+{include file="public:footer" /}

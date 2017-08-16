@@ -1,0 +1,35 @@
+<div class="tree-content">
+    <div class="tree-content-table">
+        <table class="table" id="table">
+        </table>
+        <div class="page ">
+            {$page}
+        </div>
+    </div>
+</div>
+<script src="{:IND_URL}js/tabletree.js"></script>
+<script>
+    var data = {$tablelist};
+    var title_list = {"checkbox":"checkbox","id":"ID","needName":"需求名称","level":"优先级","iterationID":"迭代","status":"状态","dealname":"当前处理人","needby":"提出者","startTime":"预计开始","endTime":"预计结束"};
+    var btn_text ={"add":"创建子需求","copy":"复制需求","edit":"编辑需求","del":"删除需求","apply":"申请需求变更","creatlink":"{:url('Need/create')}?pidneed=","editlink":"{:url('Need/create')}?needid=","table":"need","desclink":"{:url('Need/desc')}?needid=","applylink":"{:url('Need/apply')}?needid="};
+    $("#table").tableview({color:"#428bca",enableLinks:!0,showBorder:!1,data:data,btn_text:btn_text,title_list:title_list});
+    $('.edit_pencil').mouseenter(function(){
+        $(this).css({'background-color':'#F0F5FA'});
+        $(this).find('.e-pen').show();
+    }).mouseleave(function(){
+        $(this).css({'background':'none'});
+        $(this).find('.e-pen').hide();
+    });
+    $('.operation').mouseenter(function(){
+        $('.cog').hide();
+        $(this).find('.cog').show();
+    });
+    $('.operation').click(function(){
+        $(this).siblings().removeClass('open');
+        $(this).addClass('open');
+    });
+    $('.dropdown-menu').mouseleave(function(){
+        $(this).parents('.dropdown').removeClass('open');
+        $(this).prev().prop('aria-expanded','false');
+    });
+</script>

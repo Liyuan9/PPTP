@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Project项目管理系统</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link href="{:IND_URL}bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="{:IND_URL}bootstrap/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="{:IND_URL}css/common.css" rel="stylesheet" type="text/css" />
+    <link href="{:IND_URL}css/style.css" rel="stylesheet" type="text/css" />
+    <script src="{:IND_URL}js/jquery-3.2.1.min.js"></script>
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script src="{:IND_URL}js/layer/layer-min.js"></script>
+    <style type="text/css">
+        .cancel_a{padding:2px 5px; border: 1px solid #ddd; display: inline-block; margin-bottom: 5px;}
+    </style>
+</head>
+<body>
+<div class="row row-default" style="padding-top: 0;">
+    <div style="background-color:#F7F7FE; height:auto; overflow: hidden; padding-bottom: 20px;">
+        <h5 class="col-sm-4">已选中成员：（<em class="number font-red">0</em>个）</h5>
+        <div class="col-sm-8">
+            <input type="text" hidden name="groupId" value="">
+            <div id="add_user"></div>
+        </div>
+    </div>
+    <div class="user-scroll">
+        <table class="table table-hover no-ma" >
+            <tbody>
+            {volist name='userlist' id="item"}
+            <tr style="width: 100%">
+                <td style="background-color: #fff; padding-left: 25px;">{$key}</td>
+            </tr>
+            {volist name="$item" id="vo"}
+            <tr style="width: 33.33%; float: left" >
+                <td style="width: 6%"></td>
+                <td style="width: 17%"><input type="checkbox" class="icheck" name="user" value="{$vo.id}" attr_name="{$vo.dealname}"/></td>
+                <td style="width: 40%"><img src="{:IND_URL}img/user-icon.jpg" class="img-circle ma-ri-10" width="35" height="35" />{$vo.dealname}</td>
+                <td style="width: 37%">{$vo.position}</td>
+            </tr>
+            {/volist}
+            {/volist}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-sm-12" style="padding-top: 20px; padding-bottom: 80px;">
+        <span style="display: inline-block; float: left; padding-left: 20px;">被邀请者还没有加入公司？先请<a href="javascript:;" onclick="layer.tips('请通过腾讯通找{$admin}创建账号！',this,{tips: [1, '#3595CC'],
+			time: 4000})">公司管理员</a>添加吧！</span>
+    </div>
+    <div class="col-sm-12" style="position: fixed; bottom: 0; width: 100%; height: 50px; line-height: 50px; text-align: right; padding-right: 20px; background-color: #F8F8F8; border-top: 1px solid #ddd">
+        <a href="javascript:;" class="btn btn-primary blue" onclick="addpeople()">提交</a>
+    </div>
+</div>
+<script type="text/javascript" src="{:IND_URL}js/dialog.js"></script>
+<script>
+    $('.icheck').click(function(){
+        var userid = $(this).val();
+        var template = {
+            item:'<a href="javascript:;" class="cancel_a ma-le-10"></a>',
+            idel:'<i class="fa fa-close font-red ma-le-5 cancel"></i>'
+        };
+        var aItem = $(template.item);
+        if($(this).is(":checked")){
+            aItem
+                    .attr('user_id',userid)
+                    .append($(this).attr('attr_name'))
+                    .append($(template.idel));
+            $('#add_user').append(aItem);
+        }else{
+            $('.cancel_a').each(function(){
+                if($(this).attr('user_id') == userid){
+                    $(this).remove();
+                }
+            })
+        }
+        get_value();
+
+        $('.cancel').click(function(){
+            var id = $(this).parent().attr('user_id');
+            $(this).parent().remove();
+            $('.icheck').each(function(){
+                if($(this).val() == id ){
+                    $(this).prop('checked',false);
+                    end;
+                }
+            });
+            get_value();
+        });
+    });
+
+    function get_value(){
+        var userid = '';
+        var num = 0;
+        $('#add_user').find('a').each(function(){
+            num++;
+            if(userid == ''){
+                userid = $(this).attr('user_id');
+            }else{
+                userid = userid +','+ $(this).attr('user_id');
+            }
+
+        });
+        $('input[name=groupId]').val(userid);
+        $('.number').text(num);
+    }
+
+    function addpeople(){
+        var user = $('input[name=groupId]').val();
+        $.ajax({
+            url:'../set/getuser?step=join',
+            data:{user:user},
+            type:'post',
+            dataType: 'json',
+            success:function(data) {
+                if(data.status == 1){
+                    layer.msg(data.msg,{icon:1},function(){
+                        top.location.reload();
+                    });
+                }
+                else {
+                    layer.msg(data.msg,{icon:2});
+                }
+            },
+            error:function() {
+                return dialog.error('网络异常');
+            }
+        });
+    }
+
+</script>
+</body>
+</html>

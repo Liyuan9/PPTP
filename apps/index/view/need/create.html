@@ -1,0 +1,265 @@
+{include file="public:header" /}
+<div class="row row-default bg-default">
+    <div class="col-sm-12">
+        <div class="ibox div-default">
+            <div class="ibox-title">
+                {if condition="$info eq null"}
+                <h5>创建需求</h5>
+                {else/}
+                <h5>编辑需求</h5>
+                {/if}
+            </div>
+            <div class="col-sm-10 ibox-content" >
+                <form id="Form" method="post" class="form-horizontal">
+                    <input name="id" type="text" value="{$info.id|default=''}" hidden />
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label font-primary">选择模板</label>
+                        <div class="col-sm-8">
+                            <select class="form-control select" name="templateID">
+                                <option value="0">系统默认模板</option>
+                            </select>
+                        </div>
+                        <!--<div class="col-sm-2 no-padding">
+                            <a href="javascript:;" class="line-h-30 define">自定义模板</a>
+                        </div>-->
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label font-primary">需求名称</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="needName" class="form-control" value="{$info.needName|default=''}" />
+                        </div>
+                        <div class="col-sm-2 no-padding">
+                            <em class="line-h-30 font-red">*</em>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label font-primary">需求描述</label>
+                        <div class="col-sm-8">
+                            <textarea name="needDepict" id="editor" >{$info.needDepict|default=''}</textarea>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-4 control-label font-primary">需求分类</label>
+                        <div class="col-sm-6">
+                            <select class="form-control select" name="needKind" id="treeview">
+                                <option value="-1">|—未规划</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-3 control-label font-primary">优先级</label>
+                        <div class="col-sm-6">
+                            <select class="form-control select" name="level">
+                                <option value="--">--空--</option>
+                                <option value="极高">极高</option>
+                                <option value="高">高</option>
+                                <option value="中">中</option>
+                                <option value="低">低</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-4 control-label font-primary">类型</label>
+                        <div class="col-sm-6">
+                            <select class="form-control select" name="type">
+                                <option value="--">--</option>
+                                <option value="业务">业务</option>
+                                <option value="技术">技术</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2 no-padding">
+                            <em class="line-h-30 font-red">*</em>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-3 control-label font-primary">业务价值</label>
+                        <div class="col-sm-6">
+                            <input type="text" name="value" class="form-control grade" onfocus="tip(this,'请为需求业务价值评分，满分10分')"  onchange="checkval(this)" value="{$info.value|default=''}"/>
+                        </div>
+                        <div class="col-sm-3 no-padding">
+                            <em class="line-h-30 font-red">*</em>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-4 control-label font-primary">来源</label>
+                        <div class="col-sm-6">
+                            <select class="form-control select" name="origin">
+                                <option value="--">--</option>
+                                <option value="产品设计">产品设计</option>
+                                <option value="用户反馈">用户反馈</option>
+                                <option value="Bug转需">Bug转需</option>
+                                <option value="其他">其他</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-3 control-label font-primary">需求提出者</label>
+                        <div class="col-sm-6 dropdown">
+                            <input type="text" class="dropdown-toggle form-control" data-toggle="dropdown" name="needby" id="needby" value="{$info.needby}"/>
+                            <ul class="dropdown-menu" style="left: 15px;">
+                                {foreach name="names" item="na"}
+                                <li><a href="javascript:;" onclick="selectuser(this,'#needby')">{$na}</a></li>
+                                {/foreach}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-4 control-label font-primary">预计开始</label>
+                        <div class="col-sm-6">
+                            <div class="input-group input-prepend ">
+                                <span class="add-on input-group-addon">
+                                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                                </span>
+                                <input class="finput layer-date" style="width: 100%;" id="start" name="startTime"  value="{$info.startTime|default=''}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-3 control-label font-primary">预计结束</label>
+                        <div class="col-sm-6">
+                            <div class="input-group input-prepend " style="width: 100%;">
+                                <span class="add-on input-group-addon">
+                                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                                </span>
+                                <input class="finput layer-date" style="width: 100%;" id="end" name="endTime" value="{$info.endTime|default=''}">
+                            </div>
+                        </div>
+                    </div>
+					<div class="col-sm-6 form-group">
+                        <label class="col-sm-4 control-label font-primary">处理人</label>
+                        <div class="col-sm-6 dropdown">
+                            <input type="text" class="dropdown-toggle form-control" data-toggle="dropdown" name="dealname" id="dealname" value="{$info.dealname}"/>
+                            <ul class="dropdown-menu" style="left: 15px;">
+                                {foreach name="names" item="na"}
+                                <li><a href="javascript:;" onclick="selectOneuser(this,'#dealname')">{$na}</a></li>
+                                {/foreach}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-3 control-label font-primary">抄送人</label>
+                        <div class="col-sm-6 dropdown">
+                            <input type="text" class="dropdown-toggle form-control" data-toggle="dropdown" name="sendto" id="sendto" onfocus="tip(this,'多个抄送人请用“|”隔开')" value="{$info.sendto|default=''}"/>
+                            <ul class="dropdown-menu" style="left: 15px;">
+                                {foreach name="names" item="na"}
+                                <li><a href="javascript:;" onclick="selectuser(this,'#sendto')">{$na}</a></li>
+                                {/foreach}
+                            </ul>
+                        </div>
+                    </div>
+					<div class="col-sm-6 form-group">
+                        <label class="col-sm-4 control-label font-primary">迭代</label>
+                        <div class="col-sm-6 dropdown">
+							<select class="form-control select" name="iterationID">
+								<option value="0">--空--</option>
+								{foreach name="iteration" item="vo"}
+								<option value="{$vo.id}">{$vo.iterationName}</option>
+								{/foreach}
+							</select>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <label class="col-sm-2 control-label font-primary">父需求</label>
+                        <div class="col-sm-8" id="need">
+                            <input type="text" name="pidNeed" hidden value="{$info.pidNeed|default='0'}" />
+                            <a href="#choose" role="button" data-toggle="modal" class="btn btn-primary blue btn-sm"><i class="fa fa-plus ma-ri-10"></i>选择需求</a>
+                            {if condition="$info['pidNeed'] neq 0"}
+                            <span class="ma-le-20"><em class="fa-title">{$info.pidName}</em><i class="fa fa-close font-red ma-le-10 clearneed" attr-id="{$info.pidNeed}" style="cursor: pointer"></i></span>
+                            {/if}
+                        </div>
+                    </div>
+                    <div class="form-group explain" style="display: none">
+                        <label class="col-sm-2 control-label font-primary">抄送说明</label>
+                        <div class="col-sm-8">
+                            <textarea class="form-control" name="sendcontent" id="sendtext" >{$info.sendcontent|default=''}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label font-primary">附件</label>
+                        <div class="col-sm-8">
+                            {foreach name="uploads" item="vo"}
+                            {foreach name="vo" item="vv"}
+                            <p>
+                                <a href="{$vv.path}{$vv.title}" style="padding: 7px 10px;">{$vv.title}</a>
+                                <em class="ma-le-20">{$vv.upby}</em>
+                                <em class="ma-le-20">{$vv.size}</em>
+                                <em class="ma-le-20">{$vv.uptime}</em>
+                                <i class="fa fa-close font-red ma-le-10 upFileList" title="删除" attr-title="{$vv.title}" attr-size="{$vv.size}" attr-path="{$vv.path}" attr-upby="{$vv.upby}" attr-uptime="{$vv.uptime}" style="cursor: pointer"></i>
+                            </p>
+                            {/foreach}
+                            {/foreach}
+                            <input type="text" name="upload" value="" hidden attr_user="{:session('loginname.dealname')}"/>
+                            <input id="file-zh" name="file-zh[]" type="file" multiple >
+                        </div>
+                    </div>
+                </form>
+                <div class="col-sm-10" style="margin: 20px 0; text-align: right">
+                    <a href="javascript:;" id='formbutton' class="btn btn-primary" >确定</a>
+                    <a href="javascript:history.go(-1)" class="btn btn-default">取消</a>
+                </div>
+                <!---引入需求--->
+                {include file="public:chooseneed" /}
+                <!---end--->
+                {if condition="$info neq null"}
+                <script>
+                    $('select[name=type]').val('{$info.type}');
+                    $('select[name=level]').val('{$info.level}');
+                    $('select[name=origin]').val('{$info.origin}');
+                    $('select[name=needby]').val('{$info.needby}');
+                </script>
+                {else /}
+                    <script>
+                        $('select[name=needby]').val("{:session('loginname.dealname')}");
+                    </script>
+                {/if}
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{:IND_URL}plugins/ueditor/ueditor.config.js"></script>
+<script src="{:IND_URL}plugins/ueditor/ueditor.all.js"></script>
+<script src="{:IND_URL}plugins/ueditor/ueditor.all.min.js"></script>
+<script src="{:IND_URL}plugins/fileupload/fileinput.js"></script>
+<script src="{:IND_URL}js/selecttree.js"></script>
+<script src="{:IND_URL}plugins/laydate/laydate.js"></script>
+<script>
+    var SCOPE = {
+        'save_url' : "{:url('Need/addneed')}",//保存路径接口
+        'jump_url' : "{:url('Need/index')}" //成功后跳原路径
+    };
+    $(document).ready(function(){
+        $('head').append('<link  type="text/css" rel="stylesheet" href="{:IND_URL}plugins/fileupload/fileinput.css" />');
+        $('.modal-body-scroll').slimScroll({
+            height:'100%',
+            size:'2px'
+        });
+        UE.getEditor('editor');
+        $('#file-zh').fileinput({
+            language: 'zh',
+            uploadUrl: "{:url('Action/uploads')}",
+            maxFileSize: 15000,
+            uploadAsync: false//设置上传同步异步 此为同步
+        });
+        $('input[name=upload]').val("{:UPLOAD_URL}");
+        $('.upFileList').click(function(){
+            $(this).parent('p').remove();
+        });
+        if($('#sendto').val() != ''){
+            $('.explain').show();
+        }
+    });
+    var data = {$treelist};
+    $("#treeview").treeview({color:"#428bca",enableLinks:!0,showBorder:!1,data:data});
+    $('#treeview').val('{$info.needKind}');
+    var start={elem:"#start",format:"YYYY-MM-DD",min:"2017-01-01",max:"2099-06-16",istime:false,istoday:false,choose:function(datas){end.min=datas;end.start=datas}};
+    var end={elem:"#end",format:"YYYY-MM-DD",min:"2017-01-01",max:"2099-06-16",istime:false,istoday:false,choose:function(datas){start.max=datas}};laydate(start);laydate(end);
+    function checkval(obj){
+        var grade = $(obj).val();
+        var reg = /^([1-9]|10)$/;
+        if(!reg.test(grade)){
+            tip(obj,'请填写1-10的整数')
+        }
+    }
+
+</script>
+{include file="public:footer" /}

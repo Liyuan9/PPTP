@@ -1,0 +1,114 @@
+<div class="tree-content">
+    <div class="tree-content-table">
+        <table class="table">
+            <thead>
+            <tr>
+                <th></th>
+                <th>ID</th>
+                <th>用例名称</th>
+                <th>功能点</th>
+                <th>用例类型</th>
+                <th>用例状态</th>
+                <th>用例等级</th>
+                <th>创建人</th>
+                <th>创建时间</th>
+            </tr>
+            </thead>
+            <tbody>
+            {if condition="$list neq null"}
+            {volist name='list' id='vo'}
+            <tr class="pa">
+                <td class="dropdown operation" style="text-align: center;width: 60px">
+                    <a href="javascript:;" class="dropdown-toggle cog" data-toggle="dropdown" style="display: none"><i class="fa fa-angle-double-down"></i></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{:url('Cases/createCase')}?casesid={$vo.id}">编辑</a></li>
+                        <!--<li><a href="javascript:;" onclick="copy('cases',{$vo.id})">复制</a></li>-->
+                        <li><a href="javascript:;" onclick="del('cases',{$vo.id})">删除</a></li>
+                    </ul>
+                </td>
+                <td>{$vo.id}</td>
+                <td class="tb-title font-primary">
+                    <div class="edit_pencil" style="width: 300px; display: inline-block;">
+                        {if condition="$vo['upload'] neq null"}<i class="fa fa-paperclip font-ye"></i>{/if}
+                        <span class="sign green ma-ri-10">CASE</span><a href="{:url('Cases/desc')}?caseid={$vo.id}" class="edit">{$vo.casesName}</a>
+                        <a href="javascript:;" onclick="edit_pencil(this)" style="display: none; margin-left: 20px;" class="e-pen" ><i class="fa fa-pencil"></i></a>
+                    </div>
+                    <div class="edit_input" style="display: none; width:300px">
+                        <input type="text" name="casesName" value="{$vo.casesName}" attr_id="{$vo.id}" onmouseout="hideObj(this)" onchange="editObj(this,'cases')" style="width: 100%;" >
+                    </div>
+                </td>
+                <td>{$vo.point}</td>
+                <td>
+                    <div class="edit_pencil" style="width:100px;">
+                        <em class="edit">{$vo.type}</em>
+                        <a href="javascript:;" onclick="edit_pencil(this)" class="e-pen" style="display: none; margin-left: 20px;" ><i class="fa fa-pencil"></i></a>
+                    </div>
+                    <div class="edit_input" style="display: none;width: 100px;">
+                        <select name="type" attr_id="{$vo.id}" onblur="hideObj(this)" onchange="editObj(this,'cases')" style="width: 100%;" class="select" >
+                            <option value="功能性测试">功能性测试</option>
+                            <option value="性能测试">性能测试</option>
+                            <option value="安全性测试">安全性测试</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                </td>
+                <td>
+                    <div class="edit_pencil" style="width:100px;">
+                        <em class="edit">{$vo.status}</em>
+                        <a href="javascript:;" onclick="edit_pencil(this)" class="e-pen" style="display: none; margin-left: 20px;" ><i class="fa fa-pencil"></i></a>
+                    </div>
+                    <div class="edit_input" style="display: none;width: 100px;">
+                        <select name="status" attr_id="{$vo.id}" onblur="hideObj(this)" onchange="editObj(this,'cases')" style="width: 100%;" class="select" >
+                            <option value="正常">正常</option>
+                            <option value="待更新">待更新</option>
+                            <option value="已废弃">已废弃</option>
+                        </select>
+                    </div>
+                </td>
+                <td>
+                    <div class="edit_pencil" style="width:100px;">
+                        <em class="edit">{$vo.grade}</em>
+                        <a href="javascript:;" onclick="edit_pencil(this)" class="e-pen" style="display: none; margin-left: 20px;" ><i class="fa fa-pencil"></i></a>
+                    </div>
+                    <div class="edit_input" style="display: none;width: 100px;">
+                        <select name="grade" attr_id="{$vo.id}" onblur="hideObj(this)" onchange="editObj(this,'cases')" style="width: 100%;" class="select" >
+                            <option value="3">3</option>
+                            <option value="2">2</option>
+                            <option value="1">1</option>
+                            <option value="4">4</option>
+                        </select>
+                    </div>
+                </td>
+                <td>{$vo.creatName}</td>
+                <td>{:date("Y-m-d",strtotime($vo.creatTime))}</td>
+            </tr>
+            {/volist}
+            {else/}
+            <tr>
+                <h5 style="text-align: center">目前没有测试用例</h5>
+            </tr>
+            {/if}
+            </tbody>
+        </table>
+        <div class="page">
+            {$list->render()}
+        </div>
+    </div>
+</div>
+<script>
+    $('.edit_pencil').mouseenter(function(){
+        $(this).css({'background-color':'#F0F5FA'});
+        $(this).find('.e-pen').show();
+    }).mouseleave(function(){
+        $(this).css({'background':'none'});
+        $(this).find('.e-pen').hide();
+    });
+    $('.operation').mouseenter(function(){
+        $('.cog').hide();
+        $(this).find('.cog').show();
+    });
+    $('.dropdown-menu').mouseleave(function(){
+        $(this).parents('.dropdown').removeClass('open');
+        $(this).prev().prop('aria-expanded','false');
+    });
+</script>

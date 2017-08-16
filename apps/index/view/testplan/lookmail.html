@@ -1,0 +1,183 @@
+{include file="public:header" /}
+<div class="row row-default bg-default" xmlns="http://www.w3.org/1999/html">
+    <div class="col-sm-12">
+        <div class="ibox">
+            <div class="ibox-title">
+                <h5><i class="fa fa-envelope-o ma-ri-10"></i>测试报告<em>（{$info.planName}）</em></h5>
+				<div class="ibox-tools">
+					<a href="javascript:;" onclick="sendmail()" class="btn btn-xs btn-info"><i class="fa fa-send ma-ri-5"></i>发送邮件</a>
+					<a class="btn btn-xs btn-info"><i class="fa fa-eye ma-ri-5"></i>邮件预览</a>
+					<a class="btn btn-xs btn-info"><i class="fa fa-download ma-ri-5"></i>保存草稿</a>
+				</div>
+            </div>
+            <div class="ibox-content">
+                <div class="row">
+                    <h5 class="col-sm-12" style="font-weight: bold; padding-left: 15px;">基本信息</h5>
+                    <div class="col-lg-12 col-md-12 form-group">
+                        <label class="col-md-1 control-label font-primary" style="text-align: right">邮件主题：</label>
+                        <div class="col-lg-5 col-md-8">
+                            <input type="text" class="form-control" name="subject" value="{$subject}"/>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12 form-group">
+                        <label class="col-md-1 control-label font-primary" style="text-align: right">收件人：</label>
+                        <div class="col-lg-5 col-md-8 dropdown">
+                            <input type="text" class="form-control dropdown-toggle" data-toggle="dropdown" id="sendto" name="sendto" value=""/>
+                            <ul class="dropdown-menu" style="left: 15px;">
+                                {volist name="name" id="vo"}
+                                <li><a href="javascript:;" onclick="selectOneuser(this,'#sendto')">{$vo}</a></li>
+                                {/volist}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12 form-group">
+                        <label class="col-md-1 control-label font-primary" style="text-align: right">抄送人：</label>
+                        <div class="col-lg-5 col-md-8 dropdown">
+                            <input type="text" class="form-control dropdown-toggle" data-toggle="dropdown" id="copysend" name="copysend" value=""/>
+                            <ul class="dropdown-menu" style="left: 15px;">
+                                {volist name="name" id="vo"}
+                                <li><a href="javascript:;" onclick="selectuser(this,'#copysend')">{$vo}</a></li>
+                                {/volist}
+                            </ul>
+                        </div>
+                    </div>
+                    <h5 class="col-sm-12" style="font-weight: bold; padding-left: 15px;">邮件内容</h5>
+				</div>
+				<div class="row" id="message">
+					<div class="col-sm-12">
+                        <h5 class="bg-primary" style="height: 35px; line-height: 35px; padding-left: 10px;"><i class="fa fa-ellipsis-v ma-ri-5"></i>基本信息</h5>
+                        <div class="report-contain" style="padding-left: 10px;">
+                            <div class="col-md-4 col-sm-5">
+                                <dl class="dl-horizontal dl-default no-margin">
+                                    <dt>测试计划名称：</dt>
+                                    <dd>{$info.planName}</dd>
+                                    <dt>测试版本：</dt>
+                                    <dd>{$info.title}</dd>
+                                    <dt>版本提交时间：</dt>
+                                    <dd>{$info.createVersion}</dd>
+                                </dl>
+                            </div>
+                            <div class="col-md-4 col-sm-5">
+                                <dl class="dl-horizontal dl-default no-margin">
+                                    <dt>测试负责人：</dt>
+                                    <dd>{$info.responsible}</dd>
+                                    <dt>测试人员：</dt>
+                                    <dd>{$info.testby}</dd>
+                                    <dt>测试类型：</dt>
+                                    <dd>{$info.type}</dd>
+                                </dl>
+                            </div>
+                            <div class="col-md-4 col-sm-5">
+                                <dl class="dl-horizontal dl-default no-margin">
+                                    <dt>预发布时间：</dt>
+                                    <dd>{$info.publishTime}</dd>
+                                    <dt style="width:120px; text-align:left;">测试总耗时(h)：</dt>
+                                    <dd><em class="font-red">{$info.countTime}</em><small>（{$info.startTest}~{$info.endTest}）</small></dd>
+                                </dl>
+                            </div>
+                            <div class="col-sm-12">
+                                <dl class="dl-horizontal dl-default no-margin">
+                                    <dt>提测说明：</dt>
+                                    <dd>{$info.content}</dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <h5 class="bg-primary" style="height: 35px; line-height: 35px; padding-left: 10px;"><i class="fa fa-ellipsis-v ma-ri-5"></i>测试进度</h5>
+                        <div class="report-contain" style="padding-left: 10px;">
+                            <div class="col-sm-12">
+                                <dl class="dl-horizontal dl-default no-margin">
+                                    <dt>测试情况：</dt>
+                                    <dd>已提测需求{$play_result.needNum}个，代码版本{$play_result.versionNum}个</dd>
+                                    <dt>需求测试结果：</dt>
+                                    <dd><em style="color: green">通过：{$play_result.success}</em>&nbsp;|&nbsp;<em style="color: red">冒烟测试失败：{$play_result.fail}</em>&nbsp;|&nbsp;未执行：{$play_result.noplay}</dd>
+                                    <dt>测试执行进度：</dt>
+                                    <dd>{$play_result.rate}，<em style="color: red">产生缺陷：{$play_result.bugnum}个</em></dd>
+									<dt>bug修复情况：</dt>
+                                    <dd>已修复{$play_result.overbug}个，拒绝{$play_result.refusebug}个，</dd>
+                                </dl>
+                            </div>
+                            <div class="col-sm-12">
+                                <dl class="dl-horizontal dl-default no-margin">
+                                    <dt>测试问题汇总：</dt>
+                                    <dd id="question"><textarea class="form-control" name="question"></textarea></dd>
+                                </dl>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+						<h5 class="bg-primary" style="height: 35px; line-height: 35px; padding-left: 10px;"><i class="fa fa-ellipsis-v ma-ri-5"></i>需求跟踪</h5>
+                        <div class="report-contain table-default" style="padding-left: 10px;">
+                           <table class="table">
+                               <thead>
+                                    <tr>
+                                        <th>序号</th>
+                                        <th style="width: 30%">名称</th>
+                                        <th>等级</th>
+                                        <th>需求状态</th>
+                                        <th style="width: 30%">备注</th>
+                                    </tr>
+                               </thead>
+                               <tbody>
+                                    {volist name="need" id="vi"}
+                                    <tr>
+                                        <td>{$vi.id}</td>
+                                        <td><span class="sign blue ma-ri-10">NEED</span>{$vi.needName}</td>
+                                        <td>{$vi.level}</td>
+                                        <td>{$vi.status}</td>
+                                        <td class="needtext"><input type="text" class="form-control" name="needtext" value=""  /></td>
+                                    </tr>
+									{volist name="$vi['linkBug']" id="vo"}
+									<tr>
+                                        <td>{$vo.id}</td>
+                                        <td><span class="sign red ma-ri-10 ma-le-20">BUG</span>{$vo.bugName}</td>
+                                        <td>{$vo.serious}</td>
+                                        <td>{$vo.status}</td>
+                                        <td>{$vo.dealmethod}</td>
+                                    </tr>
+									{/volist}
+                                    {/volist}
+                               </tbody>
+                           </table>
+                        </div>
+                    </div>
+				</div>
+            </div>
+        </div>
+    </div>
+</div>
+<script >
+	function sendmail(){
+        var data = {};
+		document.getElementById('question').innerHTML = $('textarea[name=question]').val();
+		$('.needtext').each(function(i){
+			$(this).text($(this).find('input[name=needtext]').val());
+		});
+		
+        data['sendto'] = $("input[name=sendto]").val();
+        data['copysend'] = $('input[name=copysend]').val();
+        data['subject'] = $('input[name=subject]').val();
+		
+        data['message'] = $('#message').prop('outerHTML');
+		
+        $.ajax({
+                url:'../testplan/sendmail',
+                method:'post',
+                data:data,
+                dataType:'json',
+                success:function(data){
+                    if(data.status == 1){
+                        top.location.reload();
+                    }
+                    else {
+                        return dialog.error(data.message);
+                    }
+                },
+                error:function() {
+                    return dialog.error('网络异常');
+                }
+            })
+    }
+</script>
+{include file="public:footer" /}

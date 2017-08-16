@@ -1,0 +1,172 @@
+{include file="public:header" /}
+<div class="row row-default">
+    <div class="col-md-12 top-tool" >
+        <ul class="top-tool-ul">
+            <li><a href="{:url('Testplan/create')}" class="btn-a" >创建测试计划</a></li>
+            <li><a href="#download-case" class="btn-a" role="buttom" id="modal" data-toggle="modal">导出测试计划</a></li>
+            <li class="seli">
+                <form method="post" >
+                    <span>当前视图</span>
+                    <select name="view" id="view" class="seli-select select" onchange="handel_view(this,'testplan')">
+                        <option value="">选择视图</option>
+                        <option value="全部">全部</option>
+                        <option value="未关闭">未关闭</option>
+                        <option value="已关闭">已关闭</option>
+                        <option value="我负责的">我负责的</option>
+                        <option value="我创建的">我创建的</option>
+                    </select>
+                </form>
+            </li>
+            <li class="shaili">
+                <a href="javascript:;" class="drop-search">筛选<i class="fa fa-angle-double-down"></i></a>
+            </li>
+            <!--<li class="seticon"><i class="fa fa-cog"></i></li>-->
+        </ul>
+    </div>
+    <form id="searchForm" method="post" >
+        <div class="drop-search-menu" style="display:none;">
+            <ul class="drop-search-menu-ul">
+                {php}$i=0;{/php}
+                {foreach name='data' item='v'}
+                    {if condition="$i lt 2"}
+                        {if condition="isset($v['children'])"}
+                        <li><label>{$v.comment}</label>
+                            <select name="{$v.name}" class="fselect">
+                                {foreach name="v['children']" item="vo"}
+                                <option value="{$vo.id}">{$vo.name}</option>
+                                {/foreach}
+                            </select>
+                            <i class="fa fa-close del" style="margin-left:10px;color:#617CCD"></i>
+                        </li>
+                        {else /}
+                        <li><label>{$v.comment}</label>
+                            <input type="text" name="{$v.name}" class="finput" value="">
+                            <i class="fa fa-close del" style="margin-left:10px;color:#617CCD"></i>
+                        </li>
+                        {/if}
+                    {php}$i++;{/php}
+                    {/if}
+                {/foreach}
+            </ul>
+            <div class="fbtn">
+                <span><a href="javascript:;" id="searchbutton">筛选</a></span>
+                <span><a href="javascript:;" id="morechose" attr-value ="">更多条件</a></span>
+            </div>
+        </div>
+    </form>
+    {include file="public:search"/}
+    {include file="public:download" /}
+    <div class="tree-content tree-content-default">
+        <div class="tree-content-table">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>ID</th>
+                    <th>计划名称</th>
+                    <th>测试版本</th>
+                    <th>测试类型</th>
+                    <th>状态</th>
+                    <th>测试负责人</th>
+					<th>预发布时间</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                </tr>
+                </thead>
+                <tbody>
+                {if condition="$testplan neq null"}
+                {volist name="$testplan" id="vo"}
+                <tr>
+                    <td class="dropdown operation" style="text-align: center; width: 60px;">
+                        <a href="javascript:;" class="dropdown-toggle cog" data-toggle="dropdown" style="display: none"><i class="fa fa-angle-double-down"></i></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{:url('Testplan/playtest')}?planid={$vo.id}">规划&执行</a></li>
+                            <li><a href="{:url('Testplan/create')}?planid={$vo.id}">编辑</a></li>
+                            <!--<li><a href="javascript:;" onclick="copy('testplan','{$vo.id}')">复制</a></li>-->
+                            <li><a href="javascript:;" onclick="del('testplan','{$vo.id}')">删除</a></li>
+                        </ul>
+                    </td>
+                    <td>{$vo.id}</td>
+                    <td class="tb-title font-primary">
+                        <div class="edit_pencil" style="width: 500px; display: inline-block;">
+                            {if condition="$vo['upload'] neq null"}<i class="fa fa-paperclip font-ye"></i>{/if}
+                            <span class="sign green ma-ri-10">PLAN</span><a href="{:url('Testplan/desc')}?planid={$vo.id}" class="edit">{$vo.planName}</a>
+                            <a href="javascript:;" onclick="edit_pencil(this)" style="display: none; margin-left: 20px;" class="e-pen" ><i class="fa fa-pencil"></i></a>
+                        </div>
+                        <div class="edit_input" style="display: none; width: 500px">
+                            <input type="text" name="planName" value="{$vo.planName}" attr_id="{$vo.id}" onmouseout="hideObj(this)" onchange="editObj(this,'testplan')" style="width: 100%" >
+                        </div>
+                    </td>
+                    <td>{$vo.title}</td>
+                    <td>
+                        <div class="edit_pencil" style="width:100px;">
+                            <em class="edit">{$vo.type}</em>
+                            <a href="javascript:;" onclick="edit_pencil(this)" class="e-pen" style="display: none; margin-left: 20px;" ><i class="fa fa-pencil"></i></a>
+                        </div>
+                        <div class="edit_input" style="display: none;width: 100px;">
+                            <select name="type" attr_id="{$vo.id}" onblur="hideObj(this)" onchange="editObj(this,'testplan')" style="width: 100%" class="select" >
+                                <option value="--">--空--</option>
+                                <option value="功能测试">功能测试</option>
+                                <option value="性能测试">性能测试</option>
+                                <option value="接口测试">接口测试</option>
+                                <option value="安全测试">安全测试</option>
+                                <option value="其他">其他</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="edit_pencil" style="width:100px;">
+                            <em class="edit">{$vo.status}</em>
+                            <a href="javascript:;" onclick="edit_pencil(this)" style="display: none; margin-left: 20px;" class="e-pen" ><i class="fa fa-pencil"></i></a>
+                        </div>
+                        <div class="edit_input" style="display: none; width: 100px">
+                            <select name="status" attr_id="{$vo.id}" onblur="hideObj(this)" onchange="editObj(this,'testplan')" style="width: 100%" class="select" >
+                                <option value="--">--</option>
+                                <option value="开启">开启</option>
+                                <option value="关闭">关闭</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td>{$vo.responsible}</td>
+					<td>{$vo.publishTime}</td>
+                    <td>{$vo.startTime}</td>
+					<td>{$vo.overTime}</td>
+                    <!--<td>{:date("Y-m-d",strtotime($vo.overTime))}</td>-->
+                </tr>
+                {/volist}
+                {else/}
+                <tr>
+                    <h5 style="text-align: center">目前没有测试计划</h5>
+                </tr>
+                {/if}
+                </tbody>
+            </table>
+            <div class="page">
+                {$testplan->render()}
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var SCOPE = {
+        'search_url' : "{:url('Testplan/search')}",//搜索路径接口
+        'search_jump_url' : "{:url('Testplan/index')}" //搜索成功后跳原路径
+    };
+    $('#view').val('{$view}');
+    $('.edit_pencil').mouseenter(function(){
+        $(this).css({'background-color':'#F0F5FA'});
+        $(this).find('.e-pen').show();
+    }).mouseleave(function(){
+        $(this).css({'background':'none'});
+        $(this).find('.e-pen').hide();
+    });
+    $('.operation').mouseenter(function(){
+        $('.cog').hide();
+        $(this).find('.cog').show();
+    });
+    $('.dropdown-menu').mouseleave(function(){
+        $(this).parents('.dropdown').removeClass('open');
+        $(this).prev().prop('aria-expanded','false');
+    });
+</script>
+{include file="public:footer" /}

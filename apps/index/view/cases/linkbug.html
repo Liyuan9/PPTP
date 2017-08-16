@@ -1,0 +1,36 @@
+<div class="panel-body table-default" >
+    <table class="table" id="linkbug">
+        <thead>
+        <tr>
+            <th>缺陷ID</th>
+            <th>缺陷名称</th>
+            <th>测试计划名称</th>
+            <th>严重程度</th>
+            <th>优先级</th>
+            <th>缺陷状态</th>
+            <th>当前处理人</th>
+            <th>创建人</th>
+            <th>窗机时间</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+       {volist name="linkbug" id="vo"}
+        <tr>
+            <td>{$vo.id}</td>
+            <td><a href="{:url('Bugtrace/desc')}?bugid={$vo.id}">{$vo.bugName}</a></td>
+            <td><a href="{:url('Testplan/desc')}?planid={$vo.planid}">{$vo.planName}</a></td>
+            <td>{$vo.serious}</td>
+            <td>{$vo.level}</td>
+            <td>{$vo.status}</td>
+            <td>{$vo.dealby}</td>
+            <td>{$vo.creatName}</td>
+            <td>{$vo.creatTime}</td>
+            <td>
+                <a href="javascript:;" onclick="cancelLink(this,'bug','case')" attr_id="{$vo.id}" attr_cancelID="{$cases.id}" title="取消关联"><i class="fa fa-chain-broken"></i></a>
+            </td>
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+</div>

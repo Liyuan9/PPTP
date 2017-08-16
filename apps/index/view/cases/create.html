@@ -1,0 +1,209 @@
+{include file="public:header" /}
+<div class="row row-default bg-default">
+    <div class="col-sm-12">
+        <div class="ibox div-default">
+            <div class="ibox-title">
+                {if condition="$info['id'] neq null "}
+                    <h5>编辑测试用例</h5>
+                    {else/}
+                    <h5>创建测试用例</h5>
+                {/if}
+            </div>
+            <div class="col-sm-10 ibox-content" >
+                <form id="Form" method="post" class="form-horizontal" enctype="multipart/form-data">
+                    <input type="text" name="id" value="{$info.id|default=''}" hidden />
+                    <input type="text" name="projectID" value="{:session('projectID')}" hidden />
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label font-primary">选择模板</label>
+                        <div class="col-sm-8">
+                            <select class="form-control select" name="template">
+                                <option value="0">系统默认模板</option>
+                                <option value="1">公用模板1</option>
+                                <option value="2">功能模板2</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2 no-padding">
+                            <a href="javascript:;" class="line-h-30 define">自定义模板</a>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label font-primary">用例名称</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="casesName" class="form-control" value="{$info.casesName|default=''}" />
+                        </div>
+                        <div class="col-sm-2 no-padding">
+                            <em class="line-h-30 font-red">*</em>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label font-primary">前置条件</label>
+                        <div class="col-sm-8">
+                            <textarea name="precondition" id="editor" onfocus="tip(this,'用例执行的前提条件')" style="width: 100%; min-height: 300px;">{$info.precondition|default=''}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label font-primary">用例步骤</label>
+                        <div class="col-sm-8">
+                            <textarea name="step" id="step-editor" onfocus="tip(this,'用例执行的步骤')" style="width: 100%; min-height: 300px;">{$info.step|default=''}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label font-primary">预期结果</label>
+                        <div class="col-sm-8">
+                            <textarea name="result" id="result-editor" onfocus="tip(this,'用例执行的预期结果')" style="width: 100%; min-height: 300px;">{$info.result|default=''}</textarea>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-4 control-label font-primary">用例目录</label>
+                        <div class="col-sm-6">
+                            <select class="form-control select" name="list" id="treeview">
+                                <option value="-1">|—未规划</option>
+                            </select>
+
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-3 control-label font-primary">用例等级</label>
+                        <div class="col-sm-6">
+                            <select class="form-control select" name="grade" id="grade">
+                                <option value="3">3</option>
+                                <option value="2">2</option>
+                                <option value="1">1</option>
+                                <option value="4">4</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-4 control-label font-primary">用例类型</label>
+                        <div class="col-sm-6">
+                            <select class="form-control select" name="type">
+                                <option value="--">--</option>
+                                <option value="功能测试">功能测试</option>
+                                <option value="安全测试">安全测试</option>
+                                <option value="性能测试">性能测试</option>
+                                <option value="其他">其他</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-3 control-label font-primary">用例状态</label>
+                        <div class="col-sm-6">
+                            <select class="form-control select" name="status">
+                                <option value="--">--</option>
+                                <option value="正常">正常</option>
+                                <option value="待更新">待更新</option>
+                                <option value="已废弃">已废弃</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label font-primary">功能点</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="point" class="form-control" value="{$info.point|default=''}" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label font-primary">关联需求</label>
+                        <div class="col-sm-8" id="need">
+                            <input type="text" name="needID" hidden value="" />
+                            <a href="#choose" role="button" data-toggle="modal" class="btn btn-primary blue btn-sm"><i class="fa fa-plus ma-ri-10"></i>选择需求</a>
+                            {if condition="$linkneed neq null"}
+                                {foreach name='linkneed' item='linkneed'}
+                                    <span class="ma-le-20"><em class="fa-title">{$linkneed.needName}</em><i class="fa fa-close font-red ma-le-10 clearneed" attr-id="{$linkneed.id}" style="cursor: pointer"></i></span>
+                                {/foreach}
+                            {/if}
+                        </div>
+                    </div>
+                    {if condition="$info neq null" }
+                        {if condition="$info['status'] eq '已废弃'"}
+                        <div class="form-group" >
+                            <label class="col-sm-2 control-label font-primary">已废弃说明</label>
+                            <div class="col-sm-8">
+                                <textarea class="form-control" name="statustext" ></textarea>
+                            </div>
+                        </div>
+                        {/if}
+                    {/if}
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label font-primary">附件</label>
+                        <div class="col-sm-8">
+                            {foreach name="uploads" item="vo"}
+                            {foreach name="vo" item="vv"}
+                            <p>
+                                <a href="{$vv.path}{$vv.title}" style="padding: 7px 10px;">{$vv.title}</a>
+                                <em class="ma-le-20">{$vv.upby}</em>
+                                <em class="ma-le-20">{$vv.size}</em>
+                                <em class="ma-le-20">{$vv.uptime}</em>
+                                <i class="fa fa-close font-red ma-le-10 upFileList" title="删除" attr-title="{$vv.title}" attr-size="{$vv.size}" attr-path="{$vv.path}" attr-upby="{$vv.upby}" attr-uptime="{$vv.uptime}" style="cursor: pointer"></i>
+                            </p>
+                            {/foreach}
+                            {/foreach}
+                            <input type="text" name="upload" value="" hidden attr_user="{:session('loginname.dealname')}" />
+                            <input id="file-zh" name="file-zh[]" type="file" multiple >
+                        </div>
+                    </div>
+                </form>
+                <div class="col-sm-10" style="margin: 20px 0; text-align: right">
+                    <a href="javascript:;" id='formbutton' class="btn btn-primary" >确定</a>
+                    <a href="javascript:history.go(-1)" class="btn btn-default">取消</a>
+                </div>
+                <!---引入需求--->
+                {include file="common:linkneed" /}
+                <!---end--->
+                {if condition="$info neq null"}
+                    <script>
+                        $('select[name=grade]').val('{$info.grade}');
+                        $('select[name=type]').val('{$info.type}');
+                        $('select[name=status]').val('{$info.status}');
+                    </script>
+                {/if}
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{:IND_URL}plugins/ueditor/ueditor.config.js"></script>
+<script src="{:IND_URL}plugins/ueditor/ueditor.all.js"></script>
+<script src="{:IND_URL}plugins/ueditor/ueditor.all.min.js"></script>
+<script src="{:IND_URL}plugins/fileupload/fileinput.js"></script>
+<script src="{:IND_URL}plugins/treeview/selecttree.js"></script>
+<script>
+    var SCOPE = {
+        'save_url' : "{:url('Cases/addcase')}",//保存路径接口
+        'jump_url' : "{:url('Cases/index')}" //成功后跳原路径
+    };
+    $(document).ready(function(){
+        $('head').append('<link  type="text/css" rel="stylesheet" href="{:IND_URL}plugins/fileupload/fileinput.css" />');
+        $('.modal-body-scroll').slimScroll({
+            height:'380px',
+            size:'2px'
+        });
+        UE.getEditor('editor');
+        UE.getEditor('step-editor');
+        UE.getEditor('result-editor');
+
+        $('#file-zh').fileinput({
+            language: 'zh',
+            uploadUrl: "{:url('Action/uploads')}",
+            maxFileSize: 15000,
+            uploadAsync: false//设置上传同步异步 此为同步
+        });
+        $('input[name=upload]').val("{:UPLOAD_URL}");
+        $('.upFileList').click(function(){
+            $(this).parent('p').remove();
+        });
+
+        var data = {$treelist};
+        $("#treeview").treeview({color:"#428bca",enableLinks:!0,showBorder:!1,data:data});
+        $('#treeview').val('{$info.list}');
+        $('.clearneed').click(function(){
+            $(this).parent().remove();
+            var needid = '';
+            $('.clearneed').each(function(){
+                needid = needid+','+$(this).attr('attr-id');
+            });
+            needid = needid.substring(1);
+            $('input[name=needID]').val(needid);
+        });
+    });
+</script>
+{include file="public:footer" /}

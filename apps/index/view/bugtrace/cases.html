@@ -1,0 +1,24 @@
+<div class="panel-body table-default" >
+    <table class="table">
+        <thead>
+        <tr>
+            <th>测试用例</th>
+            <th>测试计划</th>
+            <th>执行人</th>
+            <th>执行时间</th>
+            <th>执行结果</th>
+        </tr>
+        </thead>
+        <tbody>
+        {volist name="caseList" id="vo"}
+        <tr>
+            <td><a href="{:url('cases/desc')}?caseid={$vo.caseid}">{$vo.casesName}</a></td>
+            <td><a href="{:url('Testplan/desc')}?planid={$vo.planid}">{$vo.planName}</a></td>
+            <td>{$vo.run_people}</td>
+            <td>{$vo.runtime}</td>
+            <td>{$vo.testresult}</td>
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+</div>

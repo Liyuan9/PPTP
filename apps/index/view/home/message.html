@@ -1,0 +1,65 @@
+{include file="public:header" /}
+<div class="row row-default" >
+    <div class="col-sm-12">
+        <div class="ibox">
+            <div class="ibox-title">
+                <h5>消息中心<em>（{$num}条消息）</em></h5>
+                <div class="ibox-tools dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:;" title="选择项目">
+                        <i class="fa fa-wrench"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-project">
+                        <li><a href="../home/message">全部</a></li>
+                        {foreach name="project" item="vo"}
+                        <li><a href="../home/message?projectID={$vo.id}">{$vo.projectName}</a></li>
+                        {/foreach}
+                    </ul>
+                </div>
+            </div>
+            <div class="ibox-content">
+                <div class="project-list">
+                    <table class="table table-hover">
+                        <tbody>
+                        {if condition="$message neq null"}
+                            {volist name="message" id="vo"}
+                            <tr>
+                                <td class="user font-primary">
+									{if condition="$vo['header'] eq null"}
+                                    <img alt="image" class="img-circle head-img ma-ri-10" src="{:IND_URL}img/user-icon.jpg">{else /}
+									<img alt="image" class="img-circle head-img ma-ri-10" src="{$vo.header}">
+									{/if}
+									{$vo.user}
+                                </td>
+                                <td>
+                                    {$vo.tip}<br>
+                                    <small>
+                                        {switch name="$vo.model"}
+                                        {case value="need"}<span class="sign green ma-ri-10">NEED</span><a href="../need/desc?projectID={$vo.projectID}&needid={$vo.linkID}&msg={$vo.id}">{$vo.linkName}</a>{/case}
+                                        {case value="bug"}<span class="sign red ma-ri-10">BUG</span><a href="../bugtrace/desc?projectID={$vo.projectID}&bugid={$vo.linkID}&msg={$vo.id}">{$vo.linkName}</a>{/case}
+                                        {case default /}<span class="sign red ma-ri-10">PLAN</span><a href="../testplan/playtest?projectID={$vo.projectID}&planID={$vo.linkID}">{$vo.linkName}</a>{/case}
+                                        {/switch}
+                                    </small>
+                                </td>
+								<td>
+								{if condition="$vo['comment'] neq null"}
+								他/她的意见：{$vo.comment}
+								{/if}
+								</td>
+                                <td class="time">
+                                    {$vo.time}
+                                </td>
+                            </tr>
+                            {/volist}
+                        {else /}
+                            <tr>
+                                <td colspan="4" style="text-align: center; background-color:#F9FAFC">暂时没有新消息</td>
+                            </tr>
+                        {/if}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{include file="public:footer" /}

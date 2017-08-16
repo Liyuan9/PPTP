@@ -1,0 +1,85 @@
+<div class="panel-body" >
+    <div class="tabs-container">
+        <a class="btn btn-primary btn-xs ma-ri-20 pull-right" data-toggle="tab" aria-expanded="true" href="#other-div">其它变更</a>
+        <a class="btn btn-info btn-xs ma-ri-20 pull-right" data-toggle="tab" aria-expanded="true" href="#status-div">状态变更</a>
+        <div class="tab-content">
+            <div id="status-div" class="tab-pane table-default" style="min-height: 300px;">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th class="wi-60">序号</th>
+                        <th class="wi-160">变更时间</th>
+                        <th class="wi-120">变更人</th>
+                        <th class="wi-160">变更字段</th>
+                        <th class="wi-200">变更前</th>
+                        <th class="wi-200">变更后</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {volist name='sta_history' id='vo' key="k"}
+                    <tr>
+                        <td class="wi-60" style="vertical-align:middle">{$k}</td>
+                        <td class="wi-160" style="vertical-align:middle">{$vo.addTime}</td>
+                        <td class="wi-120" style="vertical-align:middle">{$vo.run_people}</td>
+                        <td colspan="3" style="vertical-align:middle">
+                            <table style="width:100%; table-layout:fixed; margin-bottom:0;">
+                                <tbody>
+                                {volist name="$vo['result']" id="vi"}
+                                <tr>
+                                    <td class="wi-160" style="padding:5px 0;vertical-align:middle;">{$vi.column_sign}</td>
+                                    <td class="wi-200" style="padding:5px 0;vertical-align:middle">{$vi.before_sign}</td>
+                                    <td class="wi-200" style="padding:5px 0;vertical-align:middle">{$vi.after_sign}</td>
+                                </tr>
+                                {/volist}
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    {/volist}
+                    </tbody>
+                </table>
+            </div>
+            <div id="other-div" class="tab-pane active table-default" style="min-height: 300px;">
+                <table class="table" >
+                    <thead>
+                    <tr>
+                        <th class="wi-60">序号</th>
+                        <th class="wi-160">变更时间</th>
+                        <th class="wi-120">变更人</th>
+                        <th class="wi-160">变更字段</th>
+                        <th class="wi-200">变更前</th>
+                        <th class="wi-200">变更后</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {volist name='history' id='vo' key="k"}
+                    <tr>
+                        <td class="wi-60" style="vertical-align:middle">{$k}</td>
+                        <td class="wi-160" style="vertical-align:middle">{$vo.addTime}</td>
+                        <td class="wi-120" style="vertical-align:middle">{$vo.run_people}</td>
+                        <td colspan="3" style="vertical-align:middle">
+                            <table style="width:100%; table-layout:fixed; margin-bottom:0;">
+                                <tbody>
+                                {volist name="$vo['result']" id="vi"}
+                                <tr>
+                                    <td class="wi-160" style="vertical-align:middle;">{$vi.column_sign}</td>
+                                    {if condition="$vi['before_sign'] eq '查看详情'"}
+                                    <td class="wi-200" style="padding:5px 0;vertical-align:middle"><a href="../common/lookdiff?step={$vi.id}" target="_blank">{$vi.before_sign}</a></td>
+                                    <td class="wi-200" style="padding:5px 0;vertical-align:middle"><a href="../common/lookdiff?step={$vi.id}" target="_blank">{$vi.after_sign}</a></td>
+                                    {else/}
+                                    <td class="wi-200" style="padding:5px 0;vertical-align:middle">{$vi.before_sign}</td>
+                                    <td class="wi-200" style="padding:5px 0;vertical-align:middle">{$vi.after_sign}</td>
+                                    {/if}
+                                </tr>
+                                {/volist}
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    {/volist}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

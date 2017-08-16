@@ -1,0 +1,30 @@
+<div class="panel-body table-default" >
+    <table class="table" id="substory">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>标题</th>
+            <th>优先级</th>
+            <th>状态</th>
+            <th>当前处理人</th>
+        </tr>
+        </thead>
+        <tbody>
+        {if condition="$linkneed neq null"}
+        {volist name="linkneed" id="vo"}
+        <tr>
+            <td>{$vo.id}</td>
+            <td><a href="../Need/desc?needid={$vo.id}">{$vo.needName}</a></td>
+            <td>{$vo.level}</td>
+            <td>{$vo.status}</td>
+            <td>{$vo.dealname}</td>
+        </tr>
+        {/volist}
+        {else /}
+            <tr>
+                <td colspan="5">测试用例暂时没有关联需求</td>
+            </tr>
+        {/if}
+        </tbody>
+    </table>
+</div>

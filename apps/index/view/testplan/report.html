@@ -1,0 +1,236 @@
+{include file="public:header" /}
+<div class="row row-default bg-default" xmlns="http://www.w3.org/1999/html">
+    <div class="col-sm-12">
+        <div class="ibox">
+            <div class="ibox-title">
+                <h5><i class="fa fa-envelope-o ma-ri-10"></i>测试报告<em>（{$info.planName}）</em></h5>
+				<div class="ibox-tools">
+					<a href="javascript:;" onclick="sendmail('send')" class="btn btn-xs btn-info"><i class="fa fa-send ma-ri-5"></i>发送邮件</a>
+					<a href="javascript:;" onclick="lookmail()"class="btn btn-xs btn-info"><i class="fa fa-eye ma-ri-5"></i>邮件预览</a>
+					<a href="javascript:;" onclick="sendmail('save')" class="btn btn-xs btn-info"><i class="fa fa-download ma-ri-5"></i>保存草稿</a>
+				</div>
+            </div>
+            <div class="ibox-content">
+                <div class="row">
+                    <h5 class="col-sm-12" style="font-weight: bold; padding-left: 15px;">基本信息</h5>
+                    <div class="col-lg-12 col-md-12 form-group">
+                        <label class="col-md-1 control-label font-primary" style="text-align: right">邮件主题：</label>
+                        <div class="col-lg-5 col-md-8">
+                            <input type="text" class="form-control" name="subject" value="{$subject}"/>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12 form-group">
+                        <label class="col-md-1 control-label font-primary" style="text-align: right">收件人：</label>
+                        <div class="col-lg-5 col-md-8 dropdown">
+                            <input type="text" class="form-control dropdown-toggle" data-toggle="dropdown" id="sendto" name="sendto" value=""/>
+                            <ul class="dropdown-menu" style="left: 15px;">
+                                {volist name="name" id="vo"}
+                                <li><a href="javascript:;" onclick="selectuser(this,'#sendto')">{$vo}</a></li>
+                                {/volist}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12 form-group">
+                        <label class="col-md-1 control-label font-primary" style="text-align: right">抄送人：</label>
+                        <div class="col-lg-5 col-md-8 dropdown">
+                            <input type="text" class="form-control dropdown-toggle" data-toggle="dropdown" id="copysend" name="copysend" value=""/>
+                            <ul class="dropdown-menu" style="left: 15px;">
+                                {volist name="name" id="vo"}
+                                <li><a href="javascript:;" onclick="selectuser(this,'#copysend')">{$vo}</a></li>
+                                {/volist}
+                            </ul>
+                        </div>
+                    </div>
+                    <h5 class="col-sm-12" style="font-weight: bold; padding-left: 15px;">邮件内容</h5>
+				</div>
+				<div class="row" id="message">
+					<div style="width:96%; margin:5px 2%;">
+						<h3 style="width:100%; text-align:center; color:#337AB7">测试结果反馈</h3>
+						<p style="text-align:right">项目名称：{:session('projectName')}|<em style="color:red; font-style:normal">{:session('projectCreate')}</em></p>
+					</div>
+					<div style="width:96%; margin:5px 2%;">
+                        <h5 style="float:left;height: 30px; line-height: 30px; width:140px; padding-left:10px; margin:10px 0; background-color:#337AB7;color:#fff;"><i style="font-size:16px; font-style:normal;margin-right:5px;">☞</i>测试计划详情</h5><div style=" float:left; width: 0; height: 0; margin:10px 0;background-color:#337AB7; border-width:15px 0 15px 15px; border-color:#fff transparent; border-style:solid;"></div>
+                        <ul style="width:100%;height:auto; overflow:hidden;padding-left:1%;">
+                            <li style="width:33%;min-height:30px; vertical-align:middle; float:left; list-style: none;"><strong>测试计划名称：</strong>{$info.planName}</li>
+                            <li style="width:33%;min-height:30px; vertical-align:middle; float:left; list-style: none;"><strong>测试负责人：</strong>{$info.responsible}</li>
+                            <li style="width:33%;min-height:30px; vertical-align:middle; float:left; list-style: none;"><strong>测试人员：</strong>{$info.testby}</li>
+                            <li style="width:33%;min-height:30px; vertical-align:middle; float:left; list-style: none;"><strong>预发布时间：</strong>{if condition="$info['publishTime'] eq null"}未知{else/}{$info.publishTime}{/if}{if condition="$info['delayDay'] neq 0"}<em style="color:#C82C2C;font-style:normal;">（已延期天）</em>{/if}</li>
+                            <li style="width:33%;min-height:30px; vertical-align:middle; float:left; list-style: none;"><strong>开始时间：</strong>{$info.startTime}</li>
+                            <li style="width:33%;min-height:30px; vertical-align:middle; float:left; list-style: none;"><strong>结束时间：</strong>{$info.overTime}</li>
+                            <li style="width:33%;min-height:30px; vertical-align:middle; float:left; list-style: none;"><strong>计划创建人：</strong>{$info.creatName}</li>
+                            <li style="width:33%;min-height:30px; vertical-align:middle; float:left; list-style: none;"><strong>计划创建时间：</strong>{$info.creatTime}</li>
+                            <li style="width:100%;height:auto; min-height:30px; line-height:25px; overflow:hidden; float:left; list-style: none;"><strong style="display:inline-block; float:left;">测试计划描述：</strong>{$info.content}</li>
+                        </ul>
+                    </div>
+					<div style="width:96%; margin:5px 2%;">
+                        <h5 style="float:left;height: 30px; line-height: 30px; width:120px; margin:10px 0;padding-left: 10px; background-color:#337AB7;color:#fff;"><i style="font-size:16px; font-style:normal;margin-right:5px;">☞</i>版本详情</h5><div style=" float:left; margin:10px 0;width: 0; height: 0; background-color:#337AB7; border-width:15px 0 15px 15px; border-color:#fff transparent; border-style:solid;"></div>
+                        <ul style="width:100%;height:auto; overflow:hidden;padding-left:1%;">
+							<li style="width:33%;min-height:30px; vertical-align:middle; float:left; list-style: none;"><strong>版本名称：</strong>{$version.title}</li>
+                            <li style="width:33%;min-height:30px; vertical-align:middle; float:left; list-style: none;"><strong>测试类型：</strong>{$version.type}</li>
+                            <li style="width:33%;min-height:30px; vertical-align:middle; float:left; list-style: none;"><strong>版本提测人：</strong>{$version.creatName}</li>
+                            <li style="width:33%;min-height:30px; vertical-align:middle; float:left; list-style: none;"><strong>所属迭代：</strong>{$version.iterationName}</li>
+                            <li style="width:33%;min-height:30px; vertical-align:middle; float:left; list-style: none;"><strong>版本提测时间：</strong>{$version.creatTime}</li>
+							<li style="width:33%;min-height:30px; vertical-align:middle; float:left; list-style: none;"><strong>测试总耗时(h)：</strong><em style="color:#C82C2C;font-style:normal;">{$info.countTime}</em><small>（{$version.StartTime}~{$version.EndTime}）</small></li>
+							<li style="width:100%;height:auto; min-height:30px; line-height:25px; overflow:hidden; float:left; list-style: none;"><strong style="display:inline-block; float:left;">提测说明：</strong>{$version.depict}</li>
+							{if condition="$version['type'] neq '性能测试' and $version['selftestdesc'] neq null"}
+							<li style="width:100%;height:auto; min-height:30px; line-height:25px; overflow:hidden; float:left; list-style: none;"><strong style="display:inline-block; float:left;">自测描述：</strong>{$version.selftestdesc}</li>
+							{/if}
+							{if condition="$version['type'] eq '性能测试' and $version['perform'] neq null""}
+							<li style="width:100%;height:auto; min-height:30px; line-height:25px; overflow:hidden; float:left; list-style: none;"><strong style="display:inline-block; float:left;">性能要求：</strong>{$version.perform}</li>
+							{/if}
+						</ul>
+                    </div>
+                    <div style="width:96%; margin:5px 2%;">
+                        <h5 style="float:left;height: 30px; margin:10px 0; line-height: 30px; width:120px;padding-left: 10px; background-color:#337AB7;color:#fff;"><i style="font-size:16px; font-style:normal;margin-right:5px;">☞</i>测试结果</h5><div style=" float:left; margin:10px 0; width: 0; height: 0; background-color:#337AB7; border-width:15px 0 15px 15px; border-color:#fff transparent; border-style:solid;"></div>
+                        <ul style="width:100%;height:auto; overflow:hidden;padding-left:1%;">
+							<li style="width:100%;height:30px; line-height:30px; float:left; list-style: none;"><strong>测试情况：</strong>已提测需求{$play_result.needNum}个，代码版本{$play_result.versionNum}个,<em style="color:#C82C2C; font-style:normal;">产生缺陷：{$play_result.bugnum}个</em></li>
+							<li style="width:100%;height:30px; line-height:30px; float:left; list-style: none;"><strong>BUG严重程度分布：</strong><em style="background-color:red">&nbsp;&nbsp;</em>致命：{$play_result.height}，<em style="background-color:#DA70D6">&nbsp;&nbsp;</em>严重：{$play_result.middle}，<em style="background-color:#F0AD4E">&nbsp;&nbsp;</em>一般：{$play_result.base}，<em style="background-color:#87CEFA">&nbsp;&nbsp;</em>轻微：{$play_result.lower}</li>
+							<li style="width:100%;height:30px; line-height:30px; float:left; list-style: none;"><strong>BUG修复情况：</strong>激活：{$play_result.openbug}个，拒绝处理：{$play_result.refusebug}个，已解决：{$play_result.overbug}个， 已关闭：{$play_result.closebug}个</li>
+							<li style="width:100%;height:30px; line-height:30px; float:left; list-style: none;"><strong style="color:#C82C2C;">测试问题汇总：</strong></li>
+							<li id="question" style="width:100%;height:auto; line-height:25px;overflow:hidden; float:left; list-style: none; color:#C82C2C;"><textarea class="form-control" name="question"></textarea></li>
+						</ul>
+					</div>
+                    <div style="width:96%; margin:5px 2%;">
+						<h5 style="float:left;height: 30px; margin:10px 0; line-height: 30px; width:120px;padding-left: 10px; background-color:#337AB7;color:#fff;"><i style="font-size:16px; font-style:normal;margin-right:5px;">☞</i>需求跟踪</h5><div style=" float:left; margin:10px 0; width: 0; height: 0; background-color:#337AB7; border-width:15px 0 15px 15px; border-color:#fff transparent; border-style:solid;"></div>
+                        <div style="width:100%;height:auto; overflow:hidden;padding-left:1%;">
+							<table style="width:100%" >
+								<thead style="border-top:1px solid #c2ccd1; border-bottom:1px solid #c2ccd1; background-color:#F9FAFC">
+									<tr>
+										<th style="height:35px; text-align:left; vertical-align:middle; width:5%;padding:0 5px; font-size:12px;">序号</th>
+										<th style="height:35px; text-align:left; vertical-align:middle; padding:0 5px; font-size:12px;">需求分类</th>
+										<th style="height:35px; text-align:left; vertical-align:middle; padding:0 5px; font-size:12px;">名称</th>
+										<th style="height:35px; text-align:left; vertical-align:middle; padding:0 5px; font-size:12px;">等级</th>
+										<th style="height:35px; text-align:left; vertical-align:middle; padding:0 5px; font-size:12px;">需求状态</th>
+										<th style="height:35px; text-align:left; vertical-align:middle; padding:0 5px;font-size:12px;">备注</th>
+									</tr>
+								</thead>
+								<tbody>
+									{volist name="need" id="vi"}
+									<tr style="border-bottom: 1px dotted #c2ccd1">
+										<td style="min-height:30px; vertical-align:middle; width:5%;padding:0 5px;font-size:12px;padding:5px 0;">{$vi.id}</td>
+										<td style="min-height:30px; vertical-align:middle; width:5%;padding:0 5px;font-size:12px;padding:5px 0;">{$vi.list_name}</td>
+										<td style="min-height:30px; vertical-align:middle; width:35%;padding:0 5px;font-size:12px;padding:5px 0;"><span style="font-size:8px; padding:0 3px; background-color:#7077D7; color:#fff; margin-right:10px; border-radius:3px;">NEED</span>{$vi.needName}</td>
+										<td style="min-height:30px; vertical-align:middle; width:10%;padding:0 5px;font-size:12px;padding:5px 0;">{$vi.level}</td>
+										<td style="min-height:30px; vertical-align:middle; width:10%;padding:0 5px;font-size:12px;padding:5px 0;">{$vi.status}</td>
+										<td class="needtext" style="min-height:30px; vertical-align:middle; width:30%;font-size:12px;padding:5px 0;"><input type="text" class="form-control" name="needtext" value="" style="height:25px" /></td>
+									</tr>
+									{volist name="$vi['linkBug']" id="vo"}
+									<tr style="border-bottom: 1px dotted #c2ccd1;">
+										<td style="min-height:30px; vertical-align:middle; width:5%;padding:0 5px;font-size:12px; padding:5px 0;">{$vo.id}</td>
+										<td></td>
+										<td style="min-height:30px; vertical-align:middle; width:35%;padding:0 5px 0 15px;font-size:12px;padding:5px 0;" ><span style="font-size:8px; padding:0 3px; background-color:#C82C2C; color:#fff; margin-right:10px; border-radius:3px;">BUG</span>{$vo.bugName}</td>
+										{switch name="$vo['serious']"}
+										{case value="致命级"}
+										<td style="min-height:30px; vertical-align:middle; width:15%;padding:0 5px;font-size:12px;padding:5px 0; color:red;">{$vo.serious}</td>
+										{/case}
+										{case value="严重级"}
+										<td style="min-height:30px; vertical-align:middle; width:15%;padding:0 5px;font-size:12px;padding:5px 0; color:#DA70D6">{$vo.serious}</td>
+										{/case}
+										{case value="一般级"}
+										<td style="min-height:30px; vertical-align:middle; width:15%;padding:0 5px;font-size:12px;padding:5px 0; color:#F0AD4E">{$vo.serious}</td>
+										{/case}
+										{default /}
+										<td style="min-height:30px; vertical-align:middle; width:15%;padding:0 5px;font-size:12px;padding:5px 0; color:#87CEFA">{$vo.serious}</td>
+										{/switch}
+										
+										<td style="min-height:30px; vertical-align:middle; width:15%;padding:0 5px;font-size:12px;padding:5px 0;">{$vo.status}</td>
+										<td style="min-height:30px; vertical-align:middle; width:30%;padding:0 5px;font-size:12px;padding:5px 0;">{$vo.dealmethod}</td>
+									</tr>
+									{/volist}
+									{/volist}
+								</tbody>
+							</table>
+						</div>
+                    </div>
+				</div>
+            </div>
+        </div>
+    </div>
+</div>
+<script >
+	function sendmail(step){
+        var data = {};
+		var url = '';
+		var question = $('textarea[name=question]').val();
+		if(question != ''){
+		document.getElementById('question').innerHTML = question ;
+		}else{
+		document.getElementById('question').innerHTML = '' ;
+		}
+		$('.needtext').each(function(i){
+			$(this).text($(this).find('input[name=needtext]').val());
+		});
+        data['sendto'] = $("input[name=sendto]").val();
+        data['copysend'] = $('input[name=copysend]').val();
+        data['subject'] = $('input[name=subject]').val();
+        data['message'] = $('#message').prop('outerHTML');
+		if(step == 'save'){
+			url = '../home/mailbox';
+		}else{
+			url = '../testplan/report?planid={$info.id}';
+		}
+        $.ajax({
+                url:'../testplan/sendmail?step='+step,
+                method:'post',
+                data:data,
+                dataType:'json',
+                beforeSend:function(){
+                    var index = layer.msg('邮件正在努力发送中....',{icon:6,time:1000000});
+                },
+                complete:function(){
+                    layer.close(index);
+                },
+                success:function(data){
+                    if(data.status == 1){
+						layer.open({
+							content: data.msg ,
+							icon : 1 ,
+							yes : function(){
+								location.href= url;
+							}
+						});
+                    }
+                    else {
+                        return dialog.error(data.msg);
+                    }
+                },
+                error:function() {
+                    return dialog.error('网络异常');
+                }
+            })
+    }
+	
+	function lookmail(){
+		var data = {};
+		var need = {};
+		var question = $('textarea[name=question]').val();
+		var textarea = '<textarea class="form-control" name="question"></textarea>';
+        var input = '<input type="text" class="form-control" name="needtext" value="" style="height:25px" />';
+		if(question != ''){
+		    document.getElementById('question').innerHTML = question ;
+		}else{
+		    document.getElementById('question').innerHTML = '' ;
+		}
+		$('.needtext').each(function(i){
+			$(this).text($(this).find('input[name=needtext]').val());
+		});
+        data['message'] = $('#message').prop('innerHTML');
+        $('#question').empty().append($(textarea));
+        $('textarea[name=question]').val(question);
+        $.each(need,function(i,value){
+            $('.needtext').eq(i).empty().append($(input));
+            $('.needtext').eq(i).find('input[name=needtext]').val(value);
+        });
+        layer.open({
+            type: 1,
+            skin: 'layui-layer-demo',
+            closeBtn: 1, 
+            anim: 3,
+            area:['100%','100%'],
+            shadeClose: true,
+            title:'邮件预览',
+            content: data['message']
+        });
+	}
+</script>
+{include file="public:footer" /}

@@ -1,0 +1,69 @@
+{include file="public:header"/}
+<div class="row row-default" >
+    <div class="col-md-12 top-tool" >
+        <ul class="top-tool-ul">
+            <li><a href="{:url('Cases/createCase')}" class="btn-a" >创建测试用例</a></li>
+            <li><a href="{:url('Cases/import')}" class="btn-a">导入测试用例</a></li>
+            <li><a href="#download-case" class="btn-a" role="buttom" id="modal" data-toggle="modal">导出测试用例</a></li>
+            <li class="shaili">
+                <a href="javascript:;" class="drop-search" >筛选<i class="fa fa-angle-double-down"></i></a>
+            </li>
+           <!-- <li class="seticon"><a href="javascript:;" onclick="setThead('cases')" title="设置显示字段"> <i class="fa fa-cog" style="font-size: 16px;"></i></a></li>-->
+        </ul>
+    </div>
+    <form id="searchForm" method="post" >
+        <div class="drop-search-menu" style="display:none;">
+            <ul class="drop-search-menu-ul">
+                {php}$i=0;{/php}
+                {foreach name='data' item='v'}
+                    {if condition="$i lt 2"}
+                        {if condition="isset($v['children'])"}
+                        <li><label>{$v.comment}</label>
+                            <select name="{$v.name}" class="fselect">
+                                {foreach name="v['children']" item="vo"}
+                                <option value="{$vo.id}">{$vo.name}</option>
+                                {/foreach}
+                            </select>
+                            <i class="fa fa-close del" style="margin-left:10px;color:#617CCD"></i>
+                        </li>
+                        {else /}
+                        <li><label>{$v.comment}</label>
+                            <input type="text" name="{$v.name}" class="finput" value="">
+                            <i class="fa fa-close del" style="margin-left:10px;color:#617CCD"></i>
+                        </li>
+                        {/if}
+                    {php}$i++;{/php}
+                    {/if}
+                {/foreach}
+            </ul>
+            <div class="fbtn">
+                <span><a href="javascript:;" id="searchbutton">筛选</a></span>
+                <span><a href="javascript:;" id="morechose" attr-value ="">更多条件</a></span>
+                <!--<span><a href="#choose-term" role="button" data-toggle="modal">更多条件</a></span>-->
+            </div>
+        </div>
+    </form>
+    {include file="public:search"/}
+    {include file="public:download" /}
+    <div class="tree-frame">
+        {include file='cases/casetype' /}
+        {include file='cases/caselist' /}
+    </div>
+</div>
+<script>
+    var SCOPE = {
+        'search_url' : "{:url('Cases/search')}",//搜索路径接口
+        'search_jump_url' : "{:url('Cases/index')}" //搜索成功后跳原路径
+    };
+    $(document).ready(function(){
+        $('.tree-frame').css({height:$('.row-default').height()-$('.top-tool').height()});
+        //$('.tree-content').css({width:$('.tree-frame').width()-230})
+
+        /*$('.tree-type-scroll').slimScroll({
+            width:'230px',
+            size: '3px',
+            color:'#3C8DBC'
+        });*/
+    });
+</script>
+{include file="public:footer"/}

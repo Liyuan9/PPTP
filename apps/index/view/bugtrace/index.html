@@ -1,0 +1,193 @@
+{include file="public:header" /}
+<div class="row row-default">
+    <div class="col-md-12 top-tool" >
+        <ul class="top-tool-ul">
+           <li><a href="{:url('Bugtrace/create')}" class="btn-a" >创建缺陷</a></li>
+           <!-- <li><a href="#download-case" class="btn-a" role="buttom" id="modal" data-toggle="modal">导出缺陷</a></li>-->
+            <li class="seli">
+                <form method="post" >
+                    <span>当前视图</span>
+                    <select name="view" id="view" class="seli-select select" onchange="handel_view(this,'bug')">
+                        <option value="">选择视图</option>
+                        <option value="全部">全部</option>
+                        <option value="未关闭">未关闭</option>
+                        <option value="已关闭">已关闭</option>
+                        <option value="我负责的">我负责的</option>
+                        <option value="我创建的">我创建的</option>
+                    </select>
+                </form>
+            </li>
+            <li class="shaili">
+                <a href="javascript:;" class="drop-search">筛选<i class="fa fa-angle-double-down"></i></a>
+            </li>
+            <!--<li class="seticon"><i class="fa fa-cog"></i></li>-->
+        </ul>
+    </div>
+    <form id="searchForm" method="post" >
+        <div class="drop-search-menu" style="display:none;">
+            <ul class="drop-search-menu-ul">
+                {php}$i=0;{/php}
+                {foreach name='data' item='v'}
+                {if condition="$i lt 2"}
+                {if condition="isset($v['children'])"}
+                <li><label>{$v.comment}</label>
+                    <select name="{$v.name}" class="fselect">
+                        {foreach name="v['children']" item="vo"}
+                        <option value="{$vo.id}">{$vo.name}</option>
+                        {/foreach}
+                    </select>
+                    <i class="fa fa-close del" style="margin-left:10px;color:#617CCD"></i>
+                </li>
+                {else /}
+                <li><label>{$v.comment}</label>
+                    <input type="text" name="{$v.name}" class="finput" value="">
+                    <i class="fa fa-close del" style="margin-left:10px;color:#617CCD"></i>
+                </li>
+                {/if}
+                {php}$i++;{/php}
+                {/if}
+                {/foreach}
+            </ul>
+            <div class="fbtn">
+                <span><a href="javascript:;" id="searchbutton">筛选</a></span>
+                <span><a href="javascript:;" id="morechose" attr-value ="">更多条件</a></span>
+                <!--<span><a href="#choose-term" role="button" data-toggle="modal">更多条件</a></span>-->
+            </div>
+        </div>
+    </form>
+    {include file="public:search"/}
+    <!--{file="public:download" /}-->
+    <div class="tree-content tree-content-default">
+        <div class="tree-content-table">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>缺陷名称</th>
+                    <th>发现版本</th>
+                    <th>严重程度</th>
+                    <th>优先级</th>
+                    <th>状态</th>
+                    <th>缺陷处理人</th>
+                    <th>创建人</th>
+                    <th>创建时间</th>
+                </tr>
+                </thead>
+                <tbody>
+                {if condition="$bugtrace neq null"}
+                {volist name="$bugtrace" id="vo"}
+                <tr {if condition="$vo['status'] eq '已关闭'"}style="color:#999;" {/if}>
+                    <td class="dropdown operation" style="text-align: center; width: 60px;">
+                        <a href="javascript:;" class="dropdown-toggle cog" data-toggle="dropdown" style="display: none"><i class="fa fa-angle-double-down"></i></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{:url('Bugtrace/create')}?bugid={$vo.id}">编辑</a></li>
+							<!--<li><a href="javascript:;" onclick="copy('testplan','{$vo.id}')">复制</a></li>-->
+                            <li><a href="javascript:;" onclick="del('bug','{$vo.id}')">删除</a></li>
+                        </ul>
+                    </td>
+					{if condition="$vo['status'] neq '已关闭'"} 
+					<td class="tb-title font-primary">
+                        <div class="edit_pencil" style="width: 500px; display: inline-block;">
+                            {if condition="$vo['upload'] neq null"}<i class="fa fa-paperclip font-ye"></i>{/if}
+                            <span class="sign red ma-ri-10">BUG</span><a href="{:url('Bugtrace/desc')}?bugid={$vo.id}" class="edit">{$vo.bugName}</a>
+                            <a href="javascript:;" onclick="edit_pencil(this)" style="display: none; margin-left: 20px;" class="e-pen" ><i class="fa fa-pencil"></i></a>
+                        </div>
+                        <div class="edit_input" style="display: none; width: 500px">
+                            <input type="text" name="bugName" value="{$vo.bugName}" attr_id="{$vo.id}" onmouseout="hideObj(this)" onchange="editObj(this,'bug')" style="width: 100%" >
+                        </div>
+                    </td>
+					{else/}
+					<td class="tb-title font-primary">
+                        <div class="edit_pencil" style="width: 500px; display: inline-block;">
+                            {if condition="$vo['upload'] neq null"}<i class="fa fa-paperclip font-ye"></i>{/if}
+                            <span class="sign gray ma-ri-10">BUG</span><a href="{:url('Bugtrace/desc')}?bugid={$vo.id}" class="font-gray">{$vo.bugName}</a>
+                        </div>
+                    </td>
+					{/if}
+                    <td>{$vo.findversion}</td>
+                    <td>
+                        <div class="edit_pencil" style="width:100px;">
+							{switch name="$vo['serious']"}
+                            {case value="致命级"}<em class="edit font-red">{$vo.serious}</em>{/case}
+							{case value="严重级"}<em class="edit font-ye">{$vo.serious}</em>{/case}
+							{case value="一般级"}<em class="edit font-green">{$vo.serious}</em>{/case}
+							{default/}<em class="edit">{$vo.serious}</em>
+							{/switch}
+                            <a href="javascript:;" onclick="edit_pencil(this)" class="e-pen" style="display: none; margin-left: 20px;" ><i class="fa fa-pencil"></i></a>
+                        </div>
+                        <div class="edit_input" style="display: none;width: 100px;">
+                            <select name="serious" attr_id="{$vo.id}" onblur="hideObj(this)" onchange="editObj(this,'bug')" style="width: 100%" class="select" >
+                                <option value="--">--</option>
+                                <option value="致命级" class="font-red">致命级</option>
+                                <option value="严重级" class="font-ye">严重级</option>
+                                <option value="一般级" class="font-green">一般级</option>
+                                <option value="轻微级">轻微级</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="edit_pencil" style="width:100px;">
+							{switch name="$vo['level']"}
+                            {case value="紧急"}<em class="edit font-red">{$vo.level}</em>{/case}
+							{default/}<em class="edit">{$vo.level}</em>
+							{/switch}
+                            <a href="javascript:;" onclick="edit_pencil(this)" style="display: none; margin-left: 20px;" class="e-pen" ><i class="fa fa-pencil"></i></a>
+                        </div>
+                        <div class="edit_input" style="display: none; width: 100px">
+                            <select name="level" attr_id="{$vo.id}" onblur="hideObj(this)" onchange="editObj(this,'bug')" style="width: 100%" class="select" >
+                                <option value="--">--</option>
+                                <option value="紧急" class="font-red">紧急</option>
+                                <option value="高">高</option>
+                                <option value="中">中</option>
+                                <option value="低">低</option>
+                            </select>
+                        </div>
+                    </td>
+                    <td>{switch name="$vo['status']"}
+                            {case value="拒绝解决"}<em class="font-red" style="cursor:pointer" onclick="tip(this,'解决方法：{$vo.dealmethod}')">{$vo.status}</em>{/case}
+							{case value="已解决"}<em class="font-green" >{$vo.status}</em>{/case}
+							{case value="已关闭"}<em class="font-gray" >{$vo.status}</em>{/case}
+							{default/}<em>{$vo.status}</em>
+							{/switch}
+					</td>
+                    <td>{$vo.dealby}</td>
+                    <td>{$vo.creatName}</td>
+                    <td>{$vo.creatTime}</td>
+                </tr>
+                {/volist}
+                {else/}
+                <tr>
+                    <h5 style="text-align: center">目前没有缺陷</h5>
+                </tr>
+                {/if}
+                </tbody>
+            </table>
+            <div class="page">
+                {$bugtrace->render()}
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var SCOPE = {
+        'search_url' : "{:url('Bugtrace/search')}",//搜索路径接口
+        'search_jump_url' : "{:url('Bugtrace/index')}" //搜索成功后跳原路径
+    };
+    $('#view').val('{$view}');
+    $('.edit_pencil').mouseenter(function(){
+        $(this).css({'background-color':'#F0F5FA'});
+        $(this).find('.e-pen').show();
+    }).mouseleave(function(){
+        $(this).css({'background':'none'});
+        $(this).find('.e-pen').hide();
+    });
+    $('.operation').mouseenter(function(){
+        $('.cog').hide();
+        $(this).find('.cog').show();
+    });
+    $('.dropdown-menu').mouseleave(function(){
+        $(this).parents('.dropdown').removeClass('open');
+        $(this).prev().prop('aria-expanded','false');
+    });
+</script>
+{include file="public:footer" /}

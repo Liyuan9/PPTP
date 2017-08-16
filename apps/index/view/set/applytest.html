@@ -1,0 +1,474 @@
+{include file="public:header" /}
+<div class="row row-default bg-default">
+    <div class="tree-frame" >
+        <div class="tree-menu">
+            <div class="tree-ibox">
+                <div class="tree-ibox-title" style="padding-left: 30px;">
+                    <strong style="line-height: 40px;">项目设置<i class="fa fa-ellipsis-v pull-right ma-ri-10" style="margin-top: 13px;color: #ddd"></i></strong>
+                </div>
+                <div class="tree-ibox-content">
+                    <dl class="menu-dl">
+                        <dt><a href="{:url('project/edit')}" style="color: #3C8DBC;">项目信息</a></dt>
+                    </dl>
+                    <dl class="menu-dl">
+                        <dt><a href="javascript:;" style="color: #3C8DBC;">成员与权限</a></dt>
+                        <dd><a href="{:url('Set/user')}">项目成员</a></dd>
+                    </dl>
+                    <dl class="menu-dl active">
+                        <dt><a href="javascript:;" style="color: #3C8DBC;">公共参数设置</a></dt>
+                        <dd><a href="{:url('Set/modular')}">模块设置</a></dd>
+                        <dd class="active"><a href="{:url('Set/version')}">版本设置<i class="fa fa-angle-right pull-right" style="padding: 3px 10px 3px 0;"></i></a></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="tree-content" >
+            <div class="tree-content-table">
+                <div class="container-fluid" style="padding: 20px;">
+                    <ul class="placeinfo">
+                        <li><i class="fa fa-location-arrow"></i>&nbsp;&nbsp;当前位置：</li>
+                        <li>项目设置&nbsp;&nbsp;&gt;</li>
+                        <li>&nbsp;&nbsp;公共参数设置&nbsp;&nbsp;&gt;</li>
+                        <li>&nbsp;&nbsp;版本设置&nbsp;&nbsp;&gt;</li>
+                        <li>&nbsp;&nbsp;申请{$title}</li>
+                    </ul>
+                    <div class="row">
+                        <div class="ibox div-default">
+                            <div class="col-sm-10 ibox-content" >
+                                <form id="Form" method="post" class="form-horizontal" enctype="multipart/form-data">
+                                    <input type="text" name="id" value="{$info.id|default=''}" hidden/>
+                                    <input type="text" name="iterationID" value="{$iterationID}" hidden/>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label font-primary">版本名称<em class="ma-le-5 font-red">*</em></label>
+                                        <div class="col-sm-8">
+                                            <input type="text" name="title" class="form-control" value="{$info.title|default=''}"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label font-primary">版本描述</label>
+                                        <div class="col-sm-8">
+                                            <textarea  name="depict" id="editor" style="width: 100%;" >{$info.depict|default=''}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label font-primary">测试类型<em class="ma-le-5 font-red">*</em></label>
+                                        <div class="col-sm-8">
+                                            <input type="text" name="type" value="{$title}" hidden/>
+                                            <input type="text" class="form-control wi-160" value="{$title}" disabled style="float: left" />
+                                            {if condition="$title eq '功能测试'"}
+                                            <div style="margin-left:20px;line-height: 34px; float: left;"><input type="checkbox" name="type2" value="兼容性测试" >同时申请兼容性测试</div>
+                                            {/if}
+                                            {if condition="$title eq '性能测试'"}
+                                            <div class="font-red" style="margin-left:20px;line-height: 34px; float: left;">*若申请接口性能测试，请在附件中上传接口说明，库表说明文档</div>
+                                            {/if}
+                                        </div>
+                                    </div>
+
+                                    {switch name="title"}
+                                    {case value="功能测试"}
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label font-primary">提测范围<em class="ma-le-5 font-red">*</em></label>
+                                        <div class="col-sm-8">
+                                            <input type="text" name="testNeed" value="{$info.testNeed|default=''}" hidden />
+                                            <input type="text" name="testBug" value="{$info.testBug|default=''}" hidden />
+                                            <input type="checkbox" class="rangeTest" attr-need="{$testneed}" attr-bug="{$testbug}"><em style="line-height: 34px;">该迭代范围下所有的需求与缺陷</em> <a  href="#choose" role="button" data-toggle="modal" class="btn btn-xs btn-warning ma-le-30"><i class="fa fa-search"></i>查找需求/缺陷</a>
+                                            <div id="testneed" style="height: auto;line-height: 30px; margin:10px 0">
+                                                {if condition="$info neq null"}
+												{if condition="$info['testneed'] neq null"}
+                                                <span>已选择需求：</span>
+                                                {volist name="$info['testneed']" id="vo"}
+												<span class="ma-le-20" style="border: 1px solid #bacee7; padding: 2px 3px">
+													<em class="fa-title" style="font-size: 10px;">{$vo.needName}</em>
+													<i class="fa fa-close font-red ma-le-10 clear" attr-id = "{$vo.id}" style="cursor: pointer"></i>
+												</span>
+                                                {/volist}
+                                                {/if}
+												{/if}
+                                            </div>
+                                            <div id="testbug" style="height: auto;line-height: 30px;">
+												{if condition="$info neq null"}
+                                                {if condition="$info['testbug'] neq null"}
+                                                <span>已选择缺陷：</span>
+                                                {volist name="$info['testbug']" id="vo"}
+												<span class="ma-le-20" style="border: 1px solid #bacee7; padding: 2px 3px">
+													<em class="fa-title" style="font-size: 10px;">{$vo.bugName}</em>
+													<i class="fa fa-close font-red ma-le-10 clear" attr-id = "{$vo.id}" style="cursor: pointer"></i>
+												</span>
+                                                {/volist}
+                                                {/if}
+												{/if}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label font-primary">自测描述<em class="ma-le-5 font-red">*</em></label>
+                                        <div class="col-sm-8">
+                                            <textarea name="selftestdesc" class="form-control">{$info.selftestdesc|default=''}</textarea>
+                                        </div>
+                                        <div class="col-sm-2 no-padding">
+                                            <em class="line-h-30 font-red">*</em>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label font-primary">代码地址</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" name="codeadd" class="form-control" value="{$info.codeadd|default=''}"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label font-primary">关联系统</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" name="linksystem" class="form-control" value="{$info.linksystem|default=''}"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label font-primary">数据库表说明</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" name="dbtext" class="form-control" value="{$info.dbtext|default=''}"/>
+                                        </div>
+                                    </div>
+                                    {/case}
+                                    {case value="性能测试"}
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label font-primary">性能要求</label>
+                                        <div class="col-sm-8">
+                                            <textarea  name="perform" class="form-control" >{$info.perform|default=''}</textarea>
+                                        </div>
+                                    </div>
+                                    {/case}
+                                    {case value="接口测试"}
+
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label font-primary">自测描述</label>
+                                        <div class="col-sm-8">
+                                            <textarea name="selftestdesc" class="form-control">{$info.selftestdesc|default=''}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label font-primary">代码地址</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" name="codeadd" class="form-control" value="{$info.codeadd|default=''}"/>
+                                        </div>
+                                    </div>
+                                    {/case}
+                                    {case value="兼容性测试"}
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label font-primary">提测范围</label>
+                                        <div class="col-sm-8" >
+                                            <input type="text" name="testNeed" value="{$info.testNeed|default=''}" hidden />
+                                            <input type="text" name="testBug" value="{$info.testBug|default=''}" hidden />
+                                            <input type="checkbox" class="rangeTest" attr-need="{$testneed}" attr-bug="{$testbug}"><em style="line-height: 34px;">该迭代范围下所有的需求与缺陷</em> <a  href="#choose" role="button" data-toggle="modal" class="btn btn-xs btn-warning ma-le-30"><i class="fa fa-search"></i>查找需求/缺陷</a>
+                                            <div id="testneed" style="height: auto;line-height: 30px; margin:10px 0">
+                                                {if condition="$info neq null"}
+                                                {if condition="$info['testneed'] neq null"}
+                                                <span>已选择需求：</span>
+                                                {volist name="$info['testneed']" id="vo"}
+                                                <span class="ma-le-20" style="border: 1px solid #bacee7; padding: 2px 3px">
+                                                    <em class="fa-title" style="font-size: 10px;">{$vo.needName}</em>
+                                                    <i class="fa fa-close font-red ma-le-10 clear" attr-id = "{$vo.id}" style="cursor: pointer"></i>
+                                                </span>
+                                                {/volist}
+                                                {/if}
+                                                {/if}
+                                            </div>
+                                            <div id="testbug" style="height: auto;line-height: 30px;">
+                                                {if condition="$info neq null"}
+                                                {if condition="$info['testbug'] neq null"}
+                                                <span>已选择缺陷：</span>
+                                                {volist name="$info['testbug']" id="vo"}
+                                                <span class="ma-le-20" style="border: 1px solid #bacee7; padding: 2px 3px">
+                                                    <em class="fa-title" style="font-size: 10px;">{$vo.bugName}</em>
+                                                    <i class="fa fa-close font-red ma-le-10 clear" attr-id = "{$vo.id}" style="cursor: pointer"></i>
+                                                </span>
+                                                {/volist}
+                                                {/if}
+                                                {/if}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label font-primary">自测描述</label>
+                                        <div class="col-sm-8">
+                                            <textarea name="selftestdesc" class="form-control">{$info.selftestdesc|default=''}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label font-primary">兼容性要求</label>
+                                        <div class="col-sm-8">
+                                            <textarea  class="form-control" name="compatibility" >{$info.compatibility|default=''}</textarea>
+                                        </div>
+                                    </div>
+                                    {/case}
+                                    {default /}
+                                    {/switch}
+                                    <div class="col-sm-12 form-group">
+                                        <label class="col-sm-2 control-label font-primary">附件</label>
+                                        <div class="col-sm-8">
+                                            {foreach name="uploads" item="vo"}
+                                            {foreach name="vo" item="vv"}
+                                            <p>
+                                                <a href="{$vv.path}{$vv.title}" style="padding: 7px 10px;">{$vv.title}</a>
+                                                <em class="ma-le-20">{$vv.upby}</em>
+                                                <em class="ma-le-20">{$vv.size}</em>
+                                                <em class="ma-le-20">{$vv.uptime}</em>
+                                                <i class="fa fa-close font-red ma-le-10 upFileList" title="删除" attr-title="{$vv.title}" attr-size="{$vv.size}" attr-path="{$vv.path}" attr-upby="{$vv.upby}" attr-uptime="{$vv.uptime}" style="cursor: pointer"></i>
+                                            </p>
+                                            {/foreach}
+                                            {/foreach}
+                                            <input type="text" name="upload" value="" hidden attr_user="{:session('loginname.dealname')}"/>
+                                            <input id="file-zh" name="file-zh[]" type="file" multiple >
+                                        </div>
+                                    </div>
+                                </form>
+                                <div class="col-sm-10" style="margin: 20px 0; text-align: right">
+								{if condition="$need neq null or $linkbug neq null"}
+                                    <a href="javascript:;" id='formbutton' class="btn btn-primary" >申请测试</a>
+									{/if}
+                                    <a href="javascript:history.go(-1)" class="btn btn-default">取消</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="choose" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="margin-top: 100px; width: 820px; height: 600px;">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #337AB7">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" style="color: #fff">选择待测需求与缺陷</h4>
+            </div>
+            <div class="modal-body" style="height: 444px; padding:0 20px;">
+                <div class="modal-body-content" style="height:444px; border-top: 0;">
+                    <div class="tabs-container">
+                        <ul class="nav nav-tabs ">
+                            <li class="bg-gray">
+                                <a data-toggle="tab" href="#SubStory-div" aria-expanded="true">需求</a>
+                            </li>
+                            <li class="bg-gray">
+                                <a data-toggle="tab" href="#Bugtrace-div" aria-expanded="true">缺陷</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div id="SubStory-div" class="tab-pane active" style="min-height: 300px;">
+                                <table class="table table-hover" style="margin-bottom: 0">
+                                    <thead>
+                                    <tr>
+                                        <th style="width: 10%"></th>
+                                        <th style="width: 45%">名称</th>
+                                        <th style="width: 25%">状态</th>
+                                        <th style="width: 20%">提出者</th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                                <div class="modal-body-scroll" style="padding-bottom: 20px;">
+                                    <table class="table table-hover" id="linkneed">
+                                        <tbody>
+                                        {volist name="need" id="vo"}
+                                        <tr>
+                                            <td style="width: 10%">
+                                                <input type="checkbox" class="checkneed" value="{$vo.id}" attr-title="{$vo.needName}" />
+                                            </td>
+                                            <td style="width: 45%">
+                                                <a href="" title="{$vo.needName}">{$vo.needName}</a>
+                                            </td>
+                                            <td style="width: 25%">{$vo.needby}</td>
+                                            <td style="width: 20%">{$vo.status}</td>
+                                        </tr>
+                                        {/volist}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div id="Bugtrace-div" class="tab-pane" style="min-height: 300px;">
+                                <table class="table"  style="margin-bottom: 0">
+                                    <thead>
+                                    <tr>
+                                        <th style="width: 35%">名称</th>
+                                        <th style="width: 35%">所属需求</th>
+                                        <th style="width: 15%">缺陷状态</th>
+                                        <th style="width: 15%">当前处理人</th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                                <div class="modal-body-scroll2" style="padding-bottom: 20px;">
+                                    <table class="table table-hover" id="linkbug" >
+                                        <tbody>
+                                        {volist name="linkbug" id="vo"}
+                                        <tr>
+                                            <td style="width: 35%"><input type="checkbox" class="checkbug" value="{$vo.id}" attr-title="{$vo.bugName}" /><a class="ma-le-20" href="{:url('Bugtrace/desc')}?bugid={$vo.id}">{$vo.bugName}</a></td>
+                                            <td style="width: 35%">
+                                                {volist name="$vo['linkneed']" id="vi"}
+                                                <a href="{:url('Need/desc')}?needid={$vi.id}">{$vi.needName}</a>
+                                                {/volist}
+                                            </td>
+                                            <td style="width: 15%">{$vo.status}</td>
+                                            <td style="width: 15%">{$vo.dealby}</td>
+                                        </tr>
+                                        {/volist}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="javascript:void(0);" id="sure" class="btn btn-primary" data-dismiss="modal">确定</a>
+                <a href="javascript:;" class="btn btn-default" data-dismiss="modal">取消</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{:IND_URL}plugins/ueditor/ueditor.config.js"></script>
+<script src="{:IND_URL}plugins/ueditor/ueditor.all.js"></script>
+<script src="{:IND_URL}plugins/ueditor/ueditor.all.min.js"></script>
+<script src="{:IND_URL}plugins/slimScroll/jquery.slimscroll.min.js"></script>
+<script src="{:IND_URL}plugins/fileupload/fileinput.js"></script>
+<script>
+    var SCOPE = {
+        'save_url' : "{:url('Set/applytest')}?step=save",//保存路径接口
+        'jump_url' : "{:url('Set/version')}" //成功后跳原路径
+    };
+    $(document).ready(function(){
+        $('head').append('<link  type="text/css" rel="stylesheet" href="{:IND_URL}plugins/fileupload/fileinput.css" />');
+        $('.tree-frame').css({'height':$('.row-default').height()});
+        UE.getEditor('editor');
+        $('.modal-body-scroll').slimScroll({
+            height:'360px',
+            size:'2px'
+        });
+        $('.modal-body-scroll2').slimScroll({
+            height:'360px',
+            size:'2px'
+        });
+		var ne = {$ne};
+		var lbug = {$lbug};
+		if(ne == '' && lbug == ''){
+			layer.open({
+				content : '此迭代下没有符合提测要求的需求或缺陷，不能执行提测操作！',
+				icon : 3 ,
+				btn : ['确定'],
+				yes:function(){
+					top.location.href='../iteration/index';
+				}
+			});
+		};
+        $('#file-zh').fileinput({
+            language: 'zh',
+            uploadUrl: "{:url('Action/uploads')}",
+            maxFileSize: 15000,
+            uploadAsync: false//设置上传同步异步 此为同步
+        });
+        $('input[name=upload]').val("{:UPLOAD_URL}");
+        /*$("#cancel").click(function(){
+         $("#test_file").val();
+         });*/
+        $('.upFileList').click(function(){
+            $(this).parent('p').remove();
+        });
+        $('#sure').click(function(){
+            var linkneed = '';
+            var linkbug = '';
+            var spanitem = $('#testneed');
+            var bugitem = $('#testbug');
+            var template = {
+                item: '<span class="ma-le-20" style="border: 1px solid #bacee7; padding: 2px 3px"></span>',
+                emitem: '<em class="fa-title" style="font-size: 10px;"></em>',
+                icon: '<i class="fa fa-close font-red ma-le-10 clear" attr-id = "" style="cursor: pointer"></i>'
+            };
+            $('#testneed').find('span').remove();
+            $('#testbug').find('span').remove();
+            $('.checkneed:checked').each(function(i){
+                spanitem
+                        .append($(template.item)
+                                .append($(template.emitem)
+                                        .append($(this).attr('attr-title'))
+                                )
+                                .append($(template.icon)
+                                        .attr('attr-id',$(this).val())
+                                        .attr('attr-sign','need')
+                                )
+                        );
+                if(linkneed == ''){
+                    linkneed = $(this).val();
+                }else{
+                    linkneed = linkneed+'|'+$(this).val();
+                }
+            });
+            $('.checkbug:checked').each(function(i){
+                bugitem
+                        .append($(template.item)
+                                .append($(template.emitem)
+                                        .append($(this).attr('attr-title'))
+                                )
+                                .append($(template.icon)
+                                        .attr('attr-id',$(this).val())
+                                        .attr('attr-sign','bug')
+                                )
+                        );
+                if(linkbug == ''){
+                    linkbug = $(this).val();
+                }else{
+                    linkbug = linkbug+'|'+$(this).val();
+                }
+            });
+            if(linkneed != ''){
+                $('#testneed').append(spanitem);
+                $('#testneed').prepend('<span>选择需求：</span>');
+            }
+            if(linkbug != ''){
+                $('#testbug').append(bugitem);
+                $('#testbug').prepend('<span>选择缺陷：</span>');
+            }
+            $('input[name=testNeed]').val(linkneed);
+            $('input[name=testBug]').val(linkbug);
+
+            $('.clear').click(function(){
+                $(this).parent().remove();
+                var sign = $(this).attr('attr-sign');
+                getTestval(sign);
+            });
+        });
+        function getTestval(sign){
+            var link = '';
+            var obj = '';
+            var input = '';
+            if(sign == 'need'){
+                obj = $('#testneed');
+                input = $('input[name=testNeed]');
+            }else{
+                obj = $('#testbug');
+                input = $('input[name=testBug]');
+            }
+            obj.find('.clear').each(function(i){
+                if(link == ''){
+                    link = $(this).attr('attr-id');
+                }else{
+                    link = link+'|'+$(this).attr('attr-id');
+                }
+            });
+            input.val(link);
+        }
+
+        $('.rangeTest').click(function(){
+            if($(this).is(":checked")){
+                $('input[name=testNeed]').val($(this).attr('attr-need'));
+                $('input[name=testBug]').val($(this).attr('attr-bug'));
+                $('#testneed').find('span').remove();
+                $('#testneed').append('<span class="font-red">你已选择所有需求与缺陷</span>');
+                $('#testbug').find('span').remove();
+            }else{
+                $("input[name=testNeed]").val('');
+                $('input[name=testBug]').val('');
+				$('#testneed').empty();
+            }
+        });
+    });
+
+</script>
+{include file="public:footer" /}

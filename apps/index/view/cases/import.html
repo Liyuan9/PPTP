@@ -1,0 +1,142 @@
+{include file="public:header"/}
+<div class="row row-default bg-default">
+    <div class="col-sm-12 ">
+        <div class="ibox">
+            <div class="ibox-title" style="padding-left: 10%">
+                <h5>导入测试用例</h5>
+                <div class="ibox-tools">
+                    <a href="javascript:history.go(-1)"><i class="fa fa-reply"></i></a>
+                </div>
+            </div>
+            <div class="ibox-content ma-le-20 div-default" >
+                <div class="row m-b-sm m-t-sm">
+                    <div class="col-md-offset-1 col-md-11 col-sm-12">
+                        <input type="radio" name="loadtype" value="1" checked />批量导入新建
+                    </div>
+                </div>
+                <div class="col-md-offset-1 col-md-11 col-sm-12">
+                    <h5>①准备测试用例</h5>
+                    <p style="padding-left: 2em; line-height: 30px;">导入的测试用例条数需<strong>小于50</strong>,所有允许导入的测试用例字段请参考模板，<strong>测试用例不符合规则，整条测试用例不予以导入。</strong>字段导入规则如下：</p>
+                    <p style="padding-left: 2em;line-height: 30px;">
+                        1）“用例名称”为必填项；<br>
+                        2）“用例目录”请填写目录ID，<a id="opencatalog" href="#catalog" role="button"  data-toggle="modal">详情请点击。</a>如果目录为空，默认导入为“未规划目录”中；<br>
+                        3）“用例状态”请填写：正常、待更新、已废弃；<br>
+                        4）人员类型字段请填写人员的昵称，“创建人”如果不填导入后会默认置为导入人；<br>
+                        5）日期型字段格式为：YYYY-MM-DD；<br>
+                        6）多选类型的自定义字段格式为：a|b|c,请用‘|’隔开多个选项；<br>
+                        7）其他字段请与项目中配置的值保持一致；<br>
+                        8）“需求ID”请填写需求ID，多个需求ID以英文;号隔开。需求必须是本项目下的需求<br>
+                        <a href="{:SITE_URL}/file/测试用例_导入模板.xlsx" ><i class="fa fa-download"></i>下载导入模板</a>
+                    </p>
+                </div>
+                <div class="col-md-offset-1 col-md-11 col-sm-12">
+                    <h5>②上传数据文件</h5>
+                    <p style="padding-left: 2em; line-height: 30px;">
+                        目前支持的文件类型为：.xls,.xlsx；<br>
+                        <input type="text" hidden name="file" value="" />
+                    </p>
+                    <div id="uploader" class="wu-example">
+                        <!--用来存放文件信息-->
+                        <div id="thelist" class="uploader-list"></div>
+                        <div class="btns">
+                            <div id="import" style="background-color: #00b7ee; width: 80px; text-align:center; border-radius: 3px"><i class="fa fa-plus"></i>添加文件</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-offset-1 col-md-11 col-sm-12" style="margin-top: 20px; margin-bottom: 20px;">
+                    <a href="javascript:;" id='inload' class="btn btn-primary">导入</a>
+                    <a href="javascript:history.go(-1)" class="btn btn-default">取消</a>
+                </div>
+                <div class="modal fade " id="catalog" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" style="margin-top: 10%;">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                <div>
+                                    <label>用例目录</label>
+                                    <ul id="treeview"></ul>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{:IND_URL}plugins/webuploader/dist/webuploader.js"></script>
+<script src="{:IND_URL}js/selecttree.js"></script>
+<script>
+    $('head').append('<link href="{:IND_URL}plugins/webuploader/css/webuploader.css" type="text/css" rel="stylesheet"/>');
+    var data = {$treelist};
+    $("#treeview").treeview({showBorder:!1,data:data,idable:1});
+    var uploader = WebUploader.create({
+        swf: "{:IND_URL}plugins/webuploader" + '/dist/Uploader.swf',
+        // 文件接收服务端。
+        server: "{:url('Cases/casesUpload')}",
+        // 选择文件的按钮。可选。
+        pick: '#import',
+        // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+        resize: false,
+        fileSizeLimit: 2* 1024 * 1024,
+        auto:false,
+        fileNumLimit: 1,
+        accept:{
+            title:'files',
+            extensions: 'xls,xlsx'
+        },
+        formData :{
+            loadtype : $("input[name='loadtype']:checked").val(),
+            projectID: '{:$projectID}'
+        }
+    });
+    uploader.on('error',function(type){
+        var msg;
+        if(type == 'Q_EXCEED_NUM_LIMIT'){
+            msg = '只能上传1个文件';
+        }else if(type == 'Q_TYPE_DENIED'){
+            msg = '请选择.xls或.xlsx文件';
+        }else{
+            msg = '文件大小不能超过2M';
+        }
+        layer.msg(msg,{icon:2});
+    });
+    // 当有文件被添加进队列的时候
+    uploader.on( 'fileQueued', function( file ){
+        $('#thelist').append('<h4 class="info">' + file.name + '<i class="fa fa-icon" id="dele"></i></h4>');
+        $("#dele").click(function(){
+            uploader.reset();
+            $(this).parent().remove();
+        });
+    });
+    // 文件上传过程中创建进度条实时显示。
+    uploader.on( 'uploadProgress', function( file, percentage ) {
+
+    });
+
+    uploader.on( 'uploadSuccess', function(file,response) {
+        if(response.status == 1){
+            $('input[name=file]').val(response.file);
+            layer.msg(response.msg,function(){
+                history.go(-1);
+            });
+        }else{
+            layer.msg(response.msg,{icon:2});
+        }
+    });
+
+    uploader.on( 'uploadError', function(file,reason) {
+        layer.msg(reason.msg,{icon:2});
+    });
+
+    uploader.on( 'uploadComplete', function( file ) {
+        $( '#'+file.id ).find('.progress').fadeOut();
+    });
+    $('#inload').click(function(){
+        uploader.upload();
+    });
+</script>
+
+{include file="public:footer" /}

@@ -1,0 +1,310 @@
+{include file="public:header" /}
+<div class="row row-default bg-default">
+    <div class="col-sm-12">
+        <div class="ibox div-default">
+            <div class="ibox-title">
+                {if condition="isset($info['id']) "}
+                <h5>编辑缺陷</h5>
+                {else/}
+                <h5>创建缺陷</h5>
+                {/if}
+            </div>
+            <div class="col-sm-10 ibox-content" >
+                <form id="Form" method="post" class="form-horizontal" enctype="multipart/form-data">
+                    <input type="text" name="id" value="{$info.id|default=''}" hidden />
+                    <input type="text" name="projectID" value="{:session('projectID')}" hidden />
+                    <input type="text" name="sign" value="{$sign}" hidden />
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label font-primary">选择模板</label>
+                        <div class="col-sm-8">
+                            <select class="form-control select" name="template">
+                                <option value="0">系统默认模板</option>
+                            </select>
+                        </div>
+                        <!--<div class="col-sm-2 no-padding">
+                            <a href="javascript:;" class="line-h-30 define">自定义模板</a>
+                        </div>-->
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label font-primary">缺陷名称</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="bugName" class="form-control" value="{$info.bugName|default=''}" />
+                        </div>
+                        <div class="col-sm-2 no-padding">
+                            <em class="line-h-30 font-red">*</em>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label font-primary">步骤</label>
+                        <div class="col-sm-8">
+                            <textarea name="step" id="step-editor" onfocus="tip(this,'执行的步骤')" style="width: 100%; min-height: 300px;">{$info.step|default=''}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label font-primary">实际执行结果</label>
+                        <div class="col-sm-8">
+                            <textarea name="result" id="result-editor" onfocus="tip(this,'执行的结果')" style="width: 100%; min-height: 300px;">{$info.result|default=''}</textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label font-primary">期望</label>
+                        <div class="col-sm-8">
+                            <textarea name="wish" id="editor" onfocus="tip(this,'期望')" style="width: 100%; min-height: 300px;">{$info.wish|default=''}</textarea>
+                        </div>
+                    </div>
+					{if condition="$link neq null"}
+                    <div class="col-sm-12 form-group">
+                        <label class="col-sm-2 control-label font-primary">缺陷所属</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="linkID" value='{$linkID}' hidden />
+                            {volist name="link" id="item"}
+                            <div class="col-md-6 col-sm-12">
+                                <span style="display:block">计划：<a style="line-height: 30px;">{$item.plan.planName|default=''}</a></span>
+                                <span style="display:block">需求：<a style="line-height: 30px;">{$item.need.needName|default=''}</a></span>
+                                <span style="display:block">用例：<a style="line-height: 30px;">{$item.case.casesName|default=''}</a></span>
+                            </div>
+                            {/volist}
+                        </div>
+                    </div>
+                    {else /}
+                    <div class="col-sm-12 form-group">
+                        <label class="col-sm-2 control-label font-primary">缺陷所属</label>
+                        <div id="link">
+                            <div class="col-sm-2" >
+                                <select class="form-control select" name="planID" id="linkPlan">
+                                    <option value="">--选择计划--</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-2" >
+                                <select class="form-control select" name="needID" id="linkNeed" >
+                                    <option value="">--选择需求--</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-2" >
+                                <select class="form-control select" name="caseID" id="linkCase">
+                                    <option value="">--选择用例--</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    {/if}
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-4 control-label font-primary">缺陷处理人</label>
+                        <div class="col-sm-6">
+                            <select class="form-control select" name="dealby">
+                                <option value=""></option>
+                                {foreach name="names" item="na"}
+                                <option value="{$na}">{$na}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                        <div class="col-sm-2 no-padding">
+                            <em class="line-h-30 font-red">*</em>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-3 control-label font-primary">抄送人</label>
+                        <div class="col-sm-6 dropdown">
+                            <input type="text" class="dropdown-toggle form-control" data-toggle="dropdown" name="sendto" id="sendto" onfocus="tip(this,'多个抄送人请用“|”隔开')" placeholder="" value="{$info.sendto|default=''}"/>
+                            <ul class="dropdown-menu" style="left: 15px;">
+                                {foreach name="names" item="na"}
+                                <li><a href="javascript:;" onclick="selectuser(this,'#sendto')">{$na}</a></li>
+                                {/foreach}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-4 control-label font-primary">模块</label>
+                        <div class="col-sm-6">
+							<select class="form-control select" name="model">
+                                <option value="">--</option>
+                                {foreach name="modular" item="vo"}
+                                <option value="{$vo.id}">{$vo.modularName}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+						<div class="col-sm-2 no-padding">
+							<a href="../set/modular" class="btn btn-warning btn-xs" style="margin-top:5px;">添加模块</a>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-3 control-label font-primary">缺陷类型</label>
+                        <div class="col-sm-6">
+                            <select class="form-control select" name="type">
+                                <option value="--">--</option>
+                                <option value="代码错误">代码错误</option>
+                                <option value="界面优化">界面优化</option>
+                                <option value="设计缺陷">设计缺陷</option>
+                                <option value="配置相关">配置相关</option>
+                                <option value="安装部署">安装部署</option>
+                                <option value="安全相关">安全相关</option>
+                                <option value="性能问题">性能问题</option>
+                                <option value="标准规范">标准规范</option>
+                                <option value="接口错误">接口错误</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2 no-padding">
+                            <em class="line-h-30 font-red">*</em>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-4 control-label font-primary">严重程度</label>
+                        <div class="col-sm-6">
+                            <select class="form-control select" name="serious">
+                                <option value="--">--</option>
+                                <option value="致命级">致命级</option>
+                                <option value="严重级">严重级</option>
+                                <option value="一般级">一般级</option>
+                                <option value="轻微级">轻微级</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2 no-padding">
+                            <em class="line-h-30 font-red">*</em>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-3 control-label font-primary">优先级</label>
+                        <div class="col-sm-6">
+                            <select class="form-control select" name="level">
+                                <option value="--">--</option>
+                                <option value="紧急">紧急</option>
+                                <option value="高">高</option>
+                                <option value="中">中</option>
+                                <option value="低">低</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-4 control-label font-primary">发现版本</label>
+                        <div class="col-sm-6" id="LinkVers">
+                            <select class="form-control select" name="findversion" id="linkVer">
+                                <option value="--">--</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2 no-padding">
+                            <em class="line-h-30 font-red">*</em>
+                           <!-- <a href="../set/version?step=add" class="btn btn-warning btn-xs" >添加版本</a>-->
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-3 control-label font-primary">操作系统</label>
+                        <div class="col-sm-6">
+                            <select class="form-control select" name="system">
+                                <option value="--">--</option>
+                                <option value="XP">XP</option>
+                                <option value="WIN7">WIN7</option>
+                                <option value="WIN8">WIN8</option>
+                                <option value="WIN10">WIN10</option>
+                                <option value="MAC">MAC</option>
+                                <option value="Android">Android</option>
+                                <option value="IOS">IOS</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-4 control-label font-primary">运行平台</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="platform" value="{$info.platform|default=''}" />
+                        </div>
+                    </div>
+                   
+                    <div class="col-sm-12 form-group explain" style="display: none">
+                        <label class="col-sm-2 control-label font-primary">抄送说明</label>
+                        <div class="col-sm-8">
+                            <textarea class="form-control" name="sendtext" id="sendtext" >{$info.sendtext|default=''}</textarea>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <label class="col-sm-2 control-label font-primary">附件</label>
+                        <div class="col-sm-8">
+                            {foreach name="uploads" item="vo"}
+                            {foreach name="vo" item="vv"}
+                            <p>
+                                <a href="{$vv.path}{$vv.title}" style="padding: 7px 10px;">{$vv.title}</a>
+                                <em class="ma-le-20">{$vv.upby}</em>
+                                <em class="ma-le-20">{$vv.size}</em>
+                                <em class="ma-le-20">{$vv.uptime}</em>
+                                <i class="fa fa-close font-red ma-le-10 upFileList" title="删除" attr-title="{$vv.title}" attr-size="{$vv.size}" attr-path="{$vv.path}" attr-upby="{$vv.upby}" attr-uptime="{$vv.uptime}" style="cursor: pointer"></i>
+                            </p>
+                            {/foreach}
+                            {/foreach}
+                            <input type="text" name="upload" value="" hidden attr_user="{:session('loginname.dealname')}"/>
+                            <input id="file-zh" name="file-zh[]" type="file" multiple >
+                        </div>
+                    </div>
+                </form>
+                <div class="col-sm-10" style="margin: 20px 0; text-align: right">
+                    <a href="javascript:;" id='formbutton' class="btn btn-primary" >确定</a>
+                    <a href="javascript:history.go(-1)" class="btn btn-default">取消</a>
+                </div>
+                <!---引入需求--->
+                <!---end--->
+                {if condition="$info neq null"}
+                <script>
+                    $('select[name=level]').val('{$info.level}');
+                    $('select[name=model]').val('{$info.model}');
+                    $('select[name=serious]').val('{$info.serious}');
+                    $('select[name=type]').val('{$info.type}');
+                    $('select[name=system]').val('{$info.system}');
+                    $('select[name=status]').val('{$info.status}');
+                    $('select[name=sendto]').val('{$info.sendto}');
+                    $('select[name=dealby]').val('{$info.dealby}');
+					var title = '{$info.version}';
+					if(title != ''){
+						var opt = [];
+					opt.push('<option value="'+'{$info.findversion}'+'">'+'{$info.version}'+'</option>');
+					$('select[name=findversion]').empty().append(opt);
+					}
+                </script>
+                {/if}
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{:IND_URL}plugins/ueditor/ueditor.config.js"></script>
+<script src="{:IND_URL}plugins/ueditor/ueditor.all.js"></script>
+<script src="{:IND_URL}plugins/ueditor/ueditor.all.min.js"></script>
+<script src="{:IND_URL}plugins/fileupload/fileinput.js"></script>
+<script src="{:IND_URL}js/threeLink.js"></script>
+<script>
+    var SCOPE = {
+        'save_url' : "{:url('Bugtrace/addbug')}",//保存路径接口
+        'jump_url' : "{$url}" //成功后跳原路径
+    };
+    $(document).ready(function(){
+        $('head').append('<link  type="text/css" rel="stylesheet" href="{:IND_URL}plugins/fileupload/fileinput.css" />');
+        $('.modal-body-scroll').slimScroll({
+            height:'380px',
+            size:'2px'
+        });
+        UE.getEditor('editor');
+        UE.getEditor('step-editor');
+        UE.getEditor('result-editor');
+        $('#file-zh').fileinput({
+            language: 'zh',
+            uploadUrl: "{:url('Action/uploads')}",
+            maxFileSize: 15000,
+            uploadAsync: false//设置上传同步异步 此为同步
+        });
+        $('input[name=upload]').val("{:UPLOAD_URL}");
+        $('.upFileList').click(function(){
+            $(this).parent('p').remove();
+        });
+		$("#link").threeLink({data:'{$plan}'});
+
+        $('.clearneed').click(function(){
+            $(this).parent().remove();
+            var needid = '';
+            $('.clearneed').each(function(){
+                needid = needid+','+$(this).attr('attr-id');
+            });
+            needid = needid.substring(1);
+            $('input[name=needID]').val(needid);
+        });
+        if($('#sendto').val() != ''){
+            $('.explain').show();
+        }
+    });
+</script>
+{include file="public:footer" /}

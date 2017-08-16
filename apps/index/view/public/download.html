@@ -1,0 +1,152 @@
+<div class="modal fade" id="download-case" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="width: 752px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" id="myModalLabel">选择导出字段</h4>
+            </div>
+            <div class="modal-body" style="padding: 0 20px; min-height: 400px;height: auto; overflow: hidden" >
+                <div class="modal-body-left" style="width: 500px; " id="choose">
+                        <span class="small-title" style="margin-left: -20px; padding-left: 25px; width: 520px;">
+                            <input type="checkbox" id="checkall" />&nbsp;&nbsp;选择所有
+                        </span>
+                    <div class="content-chose-div" style="margin-left: 0">
+                        <span class="chosedown">基础字段<i class="fa fa-angle-down"></i></span>
+                        <div class="chosedown-menu" style="display: block">
+                           {volist name='base' id='v'}
+						    <a href="javascript:;" class="check" style="width:150px; height: 30px; line-height: 30px;">
+                                <input type="checkbox" class="checklist" name="" title="{$v.column_comment}" value="{$v.column_name}"/><em class="ma-le-5">{$v.column_comment}</em>
+                            </a>
+						   {/volist}
+                        </div>
+                    </div>
+                    <div class="content-chose-div" style="margin-left: 0">
+                        <span class="chosedown">人员和时间<i class="fa fa-angle-down"></i></span>
+                        <div class="chosedown-menu" style="display: block">
+						{volist name='endbase' id='v'}
+                            <a href="javascript:;" class="check" style="width:150px;height: 30px; line-height: 30px; ">
+                                <input type="checkbox" class="checklist" name="" value="{$v.column_name}" title="{$v.column_comment}"/><em class="ma-le-5">{$v.column_comment}</em>
+                            </a>
+						{/volist}
+                        </div>
+                    </div>
+                    <!-- <div class="content-chose-div" style="margin-left: 0">
+                        <span class="chosedown">自定义字段<i class="fa fa-angle-down"></i></span>
+                        <div class="chosedown-menu" style="display: block">
+                            <a href="javascript:;" class="check" style="width:150px; ">
+                                <input type="checkbox" class="checklist" name="" value=""/>ID
+                            </a>
+                        </div>
+                    </div> -->
+                </div>
+                <div class="modal-body-right" style="padding: 0; min-height: 400px">
+                    <span class="small-title" style="margin-right: -20px; padding-right: 20px; width: 230px;">已选择字段</span>
+                    <ul class="choose-result">
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer" >
+                <a href="javascript:;" onclick="downLoad()" class="btn btn-primary">确定导出</a>
+            </div>
+        </div>
+    </div>
+</div>
+<form action="{$download}" method="post" id="outloads" >
+	<input type="hidden" name="projectID" id="projectID" value="{$projectID}"/>  
+	<input type="hidden" name="datas" id="datas" value=""/>  
+	<input type="hidden" name="dataname" id="dataname" value="" />
+</form>
+<script type="text/javascript">
+    $(function(){
+        var obj = $('.checklist:checked');
+        obj.each(function(){
+            var objectHtml = [];
+            objectHtml.push('<li>'+$(this).attr('title')+'<i class="fa fa-close result-cancel"></i></li>');
+            $('.choose-result').append(objectHtml);
+        });
+        $('.result-cancel').click(function(){
+            var title = $(this).parent().text();
+            var obj = $('.checklist:checked');
+            $(this).parent().remove();
+            obj.each(function(){
+                if($(this).attr('title') == title){
+                    $(this).prop('checked',false);
+                }
+            })
+        });
+    });
+    $('.checklist').click(function(){
+        if($(this).is(":checked")){
+            var objectHtml = [];
+            objectHtml.push('<li>'+$(this).attr('title')+'<i class="fa fa-close result-cancel"></i></li>');
+            $('.choose-result').append(objectHtml);
+        }else{
+            var text = $(this).attr('title');
+            $('.choose-result li').each(function(){
+                if($(this).text() == text){
+                    $(this).remove();
+                }
+            })
+        }
+        $('.result-cancel').click(function(){
+            $(this).parent().remove();
+            var title = $(this).parent().text();
+            var obj = $('.checklist:checked');
+            obj.each(function(){
+                if($(this).attr('title') == title){
+                    $(this).prop('checked',false);
+                }
+            })
+
+        });
+    });
+
+    $('#checkall').click(function(){
+        if($(this).is(":checked")){
+            $('.checklist').prop('checked',true);
+            var obj = $('.checklist:checked');
+            var objectHtml = [];
+            obj.each(function(){
+                objectHtml.push('<li>'+$(this).attr('title')+'<i class="fa fa-close result-cancel"></i></li>');
+            });
+            $('.choose-result').children().remove();
+            $('.choose-result').append(objectHtml);
+			$('.result-cancel').click(function(){
+                $(this).parent().remove();
+                var title = $(this).parent().text();
+                var obj = $('.checklist:checked');
+                obj.each(function(){
+                    if($(this).attr('title') == title){
+                        $(this).attr('checked',false);
+                    }
+                })
+
+            });
+        }else{
+            $('.checklist').prop('checked',false);
+            $('.choose-result').children().remove();
+        }
+    });
+
+    function downLoad(){
+        var data= [] ;
+		var dataname=[];
+        $('.checklist:checked').each(function(){
+            data.push($(this).val());
+        });
+		$('.checklist:checked').each(function(){
+            dataname.push($(this).attr('title'));
+        });
+        if(dataname == ''){
+            layer.open({
+                content :'请先选择所要导出的字段！' ,
+                icon : 3 ,
+                btn : ['确定']
+            });
+        }else{
+            $('#datas').val(JSON.stringify(data));
+            $('#dataname').val(JSON.stringify(dataname));
+            $('#outloads').submit();
+        }
+    }
+</script>

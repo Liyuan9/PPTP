@@ -1,0 +1,224 @@
+{include file="public:header" /}
+<div class="row row-default bg-default">
+    <div class="col-sm-12">
+        <div class="ibox div-default">
+            <div class="ibox-title">
+                {if condition="$info eq null"}
+                <h5>创建测试计划</h5>
+                {else/}
+                <h5>编辑测试计划</h5>
+                {/if}
+            </div>
+            <div class="col-sm-10 ibox-content" >
+                <form id="Form" method="post" class="form-horizontal" enctype="multipart/form-data">
+                    <input type="text" name="id" value="{$info.id|default=''}" hidden/>
+                    <input type="text" name="projectID" value="{:session('projectID')}" hidden/>
+					<input type="text" name="needID" value="{$needID}" hidden/>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label font-primary">选择模板</label>
+                        <div class="col-sm-8">
+                            <select class="form-control select" name="template">
+                                <option value="0">系统默认模板</option>
+                            </select>
+                        </div>
+                        <!--<div class="col-sm-2 no-padding">
+                            <a href="javascript:;" class="line-h-30 define">自定义模板</a>
+                        </div>-->
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label font-primary">测试计划名称</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="planName" class="form-control" placeholder="测试计划名称" value="{$info.planName|default=''}"/>
+                        </div>
+                        <div class="col-sm-2 no-padding">
+                            <em class="line-h-30 font-red">*</em>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label font-primary">测试计划描述</label>
+                        <div class="col-sm-8">
+                            <textarea name="content" id="editor" style="width: 100%" onfocus="tip(this,'输入本次的测试环境，测试重点，注意事项')">{$info.content|default=''}</textarea>
+                        </div>
+						 <div class="col-sm-2">
+                            <em class="font-red">输入本次的测试环境，测试重点，注意事项</em>
+                        </div>
+                    </div>
+					<div class="col-sm-6 form-group">
+                        <label class="col-sm-4 control-label font-primary">迭代</label>
+                        <div id="link">
+                            <div class="col-sm-6" >
+                                <select class="form-control select" name="iterationID" id="linkPlan">
+                                    <option value="0">--选择迭代--</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+					<div class="col-sm-6 form-group">
+                        <label class="col-sm-3 control-label font-primary">版本</label>
+                        <div class="col-sm-6" id="LinkVers">
+                            <select class="form-control select" name="versionID" id="linkVer">
+                                <option value="--">--</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-4 control-label font-primary">测试负责人</label>
+                        <div class="col-sm-6">
+                            <select class="form-control select" name="responsible">
+                                <option value="--">--</option>
+                                {foreach name="names" item="na"}
+                                <option value="{$na}">{$na}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+						<div class="col-sm-2 no-padding">
+                            <em class="line-h-30 font-red">*</em>
+                        </div>
+                    </div>
+					<div class="col-sm-6 form-group">
+                        <label class="col-sm-3 control-label font-primary">测试人员</label>
+                        <div class="col-sm-6 dropdown">
+                            <input type="text" class=" dropdown-toggle form-control" data-toggle="dropdown" name="testby" id="testby" onfocus="tip(this,'多个测试人员请用英文“|”隔开')" placeholder="" value="{$info.testby|default=''}"/>
+                            <ul class="dropdown-menu" style="left: 15px;">
+                                {foreach name="names" item="na"}
+                                <li><a href="javascript:;" onclick="selectuser(this,'#testby')">{$na}</a></li>
+                                {/foreach}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-4 control-label font-primary">测试类型</label>
+                        <div class="col-sm-6">
+                            <select class="form-control select" name="type">
+                                <option value="--">--</option>
+                                <option value="功能测试">功能测试</option>
+                                <option value="性能测试">性能测试</option>
+                                <option value="接口测试">接口测试</option>
+                                <option value="兼容性测试">兼容性测试</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                        <label class="col-sm-3 control-label font-primary">状态</label>
+                        <div class="col-sm-6">
+                            <select class="form-control select" name="status">
+                                <option value="--">--</option>
+                                <option value="开启">开启</option>
+                                <option value="关闭">关闭</option>
+                            </select>
+                        </div>
+						<div class="col-sm-2 no-padding">
+                            <em class="line-h-30 font-red">*</em>
+                        </div>
+                    </div>
+                    
+					<div class="col-sm-6 form-group">
+                         <label class="col-sm-4 control-label font-primary">开始时间</label>
+                         <div class="col-sm-6">
+                             <div class="input-group input-prepend ">
+                                 <span class="add-on input-group-addon">
+                                     <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                                 </span>
+                                 <input class="finput layer-date" style="width: 100%;" id="start" name="startTime"  value="{$info.startTime|default=''}">
+                             </div>
+                         </div>
+                     </div>
+                    <div class="col-sm-6 form-group">
+                         <label class="col-sm-3 control-label font-primary">结束时间</label>
+                         <div class="col-sm-6">
+                             <div class="input-group input-prepend " style="width: 100%;">
+                                 <span class="add-on input-group-addon">
+                                     <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                                 </span>
+                                 <input class="finput layer-date" style="width: 100%;" id="end" name="overTime" value="{$info.overTime|default=''}">
+                             </div>
+                         </div>
+                     </div>
+					 <div class="col-sm-6 form-group">
+                        <label class="col-sm-4 control-label font-primary">预发布时间</label>
+                        <div class="col-sm-6">
+                            <div class="input-group input-prepend " style="width: 100%;">
+                                 <span class="add-on input-group-addon">
+                                      <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                                 </span>
+                                 <input class="finput layer-date" style="width: 100%;" name="publishTime" value="{$info.publishTime|default=''}"  onclick="laydate({istime:false,istoday:false,isclear:false,issure:false,format: 'YYYY-MM-DD'})" />
+                            </div>
+                        </div>
+                    </div> 
+                    <div class="col-sm-12 form-group">
+                        <label class="col-sm-2 control-label font-primary">附件</label>
+                        <div class="col-sm-8">
+                         {foreach name="uploads" item="vo"}
+                            {foreach name="vo" item="vv"}
+                            <p>
+                                <a href="{$vv.path}{$vv.title}" style="padding: 7px 10px;">{$vv.title}</a>
+                                <em class="ma-le-20">{$vv.upby}</em>
+                                <em class="ma-le-20">{$vv.size}</em>
+                                <em class="ma-le-20">{$vv.uptime}</em>
+                                <i class="fa fa-close font-red ma-le-10 upFileList"title="删除" attr-title="{$vv.title}" attr-size="{$vv.size}" attr-path="{$vv.path}" attr-upby="{$vv.upby}" attr-uptime="{$vv.uptime}" style="cursor: pointer"></i>
+                            </p>
+                            {/foreach}
+                         {/foreach}
+                            <input type="text" name="upload" value="" hidden attr_user="{:session('loginname.dealname')}"/>
+                            <input id="file-zh" name="file-zh[]" type="file" multiple >
+                        </div>
+                    </div>
+                </form>
+                <div class="col-sm-10" style="margin: 20px 0; text-align: right">
+                    <a href="javascript:;" id='formbutton' class="btn btn-primary" >确定</a>
+                    <a href="javascript:history.go(-1)" class="btn btn-default">取消</a>
+                </div>
+                {if condition="$info neq null"}
+                <script>
+                    $('select[name=responsible]').val('{$info.responsible}');
+                    $('select[name=type]').val('{$info.type}');
+                    $('select[name=status]').val('{$info.status}');
+					
+					var title = '{$info.title}';
+					if(title != ''){
+						var opt = [];
+					opt.push('<option value="'+'{$info.versionID}'+'">'+'{$info.title}'+'</option>');
+					$('select[name=versionID]').empty().append(opt);
+					}
+					
+                </script>
+                {/if}
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{:IND_URL}plugins/ueditor/ueditor.config.js"></script>
+<script src="{:IND_URL}plugins/ueditor/ueditor.all.js"></script>
+<script src="{:IND_URL}plugins/ueditor/ueditor.all.min.js"></script>
+<script src="{:IND_URL}plugins/fileupload/fileinput.js"></script>
+<script src="{:IND_URL}plugins/laydate/laydate.js"></script>
+<script src="{:IND_URL}js/threeLink.js"></script>
+<script>
+    $('head').append('<link  type="text/css" rel="stylesheet" href="{:IND_URL}plugins/fileupload/fileinput.css" />');
+    var SCOPE = {
+        'save_url' : "{:url('Testplan/addplan')}",//保存路径接口
+        'jump_url' : "{:url('Testplan/index')}" //成功后跳原路径
+    };
+    
+	$(document).ready(function(){
+		UE.getEditor('editor');
+		$('#file-zh').fileinput({
+			language: 'zh',
+			uploadUrl: "{:url('Action/uploads')}",
+			maxFileSize: 15000,
+			uploadAsync: false,//设置上传同步异步 此为同步
+
+		});
+		$('input[name=upload]').val("{:UPLOAD_URL}");
+		$('.upFileList').click(function(){
+			$(this).parent('p').remove();
+		});
+		$("#link").threeLink({data:'{$iteration}'});
+		$('select[name=iterationID]').val({$info.iterationID});
+		var start={elem:"#start",format:"YYYY-MM-DD hh:mm:ss",min:"2017-01-01 00:00:00",max:"2099-06-16 23:59:59",istime:true,istoday:true,choose:function(datas){end.min=datas;end.start=datas}};
+		var end={elem:"#end",format:"YYYY-MM-DD hh:mm:ss",min:"2017-01-01 00:00:00",max:"2099-06-16 23:59:59",istime:true,istoday:true,choose:function(datas){start.max=datas}};laydate(start);laydate(end);
+		
+	})
+   
+</script>
+{include file="public:footer" /}

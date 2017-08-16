@@ -1,0 +1,316 @@
+{include file="public:header" /}
+<div class="row row-default bg-default" xmlns="http://www.w3.org/1999/html">
+    <div class="col-sm-12">
+        <div class="ibox">
+            <div class="ibox-title">
+                <h5><span class="sign green ma-ri-10">PLAN</span>{$info.planName}<em class="ma-le-20">ID:{$info.id}</em><em class="ma-le-20">状态：<b class="font-red">{$info.status}</b></em></h5>
+                <div class="ibox-tools">
+                    <a href="{:url('Testplan/report')}?planid={$info.id}"  class="ma-ri-10" title="测试报告"><i class="fa fa-book"></i></a>
+                    <a href="{:url('Testplan/create')}?planid={$info.id}" class="ma-ri-10" title="编辑"><i class="fa fa-pencil"></i></a>
+                   <!-- <a href="javascript:;" onclick="layer.msg('此功能还在挖掘中，请试试其他的',{icon:5})" class="ma-ri-10" title="复制"><i class="fa fa-copy"></i></a>-->
+                    <a href="javascript:;" onclick="del('testplan','{$info.id}')" class="ma-ri-10" title="删除"><i class="fa fa-trash"></i></a>
+                    <a href="../testplan/desc.html?planid={$prev}" class="ma-ri-10" style="font-size: 12px;">上一条</a>
+                    <a href="../testplan/desc.html?planid={$next}" class="ma-ri-10" style="font-size: 12px;">下一条</a>
+                </div>
+            </div>
+            <div class="ibox-content">
+                <div class="row">
+                    <div class="col-sm-5">
+                        <dl class="dl-horizontal dl-default no-margin">
+							<dt>迭代：</dt>
+							<dd><a href="../iteration/plan?step=desc&id={$info.iterationID}">{$info.iterationName}</a></dd>
+							<dt>测试版本：</dt>
+                            <dd><a href="../set/applytest?step=desc&version={$info.versionID}">{$info.title}</a></dd>
+                            <dt>测试类型：</dt>
+                            <dd>{$info.type}</dd>
+                            <dt>创建人：</dt>
+                            <dd>{$info.creatName}</dd>
+                            <dt>创建于：</dt>
+                            <dd>{$info.creatTime}</dd>
+                            <dt>最后修改人：</dt>
+                            <dd>{$info.endName}</dd>
+							<dt>最后修改时间：</dt>
+                            <dd>{$info.endTime}</dd>
+							
+                        </dl>
+                    </div>
+                    <div class="col-sm-5">
+                        <dl class="dl-horizontal dl-default no-margin">
+							<dt>预发布时间：</dt>
+                            <dd>{if condition="$info['publishTime'] eq null"}未知{else/}{$info.publishTime}{/if}</dd>
+                            <dt>测试负责人：</dt>
+                            <dd>{$info.responsible}</dd>
+                            <dt>测试人员：</dt>
+                            <dd>{$info.testby}</dd>
+                            <dt>开始测试时间：</dt>
+                            <dd>{$info.startTest}</dd>
+                            <dt>结束测试时间：</dt>
+                            <dd>{$info.endTest}</dd>
+							<dt>开始时间：</dt>
+							<dd>{$info.startTime}</dd>
+							<dt>结束时间：</dt>
+							<dd>{$info.overTime}</dd>
+                        </dl>
+                    </div>
+                    <div class="col-sm-10" style="margin-bottom: 20px;">
+                        <dl class="dl-horizontal dl-default">
+                            <dt>计划描述:</dt>
+                            <dd class="imgDiv">
+                                {$info.content}
+                            </dd>
+                            <dt>附件:</dt>
+                            <dd>
+                                <div id="picker" style="display: inline-block; height: 30px;"><i class="fa fa-plus-circle font-ye ma-le-10" style="font-size: 12px">添加附件</i></div>
+                                <div id="thelist" class="uploader-list"></div>
+                                <a id="upFile" class="btn btn-warning btn-sm" style="display: none">上传</a>
+                                <input name="files" type="text" value="" hidden/>
+                                {foreach name="filelist" item="vo"}
+                                    {foreach name="vo" item="vv"}
+                                        <p>
+                                            <a href="{$vv.path}{$vv.title}" style="padding: 7px 10px;">{$vv.title}</a>
+                                            <em class="ma-le-20">{$vv.upby}</em>
+                                            <em class="ma-le-20">{$vv.size}</em>
+                                            <em class="ma-le-20">{$vv.uptime}</em>
+                                        </p>
+                                    {/foreach}
+                                {/foreach}
+                            </dd>
+                        </dl>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="tabs-container">
+                            <ul class="nav nav-tabs ">
+                                <li class="bg-gray active">
+                                    <a id="Detail" href="javascript:;" onclick="tabchoose(this)">执行情况</a>
+                                </li>
+                                <li class="bg-gray">
+                                    <a id="LinkBugs" href="javascript:;" onclick="tabchoose(this)">关联缺陷（{$result.bugNum|default='0'}）</a>
+                                </li>
+                                <li class="bg-gray">
+                                    <a id="History" href="javascript:;" onclick="tabchoose(this)">变更历史（{$info.historynum}）</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div id="Detail-div" class="tab-pane active" style="min-height: 300px; padding-top: 20px;">
+                                    <div class="col-md-5">
+                                        <dl class="dl-horizontal dl-default" style="padding-left: 20px;">
+                                            <dt class="font-primary" style="font-weight: bold">整体情况&nbsp;&nbsp;</dt>
+                                            <dd></dd>
+                                            <dt>需求总数：</dt>
+                                            <dd>{$result.needNum|default='0'}</dd>
+                                            <dt>用例总数：</dt>
+                                            <dd>{$result.caseNum|default='0'}</dd>
+                                            <dt>测试执行进度：</dt>
+                                            <dd>{$result.rate|default='0%'}</dd>
+                                            <dt>通过率：</dt>
+                                            <dd>{$result.successrate|default='0%'}</dd>
+                                            <dt>发现Bug总数：</dt>
+                                            <dd>{$result.bugNum|default='0'}</dd>
+                                        </dl>
+                                        <a href="../testplan/playtest.html?planid={$info.id}" class="btn btn-primary">规划&执行</a>
+                                        <a href="../testplan/report.html?planid={$info.id}" class="btn btn-info ma-le-20">测试结果反馈</a>
+                                        <a href="../set/version?planid={$info.id}" class="btn btn-warning ma-le-20">测试版本</a>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <div id="pie" style="width: 100%; height:260px"></div>
+                                    </div>
+                                </div>
+                                <div id="LinkBugs-div" class="tab-pane table-default " style="min-height: 300px; padding: 20px;">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>缺陷名称</th>
+                                                <th>所属需求</th>
+                                                <th>所属用例</th>
+                                                <th>严重程度</th>
+                                                <th>优先级</th>
+                                                <th>状态</th>
+                                                <th>缺陷处理人</th>
+                                                <th>创建人</th>
+                                                <th>创建时间</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        {volist name='buglist' id='bug'}
+                                           <tr>
+                                                <td>{$bug.id}</td>
+                                                <td><a href="{:url('Bugtrace/desc')}?bugid={$bug.id}">{$bug.bugName}</a></td>
+                                                <td><a href="{:url('Need/desc')}?needid={$bug.linkNeed.id}">{$bug.linkNeed.name}</a></td>
+                                                <td>{if condition="$bug['linkCase'] neq null"}<a href="{:url('Cases/desc')}?caseid={$bug.linkCase.id}">{$bug.linkCase.name}</a>{/if}</td>
+                                                <td>{$bug.serious}</td>
+                                                <td>{$bug.level}</td>
+                                                <td>{$bug.status}</td>
+                                                <td>{$bug.dealby}</td>
+                                                <td>{$bug.creatName}</td>
+                                                <td>{$bug.creatTime}</td>
+                                            </tr>
+                                        {/volist}
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                                <div id="History-div" class="tab-pane" style="min-height: 300px;">
+                                    {include file="testplan:history" /}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{:IND_URL}plugins/build/dist/echarts-all.js" type="text/javascript"></script>
+<script src="{:IND_URL}plugins/webuploader/dist/webuploader.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+        $('head').append('<link href="{:IND_URL}plugins/webuploader/css/webuploader.css" type="text/css" rel="stylesheet"/>');
+        var maxwidth = $('.imgDiv').width();
+        $('.imgDiv').find('img').each(function(){
+            if($(this).width() > maxwidth){
+                $(this).css({'width':'100%'},{'max-width':maxwidth});
+            }
+        });
+		var myChart = echarts.init(document.getElementById('pie'));
+		var option = {
+			title : {
+				text: '测试执行结果',
+				x:'center'
+			},
+			tooltip : {
+				trigger: 'item',
+				formatter: "{b} : {c} ({d}%)"
+			},
+			legend: {
+				orient : 'vertical',
+				x : 'left',
+				data:['阻塞','不通过','通过','未执行']
+			},
+			calculable : true,
+			series : [
+				{
+					name:'',
+					type:'pie',
+					radius : '55%',
+					center: ['50%', '60%'],
+                    itemStyle : {
+                        normal : {
+                            label : {
+                                formatter : "{b}:{c}"
+                            }
+                        }
+                    },
+					data:[
+						{value:"{$result.block}", name:'阻塞'},
+						{value:"{$result.fail}", name:'不通过'},
+						{value:"{$result.success}", name:'通过'},
+						{value:"{$result.noplay}", name:'未执行'}
+					]
+				}
+			]
+		};
+
+		// 为echarts对象加载数据
+		myChart.setOption(option);
+
+		var uploader = WebUploader.create({
+			swf: "{:IND_URL}plugins/webuploader" + '/dist/Uploader.swf',
+			// 文件接收服务端。
+			server: "../action/webuploader",
+			// 选择文件的按钮。可选。
+			pick: '#picker',
+			// 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+			resize: false,
+			fileSizeLimit: 2* 1024 * 1024,
+			auto:true,
+			fileNumLimit: 2,
+			accept:{
+				title:'files',
+				extensions: 'xls,xlsx'
+			},
+			formData :{
+				ta: 'testplan'
+			}
+		});
+		// 当有文件被添加进队列的时候
+		uploader.on( 'fileQueued', function( file ){
+			$('#thelist').append('<h5 class="info">已选择文件：' + file.name + '<i class="fa fa-times-circle font-red ma-le-10 dele" style="cursor: pointer"></i></h5>');
+			$(".dele").click(function(){
+				uploader.reset();
+				if(uploader.getFiles().length<1){
+					$('#upFile').hide();
+				}
+				$(this).parent().remove();
+			});
+			$('#upFile').show();
+		});
+		// 文件上传过程中创建进度条实时显示。
+		uploader.on( 'uploadProgress', function( file, percentage ){
+			var $li = $( '#'+file.id ),
+					$percent = $li.find('.progress .progress-bar');
+			// 避免重复创建
+			if ( !$percent.length ){
+				$percent = $('<div class="progress progress-striped active">' +
+						'<div class="progress-bar" role="progressbar" style="width: 0%">' +
+						'</div>' +
+						'</div>').appendTo( $li ).find('.progress-bar');
+			}
+			$percent.css( 'width', percentage * 100 + '%' );
+		});
+
+		uploader.on( 'uploadSuccess', function(file,response) {
+			if(response.status == 1){
+				var files='';
+				var $data;
+				files = $('input[name=files]').val();
+				if(response.data){
+					$data = JSON.stringify(response.data);
+					if(files == ''){
+						$('input[name=files]').val($data);
+					}else{
+						files = files + '|' + $data;
+						$('input[name=files]').val(files);
+					}
+				}
+			}else{
+				layer.msg(response.msg,{icon:2});
+				$('#upFile').hide();
+			}
+		});
+
+		uploader.on( 'uploadError', function(file,reason) {
+			layer.msg(reason.msg,{icon:2});
+		});
+
+		uploader.on( 'uploadComplete', function( file ) {
+			$( '#'+file.id ).find('.progress').fadeOut();
+		});
+		uploader.on('error',function(type){
+			var msg;
+			if(type == 'Q_EXCEED_NUM_LIMIT'){
+				msg = '上传文件个数受限';
+			}else if(type == 'Q_TYPE_DENIED'){
+				msg = '请选择.xls或.xlsx文件';
+			}else{
+				msg = '文件大小不能超过2M';
+			}
+			layer.msg(msg,{icon:2});
+		});
+		$("#upFile").click(function(){
+			var data = {};
+			data['upload'] = $('input[name=files]').val();
+			data['id'] = '{$info.id}';
+			data['ta'] = 'testplan';
+			if(data['upload']){
+				var jump_url = '../testplan/desc?planid='+'{$info.id}';
+				var up_url = '../common/addfile';
+				handelData(up_url,data,jump_url)
+			}
+		});
+    });
+
+    
+</script>
+{include file="public:footer" /}

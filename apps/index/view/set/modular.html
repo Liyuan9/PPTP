@@ -1,0 +1,218 @@
+{include file="public:header" /}
+<div class="row row-default">
+    <div class="tree-frame" >
+        <div class="tree-menu">
+            <div class="tree-ibox">
+                <div class="tree-ibox-title" style="padding-left: 30px;">
+                    <strong style="line-height: 40px;">项目设置<i class="fa fa-ellipsis-v pull-right ma-ri-10" style="margin-top: 13px;color: #ddd"></i></strong>
+                </div>
+                <div class="tree-ibox-content">
+                    <dl class="menu-dl">
+                        <dt><a href="{:url('project/edit')}" style="color: #3C8DBC;">项目信息</a></dt>
+                    </dl>
+                    <dl class="menu-dl">
+                        <dt><a href="javascript:;" style="color: #3C8DBC;">成员与权限</a></dt>
+                        <dd><a href="{:url('Set/user')}">项目成员</a></dd>
+                    </dl>
+                    <dl class="menu-dl active">
+                        <dt><a href="javascript:;" style="color: #3C8DBC;">公共参数设置</a></dt>
+                        <dd class="active"><a href="{:url('Set/modular')}">模块设置<i class="fa fa-angle-right pull-right" style="padding: 3px 10px 3px 0;"></i></a></dd>
+                        <dd><a href="{:url('Set/version')}">版本设置</a></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="tree-content" >
+            <div class="tree-content-table">
+                <div class="container-fluid" style="padding: 20px;">
+                    <ul class="placeinfo">
+                        <li><i class="fa fa-location-arrow"></i>&nbsp;&nbsp;当前位置：</li>
+                        <li>项目设置&nbsp;&nbsp;&gt;</li>
+                        <li>&nbsp;&nbsp;公共参数设置&nbsp;&nbsp;&gt;</li>
+                        <li>&nbsp;&nbsp;模块设置</li>
+                    </ul>
+                    <div class="row" style="padding: 0 20px;">
+                        <div class="col-sm-12">
+                            <div class="container-fluid" style="padding: 20px;">
+                                <div class="btn-tool">
+                                    <a href="javascript:;" onclick="delMore()"><i class="fa fa-trash"></i>批量删除</a>
+                                    <a href="javascript:;" onclick="copyMore()"><i class="fa fa-upload"></i>批量复制至</a>
+                                    <a href="javascript:;" attr_id="modular" url='{:url("set/modular")}?step=add' onclick="appendtable(this)"><i class="fa fa-plus ma-ri-5" style="color: #5CB85C;"></i>添加模块</a>
+                                </div>
+                                <div class="table-default thead-default" style="margin-top: 10px;">
+                                    <table class="table table-hover" id="modular">
+                                        <thead>
+                                            <th><input type="checkbox" class="checkall"/></th>
+                                            <th>模块名称</th>
+                                            <th>模块描述</th>
+                                            <th>模块创建人</th>
+                                            <th>创建时间</th>
+                                            <th>操作</th>
+                                        </thead>
+                                        <tbody>
+                                            {volist name="modular" id="item"}
+                                            <tr>
+                                                <td><input type="checkbox" name="id" class="checklist" value="{$item.id}" /></td>
+                                                <td class="show-fa">
+                                                    <div class="edit_pencil" style="min-width:240px;">
+                                                        <em class="edit">{$item.modularName}</em>
+                                                        <a href="javascript:;" onclick="edit_pencil(this)" style="display: none; margin-left: 20px;" class="e-pen" ><i class="fa fa-pencil"></i></a>
+                                                    </div>
+                                                    <div class="edit_input" style="display: none;min-width:240px;">
+                                                        <input type="text" name="modularName" value="{$item.modularName}" attr_id="{$item.id}" onmouseout="hideObj(this)" onchange="editObj(this,'modular')" style="width: 100%;" >
+                                                    </div>
+                                                </td>
+                                                <td >
+                                                    <div class="edit_pencil" style="min-width:300px;">
+                                                        <em class="edit">{$item.depict}</em>
+                                                        <a href="javascript:;" onclick="edit_pencil(this)" style="display: none; margin-left: 20px;" class="e-pen" ><i class="fa fa-pencil"></i></a>
+                                                    </div>
+                                                    <div class="edit_input" style="display: none;min-width:300px;">
+                                                        <textarea name="depict"  attr_id="{$item.id}" onmouseout="hideObj(this)" onchange="editObj(this,'modular')" style="width: 100%;" >{$item.depict}</textarea>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    {$item.creatName}
+                                                </td>
+                                                <td>
+                                                    {$item.addTime}
+                                                </td>
+                                                <td>
+                                                    <a href="javascript:;" onclick="del('modular','{$item.id}')" title="删除"><i class="fa fa-trash"></i></a>
+                                                </td>
+                                            </tr>
+                                            {/volist}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function(){
+        $('.tree-frame').css({'height':$('.row-default').height()});
+        $('.menu-dl').click(function(){
+            $(this).siblings().removeClass('active');
+            $(this).addClass('active');
+        });
+        $('.edit_pencil').mouseenter(function(){
+            $(this).css({'background-color':'#F0F5FA'});
+            $(this).find('.e-pen').show();
+        }).mouseleave(function(){
+            $(this).css({'background':'none'});
+            $(this).find('.e-pen').hide();
+        });
+        $('.checkall').click(function(){
+            if($(this).is(':checked')){
+                $('.checklist').prop('checked',true);
+            }else{
+                $('.checklist').prop('checked',false);
+            }
+        });
+        $('.checklist').click(function(){
+            if(!$(this).is(':checked')){
+                $('.checkall').prop('checked',false);
+            }
+        })
+    });
+    function delMore(){
+        var num = $('.checklist:checked').length;
+        if(num == 0){
+            return layer.msg('请先选择要删除的模块',{icon:0})
+        }
+        var modular = '';
+        $('.checklist:checked').each(function(i){
+            modular == ''?modular = $(this).val():modular = modular+','+$(this).val();
+        });
+        layer.open({
+            content: '您确定要将这些模块从项目中移除吗？',
+            icon : 3,
+            btn : ['是','否'],
+            yes : function(){
+                $.ajax({
+                    url:'../set/modular?step=del',
+                    data:{modular:modular},
+                    type:'post',
+                    dataType: 'json',
+                    success:function(data) {
+                        if(data.status == 1){
+                            layer.msg(data.msg,{icon:1},function(){
+                                location.reload();
+                            })
+                        }
+                        else {
+                            layer.msg(data.msg,{icon:5});
+                        }
+                    },
+                    error:function() {
+                        return dialog.error('网络异常');
+                    }
+                });
+            }
+        });
+    }
+
+    function copyMore(){
+        var num = $('.checklist:checked').length;
+        var project = {$projectlist};
+        if(num == 0){
+            return layer.msg('请先选择要复制的模块',{icon:0})
+        }else{
+            var opti = '<option value="">--选择项目--</option>';
+            var id = '';
+            $('.checklist:checked').each(function(i){
+                id == ''?id = $(this).val():id = id+','+$(this).val();
+            });
+            for(var i=0;i<project.length;i++){
+                opti=opti+'<option value="'+project[i].id+'">'+project[i].projectName+'</option>';
+            }
+            layer.open({
+                title:'复制模块至',
+                area:['420px','290px'],
+                content:'<form id="copyitem"><div class="row" >' +
+                        '<p class="font-red" style="padding: 0 15px;">已选择'+num+'个模块</p>' +
+                        '<div class="form-group" style="height: 40px; margin: 15px 0"><label class="col-sm-4 control-label">复制模块至项目</label><div class="col-sm-8"><select name="projectID" class="col-sm-8 form-control select">'+opti+'</select></div></div>'+
+                        '<div class="form-group" style="height: 40px; margin: 15px 0"><label class="col-sm-4 control-label">创建人</label><div class="col-sm-8"> <input type="radio" name="creatName" value="old"/>保留原创建人<input type="radio" style="margin-left: 20px;" name="creatName" value="new"/>保留为我</div></div>'+
+                        '</div></form>',
+                btn : ['确定','取消'],
+                yes : function(){
+                    var data = $("#copyitem").serializeArray();
+                    var postData ={};
+                    $(data).each(function(i){
+                        postData[this.name] = this.value;
+                    });
+                    postData['id'] = id;
+                    $.ajax({
+                        url:'../set/modular?step=copy',
+                        data:postData,
+                        type:'post',
+                        dataType: 'json',
+                        success:function(data) {
+                            if(data.status == 1){
+                                layer.msg(data.msg,{icon:1},function(){
+                                    location.reload();
+                                })
+                            }
+                            else {
+                                layer.msg(data.msg,{icon:5});
+                            }
+                        },
+                        error:function() {
+                            return dialog.error('网络异常');
+                        }
+                    });
+
+                }
+            })
+
+        }
+
+
+    }
+</script>
+{include file="public:footer" /}

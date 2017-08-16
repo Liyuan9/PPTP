@@ -1,0 +1,95 @@
+{include file="public:header" /}
+<div class="row row-default">
+    <div class="col-md-12 top-tool" >
+        <ul class="top-tool-ul">
+            <li><a href="../need/create" class="btn-a" >创建需求</a></li>
+            <li><a href="../need/import" class="btn-a">导入需求</a></li>
+            <li><a href="#download-case" class="btn-a" role="buttom" id="modal" data-toggle="modal">导出需求</a></li>
+            <li><a href="javascript:;" onclick="batch_Copy('#table','copy')" class="btn-a " >批量复制</a></li>
+			<li><a href="javascript:;" onclick="batch_Copy('#table','edit')" class="btn-a " >批量编辑</a></li>
+			<li><a href="javascript:;" onclick="batch_Copy('#table','editCata')" class="btn-a " >批量修改分类</a></li>
+			<li class="shaili">
+                <a href="javascript:;" class="drop-search" >筛选<i class="fa fa-angle-double-down"></i></a>
+            </li>
+            <!--<li class="seticon"><i class="fa fa-cog"></i></li>-->
+        </ul>
+    </div>
+    <form id="searchForm" method="post" >
+        <div class="drop-search-menu" style="display:none;">
+            <ul class="drop-search-menu-ul">
+                {php}$i=0;{/php}
+                {foreach name='data' item='v'}
+                    {if condition="$i lt 2"}
+                        {if condition="isset($v['children'])"}
+                        <li><label>{$v.comment}</label>
+                            <select name="{$v.name}" class="fselect">
+                                {foreach name="v['children']" item="vo"}
+                                <option value="{$vo.id}">{$vo.name}</option>
+                                {/foreach}
+                            </select>
+                            <i class="fa fa-close del" style="margin-left:10px;color:#617CCD"></i>
+                        </li>
+                        {else /}
+                        <li><label>{$v.comment}</label>
+                            <input type="text" name="{$v.name}" class="finput" value="">
+                            <i class="fa fa-close del" style="margin-left:10px;color:#617CCD"></i>
+                        </li>
+                        {/if}
+                    {php}$i++;{/php}
+                    {/if}
+                {/foreach}
+            </ul>
+            <div class="fbtn">
+                <span><a href="javascript:;" id="searchbutton">筛选</a></span>
+                <span><a href="javascript:;" id="morechose" attr-value ="">更多条件</a></span>
+                <!--<span><a href="#choose-term" role="button" data-toggle="modal">更多条件</a></span>-->
+            </div>
+        </div>
+    </form>
+    {include file="public:search"/}
+    {include file="public:download" /}
+    <div class="tree-frame">
+        {include file="need/needtype"}
+        {include file="need/needlist"}
+    </div>
+</div>
+<script src="{:IND_URL}plugins/laydate/laydate.js"></script>
+
+<script>
+    var SCOPE = {
+        'search_url' : "{:url('Need/search')}",//搜索路径接口
+        'search_jump_url' : "{:url('Need/index')}" //搜索成功后跳原路径
+    };
+    $(document).ready(function(){
+        $('.tree-frame').css({'height':$('.row-default').height()-$('.top-tool').height()});
+        //$('.tree-content').css({width:$('.tree-frame').width()-230})
+    });
+	function batch_Copy(obj,step,id){
+		var num = $(obj).find('.checklist:checked').length;
+		if(id){
+			num = 1;
+		}
+		if(num<1){
+			return dialog.error('请先勾选要批量操作的需求');
+		}else{
+			if(step == 'copy'){
+				var project = {$project};
+				if(project){
+					batchCopy(obj,project,id);
+				}else{
+					layer.msg('没有可选择的项目，不能使用复制',{icon:6});
+				}
+			}else if(step == 'edit'){
+				var data = {$column};
+				batchEdit(obj,data);
+			}else if(step == 'editCata'){
+				var data = {$treelist};
+				batchCata(obj,data);
+			}
+		}
+			
+			
+		
+	}
+</script>
+{include file="public:footer" /}

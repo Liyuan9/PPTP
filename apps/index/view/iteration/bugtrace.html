@@ -1,0 +1,34 @@
+<div class="panel-body table-default" >
+    <table class="table" id="linkbug">
+        <thead>
+        <tr>
+            <th>缺陷ID</th>
+            <th>名称</th>
+            <th>严重程度</th>
+            <th>所属需求</th>
+            <th>优先级</th>
+            <th>缺陷类型</th>
+            <th>缺陷状态</th>
+            <th>当前处理人</th>
+            <th>创建人</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {volist name="linkbug" id="vo"}
+        <tr>
+            <td>{$vo.id}</td>
+            <td><a href="{:url('Bugtrace/desc')}?bugid={$vo.id}">{$vo.bugName}</a></td>
+            <td>{$vo.serious}</td>
+            <td>{volist name="$vo['linkneed']" id="vi"}<a href="{:url('Need/desc')}?needid={$vi.id}">{$vi.needName}</a><br>{/volist}</td>
+            <td>{$vo.level}</td>
+            <td>{$vo.type}</td>
+            <td>{$vo.status}</td>
+            <td>{$vo.dealby}</td>
+            <td>{$vo.creatName}</td>
+            <td><a href="javascript:;" onclick="re_move('{$vo.id}','bug')" class="btn btn-xs btn-warning">移出迭代</a></td>
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+</div>

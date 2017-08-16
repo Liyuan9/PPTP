@@ -1,0 +1,197 @@
+{include file="public:header" /}
+<div class="row row-default bg-default">
+    <div class="col-sm-12">
+        <div class="ibox">
+            <div class="ibox-title">
+                <h5><span class="sign blue ma-ri-10">ITERATION</span>{$info.iterationName}{if condition="$info['status'] eq '开启'"}<em class="ma-le-5 sign yellow" >{$info.status}</em>{else/}<em class="ma-le-5 sign gray" >{$info.status}</em>{/if}</h5>
+                <div class="ibox-tools">
+                    <a href="{:url('Iteration/plan')}?step=need&id={$info.id}" class="btn btn-xs btn-warning ma-ri-10">规划需求</a>
+                    <a href="{:url('Iteration/plan')}?step=bug&id={$info.id}" class="btn btn-xs btn-warning ma-ri-10">规划缺陷</a>
+                    <a href="{:url('Iteration/create')}?id={$info.id}" class="ma-ri-10" title="编辑"><i class="fa fa-pencil"></i></a>
+                    <!--<a href="javascript:;" onclick="" class="ma-ri-10" title="复制"><i class="fa fa-copy"></i></a>-->
+
+                    <a href="javascript:;" onclick="del('iteration','{$info.id}')" class="ma-ri-10" title="删除"><i class="fa fa-trash"></i></a>
+                    <a href="{:url('Iteration/plan')}?step=desc&id={$prev}" class="ma-ri-10" style="font-size: 12px;">上一条</a>
+                    <a href="{:url('Iteration/plan')}?step=desc&id={$next}" class="ma-ri-10" style="font-size: 12px;">下一条</a>
+                </div>
+            </div>
+            <div class="ibox-content">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <dl class="dl-horizontal dl-default no-margin col-lg-3 col-md-4 col-sm-6">
+                            <dt>时间：</dt>
+                            <dd>{$info.startTime}~{$info.endTime}</dd>
+                        </dl>
+                        <dl class="dl-horizontal dl-default no-margin col-lg-3 col-md-4 col-sm-6">
+                            <dt>创建人：</dt>
+                            <dd>{$info.createName}</dd>
+                        </dl>
+                        <dl class="dl-horizontal dl-default no-margin col-lg-3 col-md-4 col-sm-6">
+                            <dt>创建于：</dt>
+                            <dd>{$info.createTime}</dd>
+                        </dl>
+                    </div>
+                    <div class="col-sm-12">
+
+                        <dl class="dl-horizontal dl-default no-margin col-lg-3 col-md-4 col-sm-6">
+                            <dt>需求完成进度：</dt>
+                            {if condition="$info['needrate'] neq null"}
+                            <dd><small>当前进度：{$info.needrate}&nbsp;&nbsp;总需求：{$info.neednum}|已完成：{$info.overneed}</small>
+                                <div class="progress progress-mini">
+                                    <div style="width:{$info.needrate};" class="progress-bar"></div>
+                                </div>
+                            </dd>
+                            {else /}
+                            <dd><small>当前进度：100%&nbsp;&nbsp;总需求：{$info.neednum}|已完成：{$info.overneed}</small>
+                                <div class="progress progress-mini">
+                                    <div style="width:100%;" class="progress-bar"></div>
+                                </div>
+                            </dd>
+                            {/if}
+                        </dl>
+
+                        <dl class="dl-horizontal dl-default no-margin col-lg-3 col-md-4 col-sm-6">
+                            <dt>bug修复进度：</dt>
+                            {if condition="$info['bugrate'] neq null"}
+                            <dd><small>当前进度：{$info.bugrate}&nbsp;&nbsp;共缺陷：{$info.bugnum}|已关闭：{$info.closebug}</small>
+                                <div class="progress progress-mini">
+                                    <div style="width:{$info.bugrate};" class="progress-bar"></div>
+                                </div>
+                            </dd>
+                            {else /}
+                            <dd><small>当前进度：100%&nbsp;&nbsp;共缺陷：{$info.bugnum}|已关闭：{$info.closebug}</small>
+                                <div class="progress progress-mini">
+                                    <div style="width:100%;" class="progress-bar"></div>
+                                </div>
+                            </dd>
+                            {/if}
+                        </dl>
+                    </div>
+                    <div class="col-sm-10" style="margin-bottom: 20px;">
+                        <dl class="dl-horizontal dl-default">
+                            <dt>迭代描述:</dt>
+                            <dd class="imgDiv">
+                                {$info.desc}
+                            </dd>
+                        </dl>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="tabs-container">
+                            <ul class="nav nav-tabs ">
+                                <li class="bg-gray">
+                                    <a data-toggle="tab" href="#SubStory-div" aria-expanded="true">需求（{$info.neednum}）</a>
+                                </li>
+                                <li class="bg-gray">
+                                    <a data-toggle="tab" href="#Bugtrace-div" aria-expanded="true">缺陷（{$info.bugnum}）</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div id="SubStory-div" class="tab-pane active" style="min-height: 300px;">
+                                    {include file="iteration:substory" /}
+                                </div>
+                                <div id="Bugtrace-div" class="tab-pane" style="min-height: 300px;">
+                                    {include file="iteration:bugtrace" /}
+                                </div>
+                                <div id="History-div" class="tab-pane" style="min-height: 300px;">
+                                    { file="bugtrace:history" /}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{:IND_URL}js/tabletree.js"></script>
+<script>
+    var SCOPE = {
+        'search_url' : "{:url('Need/search')}",//搜索路径接口
+        'search_jump_url' : "{:url('Iteration/plan')}?id={$info.id}" //搜索成功后跳原路径
+    };
+    $(document).ready(function(){
+        $('.plan-ibox').css({'height':$('.row-default').height()});
+        $('.drop-search').click(function(){
+            $('#searchForm').toggle();
+            $('#searchForm').find('.drop-search-menu').toggleClass('select-form');
+        });
+        var title_list = {"needName":"需求名称","level":"等级","type":"需求类型","value":"业务价值","dealname":"当前处理人","status":"状态","creatName":"创建人","startTime":"预计开始","endTime":"预计结束","caozuo":""};
+        var btn_text ={"add":"创建子需求","copy":"复制需求","edit":"编辑需求","del":"删除需求","creatlink":"{:url('Need/create')}?pidneed=","editlink":"{:url('Need/create')}?needid=","table":"need",'desclink':"{:url('Need/desc')}?needid="};
+        var data = {$bindneed};
+        $('#need').tableview({color:"#428bca",enableLinks:!0,showBorder:!1,data:data,btn_text:btn_text,title_list:title_list});
+    });
+    function getName(obj){
+        var names = {$names};
+        if(!$(obj).siblings('ul').hasClass('dropdoen-menu')){
+            getNames(obj,names);
+        }
+    }
+    function bindNeed(id){
+        var needid = '';
+        $('.checklist:checked').each(function(i){
+            if(needid == ''){
+                needid = $(this).val();
+            }else{
+                needid = needid+'|'+$(this).val();
+            }
+        })
+        if(needid == ''){
+            return layer.error('请先勾选需求！');
+        }else{
+            $.ajax({
+                url:'../iteration/plan?step=play',
+                method:'post',
+                data:{id:id,needid:needid},
+                dataType:'json',
+                success:function(data){
+                    if(data.status == '1'){
+                        layer.msg('规划成功',function(){
+                            top.location.reload();
+                        });
+                    }else{
+                        return layer.error('规划需求到迭代出错');
+                    }
+                }
+
+            })
+        }
+    }
+    function checkval(obj){
+        var grade = $(obj).val();
+        var reg = /^([1-9]|10)$/;
+        if(!reg.test(grade)){
+            tip(obj,'请填写1~10的整数')
+        }
+    }
+
+    function re_move(id,table){
+        if(id){
+            layer.open({
+                content:"你确定要将此移出迭代吗？",
+                icon : 3,
+                btn : ['是','否'],
+                yes:function(){
+                    $.ajax({
+                        url:'../iteration/remove',
+                        method:'post',
+                        data : {id:id,table:table},
+                        dataType:'json',
+                        success:function(data){
+                            if(data.status == 1){
+                                layer.msg(data.msg,{icon:1},function(){
+                                    top.location.reload();
+                                })
+                            }else{
+                                dialog.error(data.msg);
+                            }
+                        },
+                        error:function(){
+                            dialog.error('网络错误');
+                        }
+                    })
+                }
+            })
+        }
+    }
+</script>
+{include file="public:footer" /}

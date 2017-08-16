@@ -1,0 +1,107 @@
+{include file="public:header" /}
+<div class="row row-default" >
+    <div class="col-sm-12">
+        <div class="ibox">
+            <div class="ibox-title">
+                <h5>草稿箱</h5>
+                <div class="ibox-tools">
+                    <em>（{$num}封邮件）</em>
+                </div>
+            </div>
+            <div class="ibox-content">
+                <div class="project-list">
+                    <table class="table table-hover">
+                        <tbody>
+                        {if condition="$mail neq null"}
+                        {volist name="mail" id="vo"}
+                        <tr>
+                            <td>{if condition="$vo['status'] eq 0"}<span class="sign blue">未发送</span>
+                                {else/}<span class="sign green">已发送</span>{/if}
+                            </td>
+                            <td>
+                                【收件人】{$vo.sendto}
+                            </td>
+                            <td>
+                                【主题】{$vo.subject}
+                            </td>
+                            <td>
+                                【保存时间】{$vo.savetime}
+                            </td>
+							<td style="text-align:right;">
+								<a href="javascript:;" onclick="send({$vo.id},'detail')" class="btn btn-primary btn-xs"><i class="fa fa-eye ma-ri-5"></i>查看详情</a>
+								<a href="javascript:;" onclick="send({$vo.id},'send')" class="btn btn-info btn-xs ma-le-10"><i class="fa fa-send ma-ri-5"></i>发送</a>
+								<a href="javascript:;" onclick="send({$vo.id},'del')" class="btn btn-warning btn-xs ma-le-10"><i class="fa fa-trash ma-ri-5"></i>删除</a>
+							</td>
+							
+                        </tr>
+                        {/volist}
+                        {else /}
+                        <tr>
+                            <td colspan="4" style="text-align: center; background-color:#F9FAFC">暂时没有保存邮件</td>
+                        </tr>
+                        {/if}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+	function send(id,step){
+		var url = ''
+		if(step == 'send'){
+			url = '../testplan/sendmail?step=send';
+			hand(id,url);
+		}else if(step == 'del'){
+			url = '../home/mailbox?step=del';
+			layer.open({
+				content:'你确定要删除此草稿吗？',
+				icon : 3,
+				btn : ['是','否'],
+				yes : function(){
+					hand(id,url);
+				}
+			})
+		}else if(step == 'detail'){
+			$.ajax({
+				url:'../home/mailbox?step=detail',
+				data:{id:id},
+				method:'post',
+				dataType:'json',
+				success:function(data){
+					layer.open({
+						type: 1,
+						skin: 'layui-layer-demo',
+						closeBtn: 1, 
+						anim: 3,
+						area:['100%','100%'],
+						shadeClose: true,
+						title:'邮件预览',
+						content: data.msg
+					});
+				}
+			})
+		}
+	}
+	
+	function hand(id,url){
+		$.ajax({
+			url:url,
+			data:{id:id},
+			method:'post',
+			dataType:'json',
+			success:function(data){
+				if(data.status==1){
+					layer.msg(data.msg,{icon:1},function(){
+						location.href.reload();
+					})
+				}
+			},
+			error:function(){
+                    layer.msg('网络错误',{icon:2});
+                }
+		})
+	}
+</script>
+{include file="public:footer" /}

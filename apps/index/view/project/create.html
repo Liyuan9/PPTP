@@ -1,0 +1,148 @@
+{include file="public:header" /}
+<div class="row row-default" >
+    <div class="col-sm-12">
+        <div class="ibox">
+            <div class="ibox-title">
+                <h5>创建项目</h5>
+            </div>
+            <div class="ibox-content">
+                <div class="row row-default">
+					<div class="col-lg-10 col-md-12 col-sm-12">
+						<form id="projectForm" method="post" class="form-horizontal">
+							<div class="form-group">
+								<label class="col-sm-3 control-label">项目名称：<i class="font-red">*</i></label>
+								<div class="col-sm-8">
+									<input name="projectName" class="form-control" type="text">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">项目描述：</label>
+								<div class="col-sm-8">
+									<textarea name="depict" class="form-control"></textarea>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">申请环境：</label>
+								<div class="col-sm-8">
+									<textarea name="applyEnviro" class="form-control"></textarea>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label"></label>
+								
+								<div class="col-sm-8">
+								<a href="javascript:;" id="joinproject"  class="btn btn-primary btn-xs blue"><i class="fa fa-plus ma-ri-10"></i>添加成员</a>
+									<input type="text" hidden name="groupId" value="">
+									<div id="add_user"></div>
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="col-lg-10 col-md-12 col-sm-12" >
+						<div class="col-sm-3"></div>
+						<div class="col-sm-8" id="join-project" style="display: none;background-color:#F7F7FE; height: 245px; overflow: hidden; margin-bottom: 50px; padding:10px;">
+							<div class="user-scroll" >
+								<table class="table table-hover no-ma" >
+									<tbody>
+										{volist name='user' id="item"}
+										<tr style="width: 100%">
+											<td colspan="4" style="background-color: #fff; padding-left: 25px;">{$key}</td>
+										</tr>
+										{volist name="$item" id="vo"}
+										<tr style="col-lg-5 col-md-5 col-sm-12; float: left" >
+											<td style="width: 6%"></td>
+											<td style="width: 17%"><input type="checkbox" class="icheck" name="user" value="{$vo.id}" attr_name="{$vo.dealname}"/></td>
+											<td style="width: 40%"><img {if condition="$vo['header'] eq null"} src="{:IND_URL}img/user-icon.jpg" {else/} src="{$vo.header}" {/if} class="img-circle ma-ri-10" width="35" height="35" />{$vo.dealname}</td>
+											<td style="width: 37%">{$vo.position}</td>
+										</tr>
+										{/volist}
+										{/volist}
+									</tbody>
+								</table>	
+							</div>
+							<span style="display: inline-block; float: left; padding-left: 20px;">被邀请者还没有加入公司？先请<a href="javascript:void(0)" onclick="tip(this,'请通过腾讯通找{$admin}创建账号！')">公司管理员</a>添加吧！</span>
+						</div>												
+					</div>
+					<div class="col-lg-10 col-md-12 col-sm-12" style="padding-right:100px;">
+						<a href="javascript:;" class="btn btn-primary blue pull-right" id="projectbutton" >提交</a>
+					</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('.user-scroll').slimScroll({
+        height:'180px',
+        size: '3px',
+        color:'#203EB1'
+    });
+    $('#joinproject').click(function(){
+        $('#join-project').slideToggle();
+        $('#add_user').find('a').each(function(){
+            var userid = $(this).attr('user_id');
+            $('.icheck').each(function(){
+                if($(this).val() == userid ){
+                    $(this).prop('checked',true);
+                }
+            })
+        })
+    });
+    $('.icheck').click(function(){
+        var userid = $(this).val();
+        var template = {
+            item:'<a href="javascript:;" class="cancel_a ma-le-10"></a>',
+            idel:'<i class="fa fa-close font-red ma-le-5 cancel"></i>'
+        };
+        var aItem = $(template.item);
+        if($(this).is(":checked")){
+            aItem
+                    .attr('user_id',userid)
+                    .append($(this).attr('attr_name'))
+                    .append($(template.idel));
+            $('#add_user').append(aItem);
+        }else{
+            $('.cancel_a').each(function(){
+                if($(this).attr('user_id') == userid){
+                    $(this).remove();
+                }
+            })
+        }
+        get_value();
+
+        $('.cancel').click(function(){
+            var id = $(this).parent().attr('user_id');
+            $(this).parent().remove();
+            $('.icheck').each(function(){
+                if($(this).val() == id ){
+                    $(this).prop('checked',false);
+                    end;
+                }
+            });
+            get_value();
+        });
+    });
+
+    function get_value(){
+        var userid = '';
+        $('#add_user').find('a').each(function(){
+            if(userid == ''){
+                userid = $(this).attr('user_id');
+            }else{
+                userid = userid +','+ $(this).attr('user_id');
+            }
+
+        });
+        //userid = userid.substr(1);
+        $('input[name=groupId]').val(userid);
+    }
+
+    /*********追加提示框*********/
+    function tip(obj,msg){
+        layer.tips(msg,obj,{
+            tips: [1, '#3595CC'],
+            time: 4000
+        })
+    }
+</script>
+{include file="public:footer" /}

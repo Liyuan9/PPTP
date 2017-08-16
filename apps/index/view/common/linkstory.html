@@ -1,0 +1,31 @@
+<div class="panel-body table-default" >
+    <a href="javascript:;" attr_id="substory" url='{:url("Need/addneed")}' attr_pid="{$info.id}" onclick="appendtable(this)" ><i class="fa fa-plus-circle font-ye ma-ri-10"></i>快速添加子需求</a>
+    <table class="table" id="substory">
+        <thead>
+        <tr>
+            <th>用例名称</th>
+            <th>用例目录</th>
+            <th>用例类型</th>
+            <th>用例状态</th>
+            <th>用例等级</th>
+            <th>创建人</th>
+            <th>创建时间</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {volist name="childneed" id="vo"}
+        <tr>
+            <td><a href="{:url('cases/desc')}?casesid={$vo.id}">{$vo.casesName}</a></td>
+            <td>{$vo.list_name}</td>
+            <td>{$vo.type}</td>
+            <td>{$vo.status}</td>
+            <td>{$vo.grade}</td>
+            <td>{$vo.creatName}</td>
+            <td>{$vo.creatTime}</td>
+            <td></td>
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+</div>

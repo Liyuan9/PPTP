@@ -1,0 +1,88 @@
+{include file="public:header" /}
+<div class="row row-default bg-default">
+    <div class="col-sm-12">
+        <div class="ibox div-default">
+            <div class="ibox-title">
+                {if condition="$info eq null"}
+                <h5>创建迭代</h5>
+                {else/}
+                <h5>编辑迭代</h5>
+                {/if}
+            </div>
+            <div class="col-sm-10 ibox-content" >
+                <form id="Form" method="post" class="form-horizontal" enctype="multipart/form-data">
+                    <input type="text" name="id" value="{$info.id|default=''}" hidden/>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label font-primary">选择模板</label>
+                        <div class="col-sm-8">
+                            <select class="form-control select" name="template">
+                                <option value="0">系统默认模板</option>
+                            </select>
+                        </div>
+                        <!--<div class="col-sm-2 no-padding">
+                            <a href="javascript:;" class="line-h-30 define">自定义模板</a>
+                        </div>-->
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label font-primary">迭代名称</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="iterationName" class="form-control" onclick="tip(this,'迭代名称如健客诊所4.8.0，不可重复')" value="{$info.iterationName|default=''}"/>
+                        </div>
+                        <div class="col-sm-2 no-padding">
+                            <em class="line-h-30 font-red">*</em>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label font-primary">迭代信息</label>
+                        <div class="col-sm-8">
+                            <textarea  name="desc" id="editor" style="width: 100%;" >{$info.desc|default=''}</textarea>
+                        </div>
+                        <div class="col-sm-2 no-padding">
+                            <em class="font-red">请输入该迭代的基本介绍</em>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 form-group">
+                         <label class="col-sm-4 control-label font-primary">开始时间<em class="ma-le-10 font-red">*</em></label>
+                         <div class="col-sm-6">
+                             <div class="input-group input-prepend ">
+                                 <span class="add-on input-group-addon">
+                                     <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                                 </span>
+                                 <input class="finput layer-date" style="width: 100%;" id="start" name="startTime"  value="{$info.startTime|default=''}">
+                             </div>
+                         </div>
+                     </div>
+                    <div class="col-sm-6 form-group">
+                         <label class="col-sm-3 control-label font-primary">结束时间<em class="ma-le-10 font-red">*</em></label>
+                         <div class="col-sm-6">
+                             <div class="input-group input-prepend " style="width: 100%;">
+                                 <span class="add-on input-group-addon">
+                                     <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                                 </span>
+                                 <input class="finput layer-date" style="width: 100%;" id="end" name="endTime" value="{$info.endTime|default=''}">
+                             </div>
+                         </div>
+                     </div>
+                </form>
+                <div class="col-sm-10" style="margin: 20px 0; text-align: right">
+                    <a href="javascript:;" id='formbutton' class="btn btn-primary" >确定</a>
+                    <a href="javascript:history.go(-1)" class="btn btn-default">取消</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{:IND_URL}plugins/ueditor/ueditor.config.js"></script>
+<script src="{:IND_URL}plugins/ueditor/ueditor.all.js"></script>
+<script src="{:IND_URL}plugins/ueditor/ueditor.all.min.js"></script>
+<script src="{:IND_URL}plugins/laydate/laydate.js"></script>
+<script>
+    var SCOPE = {
+        'save_url' : "{:url('Iteration/save')}",//保存路径接口
+        'jump_url' : "{:url('Iteration/index')}" //成功后跳原路径
+    };
+    UE.getEditor('editor');
+    var start={elem:"#start",format:"YYYY-MM-DD",min:"2017-01-01",max:"2099-06-16",istime:false,istoday:true,choose:function(datas){end.min=datas;end.start=datas}};
+    var end={elem:"#end",format:"YYYY-MM-DD",min:"2017-01-01",max:"2099-06-16",istime:false,istoday:true,choose:function(datas){start.max=datas}};laydate(start);laydate(end);
+</script>
+{include file="public:footer" /}

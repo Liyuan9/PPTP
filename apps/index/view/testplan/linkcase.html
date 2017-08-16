@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Project项目管理系统</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link href="{:IND_URL}bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="{:IND_URL}bootstrap/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="{:IND_URL}css/common.css" rel="stylesheet" type="text/css" />
+    <link href="{:IND_URL}css/style.css" rel="stylesheet" type="text/css" />
+    <script src="{:IND_URL}js/jquery-3.2.1.min.js"></script>
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script src="{:IND_URL}js/layer/layer-min.js"></script>
+    <style type="text/css">
+        .drop-search-menu-ul>li{width:50%; margin:5px 0;}
+        .choose-result>li{height: 30px; line-height: 30px;}
+    </style>
+</head>
+<body>
+<div class="row row-default">
+    <div class="col-sm-12 no-padding" style="margin-bottom: 50px;">
+        <div class="col-sm-9 no-padding" style="border-right: 1px solid #ddd">
+            <div class="searchframe" style="min-height:115px; height:auto; overflow:hidden; ">
+                <form id="searchForm" method="post" >
+                    <div class="drop-search-menu" >
+                        <ul class="drop-search-menu-ul">
+                            {php}$i=0;{/php}
+                            {foreach name='data' item='v'}
+                            {if condition="$i lt 2"}
+                            {if condition="isset($v['children'])"}
+                            <li><label>{$v.comment}</label>
+                                <select name="{$v.name}" class="fselect">
+                                    {foreach name="v['children']" item="vo"}
+                                    <option value="{$vo}">{$vo}</option>
+                                    {/foreach}
+                                </select>
+                                <i class="fa fa-close del" style="margin-left:10px;color:#617CCD"></i>
+                            </li>
+                            {else /}
+                            <li><label>{$v.comment}</label>
+                                <input type="text" name="{$v.name}" class="finput" value="">
+                                <i class="fa fa-close del" style="margin-left:10px;color:#617CCD"></i>
+                            </li>
+                            {/if}
+                            {php}$i++;{/php}
+                            {/if}
+                            {/foreach}
+                        </ul>
+                        <div class="fbtn">
+                            <span><a href="javascript:;" id="searchbutton">筛选</a></span>
+                            <span><a href="javascript:;" id="morechose" attr-value ="">更多条件</a></span>
+                        </div>
+                    </div>
+                </form>
+                {include file="Public:search" /}
+                <!------end---------->
+            </div>
+            <div style="height: 395px; overflow: hidden; ">
+                <div class="modal-body-scroll" id="treecase" style="padding-left: 30px;"></div>
+            </div>
+        </div>
+        <div class="col-sm-3  no-padding" style="height: 100%">
+            <div class="ibox" id="result" style="margin: 0;">
+                <h5 class="dark no-margin" style="border-bottom: 1px solid #ddd; height: 35px; line-height: 35px;padding-left: 10px;">
+                    已选择用例 <em id="result-num" style="color: #ff2222; margin-left: 5px;"></em>
+                </h5>
+                <ul class="choose-result" id="resultItem" style="padding: 20px;">
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12" style="position: fixed; bottom: 0; width: 100%; height: 50px; line-height: 50px; text-align: right; padding-right: 20px; background-color: #F8F8F8; border-top: 1px solid #ddd">
+        <a href="" class="btn btn-primary blue">确定</a>
+        <a href="javascript:history.go(-1)" class="btn btn-default">取消</a>
+    </div>
+</div>
+<script src="{:IND_URL}/plugins/slimScroll/jquery.slimscroll.min.js"></script>
+<script src="{:IND_URL}js/dialog.js"></script>
+<script src="{:IND_URL}js/global.js"></script>
+<script src="{:IND_URL}plugins/treeview/casetree.js"></script>
+<script>
+    var SCOPE = {
+        'search_url' : "",//保存路径接口
+        'search_jump_url' : "" //成功后跳原路径
+    };
+    $('.modal-body-scroll').slimScroll({
+        width:'100%',
+        size:'2px',
+        height:'390px',
+    });
+    var data = {$treelist};
+    var obj = {'node1':$('.resultItem'),'node2':$('.result')};
+    $("#treecase").treeCase({data:data,obj:obj});
+
+    $("#morechose").click(function(){
+        $('.content-chose').toggle();
+    });
+    $(".content-chose-close").click(function(){
+        $('.content-chose').hide();
+    });
+
+    var data = {};
+    $('.checklist').click(function(){
+        var url = $(this).attr('href');
+        var title = $(this).attr('title');
+        if($(this).is(':checked')){
+            var optionHtml = [];
+            optionHtml.push('<li><a href="'+url+'" target="_parent">'+title+'</a><i class="fa fa-close result-cancel"></i></li>');
+            $('.choose-result').append(optionHtml);
+            $('.result-cancel').click(function(){
+                $(this).parent('li').remove();
+                var aurl = $(this).siblings('a').attr('href');
+                $('.checklist').each(function(){
+                    if($(this).attr('href') == aurl){
+                        $(this).attr('checked',false);
+                    }
+                })
+            });
+        }else{
+            $('.choose-result a').each(function(){
+                if($(this).attr('href') == url){
+                    $(this).parent('li').remove();
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

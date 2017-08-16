@@ -1,0 +1,145 @@
+<div class="modal fade in" id="choose-term" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="overflow: auto;">
+    <div class="modal-dialog" style="width: 500px;">
+        <div class="modal-content">
+            <div class="modal-header" style="height: 40px;">
+                <a href="javascript:;" onclick="cancel()" class="close" >×</a>
+                <!--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>-->
+                <h4 class="modal-title" id="myModalLabel"></h4>
+            </div>
+            <div class="modal-body">
+                <span>已选条件</span>
+                <div class="content-chose-div" id="choosed"></div>
+                <span>可选条件</span>
+                <div class="content-chose-div">
+					{foreach name="data" item="vo"}
+						<a href="javascript:;" class="check" style="width: 150px;">
+                            <input type="checkbox" class="icheck" name="{$vo.name}" value="{$vo.comment}"/>{$vo.comment}
+                        </a>
+					{/foreach}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="javascript:;" id="surechoose" class="btn btn-primary">确定</a>
+                <a href="javascript:;" onclick="cancel()" class="btn btn-default">取消</a>
+            </div>
+        </div>
+    </div>
+</div>
+    <script type="text/javascript">
+		$(document).ready(function(){
+			getvalue();
+            $(".drop-search").click(function(){
+                if($(this).hasClass('active')){
+                    $(this).removeClass('active');
+                    $('.top-tool-ul').removeClass('active');
+                    $('.drop-search-menu').slideUp();
+                }else{
+                    $(this).addClass('active');
+                    $('.top-tool-ul').addClass('active');
+                    $('.drop-search-menu').slideDown();
+                }
+            });
+            $(".chosedown").click(function(){
+                $(this).next().slideToggle();
+            });
+            var start ;
+            $("#morechose").click(function(){
+                var value = $(this).attr('attr-value');
+                $('#choose-term').toggle(value,function(){
+                    value = value.split(',');
+                    start = value;
+                    $('.icheck').prop('checked',false);
+                    for(var i = 0; i<value.length;i++){
+                        $('.icheck').each(function(){
+                            if($(this).attr('value') == value[i]){
+                                $(this).prop('checked',true);
+                                var option;
+                                option =  $(this).parent().clone();
+                                option.children().addClass('be-check').removeClass('icheck');
+                                $('#choosed').append(option);
+                            }
+                        })
+                    }
+                    $(".be-check").click(function(){
+                        $(this).parent().remove();
+                        checkfun($(this),$('.icheck'));
+                    });
+                });
+            });
+
+            $('.icheck').click(function(){
+                if($(this).is(":checked")){
+                    var option;
+                    option = $(this).parent().clone();
+                    option.children().addClass('be-check').removeClass('icheck');
+                    $('#choosed').append(option);
+                    $(".be-check").click(function(){
+                        $(this).parent().remove();
+                        checkfun($(this),$('.icheck'));
+                    });
+                }else{
+                    checkfun($(this),$(".be-check"));
+                }
+            });
+            $(".be-check").click(function(){
+                $(this).parent().remove();
+                checkfun($(this),$('.icheck'));
+            });
+            $('#surechoose').click(function(){
+                var data = {:json_encode($data)};
+                var text = [];
+                var obj = $('.be-check');
+                for(var i =0; i<obj.length; i++){
+                /*for(var j=0;j<start.length;j++){
+                 if($(obj[i]).val() != start[i]){
+                 text[i] = $(obj[i]).val();
+                 }
+                 }*/
+                    text[i] = $(obj[i]).val();
+                }
+                if(text != ''){
+                    datahtml = choose(data,text);
+                    $('.drop-search-menu').prepend(datahtml);
+                    getvalue();
+                    $('.del').click(function(){
+                        $(this).parent().remove();
+                        getvalue();
+                    });
+                }
+                $('#choosed').children().remove();
+                $('.icheck').attr('checked',false);
+                $('#choose-term').hide();
+            });
+            $('.del').click(function(){
+                $(this).parent().remove();
+                getvalue();
+            });
+        });
+
+        function checkfun(obj,element){
+            var text = obj.val();
+            element.each(function(){
+                if($(this).val() == text){
+                    if(element.hasClass('be-check')){
+                        $(this).parent().remove();
+                    }else{
+                        $(this).attr('checked',false);
+                    }
+                }
+            })
+        }
+
+        function cancel(){
+            $('#choosed').children().remove();
+            $('.icheck').attr('checked',false);
+            $('#choose-term').hide();
+        }
+		function getvalue(){
+			var choosed = '';
+				$('.drop-search-menu-ul').find('label').each(function(){
+					choosed = choosed + ',' + $(this).text();
+				});
+				choosed = choosed.substr(1);
+				$('#morechose').attr('attr-value',choosed);
+		}
+    </script>

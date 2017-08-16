@@ -1,0 +1,165 @@
+{include file="public:header" /}
+<div class="row row-default">
+    <div class="col-md-12 top-tool" >
+        <ul class="top-tool-ul">
+            <li><a href="{:url('Iteration/create')}" class="btn-a" >创建迭代</a></li>
+            <!--<li><a href="#download-case" class="btn-a" role="buttom" id="modal" data-toggle="modal">导出迭代</a></li>-->
+            <!--<li class="seli">
+                <form method="post" >
+                    <span>当前视图</span>
+                    <select name="view" id="view" class="seli-select select" onchange="handel_view(this,'testplan')">
+                        <option value="">选择视图</option>
+                        <option value="全部">全部</option>
+                        <option value="未关闭">未关闭</option>
+                        <option value="已关闭">已关闭</option>
+                        <option value="我负责的">我负责的</option>
+                        <option value="我创建的">我创建的</option>
+                    </select>
+                </form>
+            </li>
+            <li class="shaili">
+                <a href="javascript:;" class="drop-search">筛选<i class="fa fa-angle-double-down"></i></a>
+            </li>-->
+            <!--<li class="seticon"><i class="fa fa-cog"></i></li>-->
+        </ul>
+    </div>
+    <!--引入筛选条件-->
+    <!--{ ="public:search"/}-->
+    <!--{ ="public:download" /}-->
+    <!----end----->
+    <div class="tree-content" style="padding: 5px;">
+		{if condition="$itenum neq 0"}
+        {volist name="info" id="vo"}
+        <div class="table-data-info">
+            <table class="table table-data">
+                <tbody >
+                    <tr>
+                        <td class="dropdown operation" style="text-align: center;width: 60px">
+                            <a href="javascript:;" class="dropdown-toggle cog" data-toggle="dropdown" style="display: none"><i class="fa fa-angle-double-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{:url('Iteration/plan')}?step=need&id={$vo.id}">规划需求</a></li>
+                                <li><a href="{:url('Iteration/plan')}?step=bug&id={$vo.id}">规划缺陷</a></li>
+                                <li><a href="{:url('Iteration/create')}?id={$vo.id}">编辑</a></li>
+                                <!--<li><a href="javascript:;" onclick="copy('cases',{$vo.id})">复制</a></li>-->
+                                {if condition="$vo['status'] eq '开启'"}
+                                <li><a href="javascript:;" onclick="changestatus('iteration','{$vo.id}','关闭')">关闭</a></li>
+                                {else/}
+                                <li><a href="javascript:;" onclick="changestatus('iteration','{$vo.id}','开启')">开启</a></li>
+                                {/if}
+                                <li><a href="javascript:;" onclick="del('iteration','{$vo.id}')">删除</a></li>
+                            </ul>
+                        </td>
+                        <td><a href="javascript:;" class="getneed" attr_id="{$vo.id}"><i class="fa fa-plus-square-o"></i></a></td>
+                        <td>{$vo.id}</td>
+                        <td class="wi-320"><a href="../iteration/plan?step=desc&id={$vo.id}">{$vo.iterationName}{if condition="$vo['status'] eq '开启'"}<em class="ma-le-5 sign yellow" >{$vo.status}</em>{else/}<em class="ma-le-5 sign gray" >{$vo.status}</em>{/if}</a></td>
+                        <td>时间：{$vo.startTime}~{$vo.endTime}</td>
+                        <td>规划需求<em class="font-red">{$vo.neednum}</em>个，已完成<em class="font-green">{$vo.overneed}</em>个<br>规划缺陷<em class="font-red">{$vo.bugnum}</em>个，已关闭<em class="font-green">{$vo.closebug}</em>个</td>
+                        <td>{$vo.createName}&nbsp;&nbsp;创建于{$vo.createTime}</td>
+                        <td style="text-align: left;width:120px;">{if condition="$vo['neednum'] neq 0"}
+                            {if condition="$vo['version'] eq ''"}
+                            <a href="javascript:;" onclick="apply('{$vo.id}','test')" class="btn btn-xs btn-primary">申请测试</a>
+                            {else/}
+                            <a href="javascript:;" onclick="apply('{$vo.id}','retest')" class="btn btn-xs btn-primary">申请回归测试</a>
+                            {/if}
+                            {/if}
+                        </td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {/volist}
+		{else /}
+		<div class="table-data-info">
+            <table class="table table-data">
+                <tbody >
+                    <tr>
+                        <td colspan="8" style="text-align:center">此项目还没有规划迭代！</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+		{/if}
+        <div class="page" style="margin-top: 20px;">
+            {$info->render()}
+        </div>
+    </div>
+</div>
+<script src="{:IND_URL}js/tabletree.js"></script>
+<script>
+    var SCOPE = {
+        'search_url' : "{:url('Testplan/search')}",//搜索路径接口
+        'search_jump_url' : "{:url('Testplan/index')}" //搜索成功后跳原路径
+    };
+    $(document).ready(function(){
+
+        $('.table-data-info').click(function(){
+            $(this).siblings().css({'background-color':'#fff'});
+            $(this).css({'background-color':'#EDF3F9'})
+        });
+        $('.edit_pencil').mouseenter(function(){
+            $(this).css({'background-color':'#F0F5FA'});
+            $(this).find('.e-pen').show();
+        }).mouseleave(function(){
+            $(this).css({'background':'none'});
+            $(this).find('.e-pen').hide();
+        });
+        $('.operation').mouseenter(function(){
+            $('.cog').hide();
+            $(this).find('.cog').show();
+        });
+        $('.dropdown-menu').mouseleave(function(){
+            $(this).parents('.dropdown').removeClass('open');
+            $(this).prev().prop('aria-expanded','false');
+        });
+        $('.getneed').click(function(){
+            var id = $(this).attr('attr_id');
+            var ept = '#getInfo'+id ;
+            if($(this).find('i').hasClass('fa-plus-square-o')){
+                $(this).parents('.table-data-info').addClass('table-select');
+                $(this).find('.fa').removeClass('fa-plus-square-o').addClass('fa-minus-square-o');
+                $(this).parents('table').after('<table class="table table-info" id="getInfo'+id+'"></table>');
+                var info = '';
+                var title_list = {"id":"ID","needName":"需求名称","level":"优先级","status":"状态","dealname":"当前处理人"};
+                var btn_text ={"add":"创建子需求","copy":"复制需求","edit":"编辑需求","del":"删除需求","creatlink":"{:url('Need/create')}?pidneed=","editlink":"{:url('Need/create')}?needid=","table":"need",'desclink':"{:url('Need/desc')}?needid="};
+                var bug = '';
+                $.ajax({
+                    url:"{:url('Iteration/getNeed')}",
+                    method:'post',
+                    data:{needid:id},
+                    dataType:'json',
+                    success:function(data){
+                        if(data.status == 1){
+                            info = data.need;
+                            bug = $.parseJSON(data.bug);
+                            $(ept).tableview({color:"#428bca",enableLinks:!0,showBorder:!1,data:info,btn_text:btn_text,title_list:title_list});
+                            if(bug){
+                                $.each(bug,function(){
+                                    var item = $('<tr class="pa"></tr>');
+                                    $(item).append('<td></td>');
+                                    $(item).append('<td>'+this.id+'</td>');
+                                    $(item).append('<td><span class="sign red ma-ri-10">BUG</span><a href="../bugtrace/desc?bugid='+this.id+'">'+this.bugName+'</a></td>');
+                                    $(item).append('<td>'+this.level+'</td>');
+                                    $(item).append('<td>'+this.status+'</td>');
+                                    $(item).append('<td>'+this.dealby+'</td>');
+                                    $(ept).find('tbody').append(item);
+                                });
+                            }
+                        }
+                        else {
+                            return layer.msg(data.msg,{icon:5});
+                        }
+                    },
+                    error:function() {
+                        return dialog.error('网络异常');
+                    }
+                });
+            }else{
+                $(this).find('.fa').removeClass('fa-minus-square-o').addClass('fa-plus-square-o');
+                $(ept).hide();
+                $(this).parents('.table-data-info').removeClass('table-select');
+            }
+        })
+    });
+</script>
+{include file="public:footer" /}

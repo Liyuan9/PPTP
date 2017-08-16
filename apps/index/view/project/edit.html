@@ -1,0 +1,95 @@
+{include file="public:header" /}
+<div class="row row-default">
+    <div class="tree-frame" >
+       <div class="tree-menu">
+            <div class="tree-ibox">
+                <div class="tree-ibox-title" style="padding-left: 30px;">
+                    <strong style="line-height: 40px;">项目设置<i class="fa fa-ellipsis-v pull-right ma-ri-10" style="margin-top: 13px;color: #ddd"></i></strong>
+                </div>
+                <div class="tree-ibox-content">
+                    <dl class="menu-dl active">
+                        <dt><a href="{:url('project/edit')}" style="color: #5CB85C;">项目信息<i class="fa fa-angle-right pull-right" style="padding: 3px 10px 3px 0;"></i></a></dt>
+                    </dl>
+                    <dl class="menu-dl">
+                        <dt><a href="javascript:;" style="color: #3C8DBC;">成员与权限</a></dt>
+                        <dd><a href="{:url('Set/user')}">项目成员</a></dd>
+                    </dl>
+                    <dl class="menu-dl">
+                        <dt><a href="javascript:;" style="color: #3C8DBC;">公共参数设置</a></dt>
+                        <dd><a href="{:url('Set/modular')}">模块设置</a></dd>
+                        <dd><a href="{:url('Set/version')}">版本设置</a></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="tree-content" >
+            <div class="tree-content-table">
+                <div class="container-fluid" style="padding: 20px;">
+                    <ul class="placeinfo">
+                        <li><i class="fa fa-location-arrow"></i>&nbsp;&nbsp;当前位置：</li>
+                        <li>项目设置&nbsp;&nbsp;&gt;</li>
+                        <li>&nbsp;&nbsp;项目信息</li>
+                    </ul>
+                    <h4 style="height:40px; line-height: 40px; padding-left: 10px;">项目信息</h4>
+                    <form  id="projectForm" method="post" >
+                        <ul class="set-project-ul" style="padding-left: 40px;">
+                            <!--<li>
+                                <em>项目图标</em>
+                                <div class="img-div" id="fileList">
+                                    <img id="img" src="{:IND_URL}dist/img/xian.jpg" width="160" height="160" title="项目图标">
+                                    <span style="position: absolute; top:-3px; right: 0"><img src="{:IND_URL}dist/img/wrong.png" class="cancel" width="16" height="16"/></span>
+                                    <div id="filePicker">选择图片</div>
+                                </div>
+                                <input type="text" name="icon" value="" hidden/>
+                            </li>-->
+                            <li>
+                                <em>项目名称<i class="red-sign">*</i></em>
+                                <input type="text" name="projectName" {if condition="session('loginname.dealname') neq $info['creatname']"} disabled {/if}class="form-control" value="{$info.projectName}" />
+                            </li>
+                            <li>
+                                <em>项目描述</em>
+                                <textarea name="depict" {if condition="session('loginname.dealname') neq $info['creatname']"} disabled {/if}  class="form-control " >{$info.depict}</textarea>
+                            </li>
+							<li>
+                                <em>申请环境</em>
+                                <textarea name="applyEnviro" {if condition="session('loginname.dealname') neq $info['creatname']"} disabled {/if}  class="form-control " >{$info.applyEnviro}</textarea>
+                            </li>
+							<li>
+                                <em>已配环境</em>
+                                <textarea name="configEnviro" disabled class="form-control " >{$info.configEnviro}</textarea>
+                            </li>
+                            <li>
+                                <em>项目状态</em>
+                                <select name="status" {if condition="session('loginname.dealname') neq $info['creatname']"} disabled {/if} class="form-control select">
+                                    <option value="进行中" {if condition="$info['status'] eq '进行中'"}selected{/if}>进行中</option>
+                                    <option value="延期" {if condition="$info['status'] eq '延期'"}selected{/if}>延期</option>
+									<option value="挂起" {if condition="$info['status'] eq '挂起'"}selected{/if}>挂起</option>
+									<option value="未开始" {if condition="$info['status'] eq '未开始'"}selected{/if}>未开始</option>
+									<option value="已完成" {if condition="$info['status'] eq '已完成'"}selected{/if}>已完成</option>
+									<option value="取消" {if condition="$info['status'] eq '取消'"}selected{/if}>取消</option>
+                                </select>
+                            </li>
+                            <li style="padding-left: 300px; margin-top: 50px;">
+                                <input type="text" hidden name="id" value="{$info.id}">
+                                {if condition="session('loginname.dealname') eq $info['creatname']"}
+                                <a href="javascript:;" id="projectbutton" class="btn btn-primary">保存</a>
+                                <a href="javascript:history.go(0);"  class="btn btn-default">取消</a>
+                                {/if}
+                            </li>
+                        </ul>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function(){
+        $('.tree-frame').css({'height':$('.row-default').height()});
+        $('.menu-dl').click(function(){
+            $(this).siblings().removeClass('active');
+            $(this).addClass('active');
+        });
+    });
+</script>
+{include file="public:footer" /}

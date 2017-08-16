@@ -1,0 +1,136 @@
+{include file="public:header" /}
+<div class="row row-default" >
+    <div class="col-sm-12">
+        <div class="ibox">
+            <div class="ibox-title">
+                <h5>待办事项<em class="ma-le-5" style="color: #888">（{:session('dealnum')}条待办）</em></h5>
+                <div class="ibox-tools dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="javascript:;" title="选择项目">
+                        <i class="fa fa-wrench"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-project">
+						<li><a href="../home/index">全部</a></li>
+						{foreach name="project" item="vo"}
+                        <li><a href="../home/index?projectID={$vo.id}">{$vo.projectName}</a></li>
+						{/foreach}
+                    </ul>
+                </div>
+            </div>
+            <div class="ibox-content">
+                <div class="row row-default timeline">
+                    <div class="col-xs-2 timeline-date no-padding">
+                        <i class="fa fa-briefcase"></i><br>今天到期
+                        <br>
+                        <small class="font-red">({$todaynum})</small>
+                    </div>
+                    <div class="col-xs-10 timeline-content no-padding">
+                        <table class="table">
+                            <tbody>
+							{if condition="$todaynum neq 0"}
+							{volist name="today" id="vo"}
+                            <tr>
+                                <td class="wi-60"><span class="sign green">STORY</span></td>
+                                <td><a href="../need/desc?needid={$vo.id}&projectID={$vo.projectID}">{$vo.needName}</a></td>
+                                <td class="wi-120"><i class="fa fa-code-fork font-primary ma-ri-10"></i>{$vo.status}</td>
+                                <td class="wi-80"><i class="fa fa-bookmark-o font-primary ma-ri-10" title="优先级"></i>{$vo.level}</td>
+                                <td class="wi-120"><i class="fa fa-clock-o font-primary ma-ri-10" title="预计结束"></i>{$vo.endTime}</td>
+                            </tr>
+							{/volist}
+							{else /}
+							<tr>
+                                <td style="text-align: center; background-color:#F9FAFC ">今天暂无未处理的事项（已预计结束时间为准）</td>
+							</tr>
+							{/if}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row row-default timeline">
+                    <div class="col-xs-2 timeline-date no-padding">
+                        <i class="fa fa-history"></i><br>其他
+                        <br>
+                        <small class="font-red">({$afternum})</small>
+                    </div>
+                    <div class="col-xs-10 timeline-content no-padding">
+                        <table class="table">
+                            <tbody>
+                           {if condition="$afternum neq 0"}
+							{volist name="after" id="vi"}
+                            <tr>
+                                <td class="wi-60"><span class="sign green">STORY</span></td>
+                                <td><a href="../need/desc?needid={$vi.id}&projectID={$vi.projectID}">{$vi.needName}</a></td>
+                                <td class="wi-120"><i class="fa fa-code-fork font-primary ma-ri-10"></i>{$vi.status}</td>
+                                <td class="wi-80"><i class="fa fa-bookmark-o font-primary ma-ri-10" title="优先级"></i>{$vi.level}</td>
+                                <td class="wi-120"><i class="fa fa-clock-o font-primary ma-ri-10" title="预计结束"></i>{$vi.endTime}</td>
+                            </tr>
+							{/volist}
+							{else /}
+							<tr>
+                                <td style="text-align: center; background-color:#F9FAFC ">未来暂无未处理的事项（已预计结束时间为准）</td>
+							</tr>
+							{/if}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row row-default timeline">
+                    <div class="col-xs-2 timeline-date no-padding">
+                        <i class="fa fa-codepen"></i><br>已过期
+                        <br>
+                        <small class="font-red">({$beforenum})</small>
+                    </div>
+                    <div class="col-xs-10 timeline-content no-padding">
+                        <table class="table">
+                            <tbody>
+							{if condition="$beforenum neq 0"}
+							{volist name="before" id="vv"}
+                            <tr>
+                                <td class="wi-60"><span class="sign green">STORY</span></td>
+                                <td><a href="../need/desc?needid={$vv.id}&projectID={$vv.projectID}">{$vv.needName}</a></td>
+                                <td class="wi-120"><i class="fa fa-code-fork font-primary ma-ri-10"></i>{$vv.status}</td>
+                                <td class="wi-80"><i class="fa fa-bookmark-o font-primary ma-ri-10" title="优先级"></i>{$vv.level}</td>
+                                <td class="wi-120"><i class="fa fa-clock-o font-primary ma-ri-10" title="预计结束"></i>{$vv.endTime}</td>
+                            </tr>
+							{/volist}
+							{else /}
+							<tr>
+                                <td style="text-align: center; background-color:#F9FAFC ">暂无未处理的过期事项（已预计结束时间为准）</td>
+							</tr>
+							{/if}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row row-default timeline">
+                    <div class="col-xs-2 timeline-date no-padding">
+                        <i class="fa fa-bug"></i><br>缺陷
+                        <br>
+                        <small class="font-red">({$bugnum})</small>
+                    </div>
+                    <div class="col-xs-10 timeline-content no-padding">
+                        <table class="table">
+                            <tbody>
+							{if condition="$bugnum neq 0"}
+							{volist name="bug" id="vv"}
+                            <tr>
+                                 <td class="wi-60"><span class="sign red">BUG</span></td>
+                                <td><a href="../bugtrace/desc?bugid={$vv.id}&projectID={$vv.projectID}">{$vv.bugName}</a></td>
+                                <td class="wi-120"><i class="fa fa-code-fork font-primary ma-ri-10"></i>{$vv.status}</td>
+                                <td class="wi-80"><i class="fa fa-bookmark-o font-primary ma-ri-10" title="优先级"></i>{$vv.level}</td>
+                                <td class="wi-120"><i class="fa fa-clock-o font-primary ma-ri-10" title="预计结束"></i>{$vv.serious}</td>
+                            </tr>
+							{/volist}
+							{else /}
+							<tr>
+                                <td style="text-align: center; background-color:#F9FAFC ">暂无未处理的缺陷</td>
+							</tr>
+							{/if}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{include file="public/footer" /}

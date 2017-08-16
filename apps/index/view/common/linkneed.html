@@ -1,0 +1,124 @@
+<div class="modal fade" id="choose" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="margin-top: 100px; width: 935px;">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #337AB7; border-bottom: 0;">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" style="color: #fff">选择需求</h4>
+            </div>
+            <div class="modal-body" style="height: auto; overflow: hidden; padding-top: 0; padding-right:0;">
+                <div class="col-sm-12 no-padding">
+                    <div class="col-sm-9 no-padding" style="border-right: 1px solid #ddd">
+                        <table class="table" style="margin-bottom: 0;">
+                            <thead>
+                            <tr>
+                                <th style="width: 5%"></th>
+                                <th style="width: 15%">需求ID</th>
+                                <th style="width: 45%">需求名称</th>
+                                <th style="width: 15%">当前处理人</th>
+                                <th style="width: 20%">需求状态</th>
+                            </tr>
+                            </thead>
+                        </table>
+                        <div style="height: 380px; overflow: hidden; ">
+                            <div class="modal-body-scroll table-default" >
+                                <table class="table table-hover">
+                                    <tbody>
+                                    {volist name="needlist" id="vo"}
+                                    <tr>
+                                        <td style="width: 5%; border-top:0;">
+                                            <input type="checkbox" class="checklist" value="{$vo.id}" attr-text="{$vo.needName}" name="need-fa"/>
+                                        </td>
+                                        <td style="width: 15%;  border-top:0">{$vo.id}</td>
+                                        <td style="width: 45%; border-top:0">
+                                            <a href="{:url('Need/desc')}?needid={$vo.id}" title="需求1">{$vo.needName}</a>
+                                        </td>
+                                        <td style="width: 15%; border-top:0">{$vo.dealname}</td>
+                                        <td style="width: 20%; border-top:0">{$vo.status}</td>
+                                    </tr>
+                                    {/volist}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-3  no-padding" style="height: 100%">
+                        <div class="ibox" id="result" style="margin: 0;">
+                            <h5 class="dark no-margin" style="border-bottom: 1px solid #ddd; height: 37px; line-height: 37px;padding-left: 10px;">
+                                已选择需求 <em id="result-num" style="color: #ff2222; margin-left: 5px;"></em>
+                            </h5>
+                            <ul class="choose-result" id="resultItem" style="padding: 10px;">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="javascript:void(0);" id="needsure" class="btn btn-primary" data-dismiss="modal">确定</a>
+                <a href="javascript:;" class="btn btn-default" data-dismiss="modal">取消</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    var data = {};
+    $('.checklist').click(function(){
+        var url = "{:url('Need/desc')}?needid="+ $(this).val();
+        var title = $(this).attr('attr-text');
+        if($(this).is(':checked')){
+            var optionHtml = [];
+            optionHtml.push('<li style="height: 30px; line-height: 30px;"><a href="'+url+'" target="_black" attr-id="'+$(this).val()+'">'+title+'</a><i class="fa fa-close result-cancel pull-right" style="padding-top: 10px;"></i></li>');
+            $('.choose-result').append(optionHtml);
+            $('.result-cancel').click(function(){
+                $(this).parent('li').remove();
+                var needid = $(this).siblings('a').attr('attr-id');
+                $('.checklist:checked').each(function(){
+                    if($(this).val() == needid){
+                        $(this).prop('checked',false);
+                    }
+                })
+            });
+        }else{
+            $('.choose-result li a').each(function(){
+                if($(this).attr('href') == url){
+                    $(this).parent('li').remove();
+                }
+            });
+        }
+    });
+    $('#needsure').click(function(){
+        var needid = '';
+        var spanitem = $('#need');
+        var template = {
+            item: '<span class="ma-le-20"></span>',
+            emitem: '<em class="fa-title"></em>',
+            icon: '<i class="fa fa-close font-red ma-le-10 clearneed" attr-id = "" style="cursor: pointer"></i>'
+        };
+        $('#need').find('span').remove();
+        $('.checklist:checked').each(function(){
+            spanitem
+                    .append($(template.item)
+                            .append($(template.emitem)
+                                    .append($(this).attr('attr-text'))
+                            )
+                            .append($(template.icon)
+                                    .attr('attr-id',$(this).val())
+                            )
+                    );
+            needid = needid+','+$(this).val();
+        });
+        needid = needid.substring(1);
+
+        $('#need').append(spanitem);
+        $('input[name=needID]').val(needid);
+        $('.clearneed').click(function(){
+            $(this).parent().remove();
+            var needid = '';
+            $('.clearneed').each(function(){
+                needid = needid+','+$(this).attr('attr-id');
+            });
+            needid = needid.substring(1);
+            $('input[name=needID]').val(needid);
+        });
+    })
+</script>

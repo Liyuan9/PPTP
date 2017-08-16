@@ -1,0 +1,235 @@
+{include file="public:header" /}
+<div class="row row-default">
+    <div class="tree-frame" >
+        <div class="tree-menu">
+            <div class="tree-ibox">
+                <div class="tree-ibox-title" style="padding-left: 30px;">
+                    <strong style="line-height: 40px;">项目设置<i class="fa fa-ellipsis-v pull-right ma-ri-10" style="margin-top: 13px;color: #ddd"></i></strong>
+                </div>
+                <div class="tree-ibox-content">
+                    <dl class="menu-dl">
+                        <dt><a href="{:url('project/edit')}" style="color: #3C8DBC;">项目信息</a></dt>
+                    </dl>
+                    <dl class="menu-dl">
+                        <dt><a href="javascript:;" style="color: #3C8DBC;">成员与权限</a></dt>
+                        <dd><a href="{:url('Set/user')}">项目成员</a></dd>
+                    </dl>
+                    <dl class="menu-dl active">
+                        <dt><a href="javascript:;" style="color: #3C8DBC;">公共参数设置</a></dt>
+                        <dd><a href="{:url('Set/modular')}">模块设置</a></dd>
+                        <dd class="active"><a href="{:url('Set/version')}">版本设置<i class="fa fa-angle-right pull-right" style="padding: 3px 10px 3px 0;"></i></a></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="tree-content" >
+            <div class="tree-content-table">
+                <div class="container-fluid" style="padding: 20px;">
+                    <ul class="placeinfo">
+                        <li><i class="fa fa-location-arrow"></i>&nbsp;&nbsp;当前位置：</li>
+                        <li>项目设置&nbsp;&nbsp;&gt;</li>
+                        <li>&nbsp;&nbsp;公共参数设置&nbsp;&nbsp;&gt;</li>
+                        <li>&nbsp;&nbsp;版本设置</li>
+                    </ul>
+                    <div class="row" style="padding: 0 20px;">
+                        <div class="col-sm-12">
+                            <div class="container-fluid" style="padding: 20px;">
+                               <div class="btn-tool" style="height:auto; overflow: hidden">
+                                    <a href="javascript:;" onclick="delMore()" style="float: left;"><i class="fa fa-trash"></i>批量删除</a>
+                                   <!-- <a href="../set/version?step=add&planid={$planid}"><i class="fa fa-plus ma-ri-5" style="color: #5CB85C;"></i>添加版本</a>-->
+                                    <div style="float: left;">
+                                        <form method="post" action="{:url('Set/version')}" style="float: left">
+                                            <div class="ma-le-20" style="float: left"><label class="font-primary" style="font-size: 12px;">测试计划</label>
+                                                <select class="wi-160 select ma-le-5" name="planid" style="padding: 2px 3px; border:1px solid #c2ccd1">
+                                                    <option value="-1">--空--</option>
+                                                    <option value="0" {if condition="$planid eq 0"} selected {/if}>--未关联--</option>
+                                                    {volist name="plan" id="v"}<option value="{$v.id}" {if condition="$planid eq $v['id']"} selected {/if}>{$v.name}</option>{/volist}
+                                                </select>
+                                            </div>
+                                            <div class="ma-le-20" style="float: left"><label class="font-primary" style="font-size: 12px;">迭代</label>
+                                                <select  class="wi-160 select ma-le-5" name="iterationID" style="padding: 2px 3px; border:1px solid #c2ccd1">
+                                                    <option value="-1">--空--</option>
+                                                    <option value="0" {if condition="$iterationID eq 0"} selected {/if}>--未关联--</option>
+                                                    {volist name="iteration" id="v"}<option value="{$v.id}" {if condition="$iterationID eq $v['id']"} selected {/if}>{$v.name}</option>{/volist}
+                                                </select>
+                                            </div>
+                                            <button type="submit" class="btn btn-sm btn-primary ma-le-10" style="float: left">搜索</button>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="table-default thead-default" style="margin-top: 10px;">
+                                    <table class="table table-hover" id="modular">
+                                        <thead>
+                                        <th><input type="checkbox" class="checkall"/></th>
+                                        <th>标题</th>
+                                        <th>所属计划</th>
+                                        <th>状态</th>
+                                        <th>测试类型</th>
+                                        <th>创建人</th>
+                                        <th>创建时间</th>
+                                        <th>测试开始时间</th>
+                                        <th>测试结束时间</th>
+                                        <th style="text-align:center">操作</th>
+                                        </thead>
+                                        <tbody>
+                                        {volist name="version" id="item"}
+                                        <tr>
+                                            <td><input type="checkbox" name="id" class="checklist" value="{$item.id}" /></td>
+                                            <td style="min-width: 200px;">
+                                                <a href="../set/applytest?step=desc&version={$item.id}">{$item.title}</a>
+                                            </td>
+                                            <td>
+                                                {$item.planName}
+                                            </td>
+                                            <td>
+                                                <div class="edit_pencil" style="width:100px;">
+                                                    <em class="edit">{$item.status}</em>
+                                                    <a href="javascript:;" onclick="edit_pencil(this)" class="e-pen" style="display: none; margin-left: 20px;" ><i class="fa fa-pencil"></i></a>
+                                                </div>
+                                                <div class="edit_input" style="display: none;width: 100px;">
+                                                    <select name="status" attr_id="{$item.id}" onblur="hideObj(this)" onchange="editObj(this,'version')" style="width: 100%;" class="select" >
+                                                        <option value="">--</option>
+                                                        <option value="打开">打开</option>
+                                                        <option value="关闭">关闭</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {$item.type}
+                                            </td>
+                                            <td>
+                                                {$item.creatName}
+                                            </td>
+                                            <td>
+                                                {$item.creatTime}
+                                            </td>
+
+                                            <td style="width: 200px; padding: 0">
+                                                {$item.StartTime}{if condition="session('loginname.bm') eq '测试'"}<a href="javascript:;" class="btn btn-xs btn-warning" onclick="editTime(this,'{$item.id}','start')">{if condition="$item['StartTime'] neq null"}修改{else /}添加{/if}</a>{/if}
+                                            </td>
+                                            <td style="width: 200px; padding: 0">
+                                                {$item.EndTime}{if condition="session('loginname.bm') eq '测试'"}<a href="javascript:;" class="btn btn-xs btn-warning" onclick="editTime(this,'{$item.id}','end')">{if condition="$item['EndTime'] neq null"}修改{else /}添加{/if}</a>{/if}
+                                            </td>
+                                            <td style="text-align:right">
+												{if condition="$item['planName'] eq null"}
+												<a href="../testplan/create?version={$item.id}" class="ma-ri-10" title="创建测试计划"><i class="fa fa-ge"></i></a>
+												{/if}
+                                                <a href="../set/applytest?step=edit&version={$item.id}"  class="ma-ri-10" title="编辑"><i class="fa fa-pencil"></i></a>
+                                                <a href="javascript:;" onclick="del('version','{$item.id}')" title="删除"><i class="fa fa-trash"></i></a>
+                                            </td>
+                                        </tr>
+                                        {/volist}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{:IND_URL}plugins/laydate/laydate.js"></script>
+<script>
+    $(document).ready(function(){
+        $('.tree-frame').css({'height':$('.row-default').height()});
+
+        $('.menu-dl').click(function(){
+            $(this).siblings().removeClass('active');
+            $(this).addClass('active');
+        });
+        $('.edit_pencil').mouseenter(function(){
+            $(this).css({'background-color':'#F0F5FA'});
+            $(this).find('.e-pen').show();
+        }).mouseleave(function(){
+            $(this).css({'background':'none'});
+            $(this).find('.e-pen').hide();
+        });
+        $('.checkall').click(function(){
+            if($(this).is(':checked')){
+                $('.checklist').prop('checked',true);
+            }else{
+                $('.checklist').prop('checked',false);
+            }
+        });
+        $('.checklist').click(function(){
+            if(!$(this).is(':checked')){
+                $('.checkall').prop('checked',false);
+            }
+        });
+
+    });
+    function delMore(){
+        var num = $('.checklist:checked').length;
+        if(num == 0){
+            return layer.msg('请先选择要删除的版本',{icon:0})
+        }
+        var version = '';
+        $('.checklist:checked').each(function(i){
+            version == ''?version = $(this).val():version = version+','+$(this).val();
+        });
+        layer.open({
+            content: '您确定要将这些版本从项目中移除吗？',
+            icon : 3,
+            btn : ['是','否'],
+            yes : function(){
+                $.ajax({
+                    url:'../set/version?step=del',
+                    data:{version:version},
+                    type:'post',
+                    dataType: 'json',
+                    success:function(data) {
+                        if(data.status == 1){
+                            layer.msg(data.msg,{icon:1},function(){
+                                location.reload();
+                            })
+                        }
+                        else {
+                            layer.msg(data.msg,{icon:5});
+                        }
+                    },
+                    error:function() {
+                        return dialog.error('网络异常');
+                    }
+                });
+            }
+        });
+    }
+
+    function editTime(obj,id,sign){
+        var start = '';
+        var end = '';
+        if(sign == 'start'){
+            $(obj).parent().empty().append('<input class="form-control layer-date" style="width:175px;" id="start" onclick="laydate({istime:true, format: \'YYYY-MM-DD hh:mm:ss\'})" name="StartTime"  attr_id="'+id+'" value=""><a href="javascript:;" class="btn btn-danger btn-xs" onclick="changeTime(\'#start\',\'version\')" style="margin-top: 10px;">确定</a>');
+        }else{
+            $(obj).parent().empty().append('<input class="form-control layer-date" style="width:175px;" id="end" onclick="laydate({istime:true, format: \'YYYY-MM-DD hh:mm:ss\'})" name="EndTime"  attr_id="'+id+'" value=""><a href="javascript:;" class="btn btn-danger btn-xs" onclick="changeTime(\'#end\',\'version\')" style="margin-top: 10px;">确定</a>');
+        }
+    }
+    function changeTime(obj,table){
+        var data = {};
+        data[$(obj).attr('name')] = $(obj).val();
+        data['id'] = $(obj).attr('attr_id');
+        data['table'] = table;
+        $.ajax({
+            url:"../common/penedit",
+            data:data,
+            type:'post',
+            dataType: 'json',
+            success:function(data) {
+                if(data.status == 1){
+                    top.location.reload();
+                }
+                else {
+                    layer.msg(data.msg,{icon:2},function(){
+                        top.location.reload();
+                    })
+                }
+            },
+            error:function() {
+                return dialog.error('网络异常');
+            }
+        });
+    }
+</script>
+{include file="public:footer" /}

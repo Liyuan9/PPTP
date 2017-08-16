@@ -1,0 +1,162 @@
+{include file="public:header" /}
+<div class="row row-default">
+    <div class="tree-frame" >
+        <div class="tree-menu">
+            <div class="tree-ibox">
+                <div class="tree-ibox-title" style="padding-left: 30px;">
+                    <strong style="line-height: 40px;">项目设置<i class="fa fa-ellipsis-v pull-right ma-ri-10" style="margin-top: 13px;color: #ddd"></i></strong>
+                </div>
+                <div class="tree-ibox-content">
+                    <dl class="menu-dl">
+                        <dt><a href="{:url('project/edit')}" style="color: #3C8DBC;">项目信息</a></dt>
+                    </dl>
+                    <dl class="menu-dl">
+                        <dt><a href="javascript:;" style="color: #3C8DBC;">成员与权限</a></dt>
+                        <dd><a href="{:url('Set/user')}">项目成员</a></dd>
+                    </dl>
+                    <dl class="menu-dl active">
+                        <dt><a href="javascript:;" style="color: #3C8DBC;">公共参数设置</a></dt>
+                        <dd><a href="{:url('Set/modular')}">模块设置</a></dd>
+                        <dd class="active"><a href="{:url('Set/version')}">版本设置<i class="fa fa-angle-right pull-right" style="padding: 3px 10px 3px 0;"></i></a></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="tree-content" >
+            <div class="tree-content-table">
+                <div class="container-fluid" style="padding: 20px;">
+                    <ul class="placeinfo">
+                        <li><i class="fa fa-location-arrow"></i>&nbsp;&nbsp;当前位置：</li>
+                        <li>项目设置&nbsp;&nbsp;&gt;</li>
+                        <li>&nbsp;&nbsp;公共参数设置&nbsp;&nbsp;&gt;</li>
+                        <li>&nbsp;&nbsp;版本设置&nbsp;&nbsp;&gt;</li>
+                        <li>&nbsp;&nbsp;添加版本</li>
+                    </ul>
+                     <div class="row" style="padding: 20px 20px 0 20px;">
+                        <form id="versionForm" class="col-md-8 form-horizontal">
+                            <input type="text" name="id" value="{$info.id|default=''}" hidden />
+                            <div class="form-group">
+                                <label class="col-md-2 control-label font-primary">代码版本名称</label>
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control" name="title" value="{$info.title|default=''}" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label font-primary">版本描述</label>
+                                <div class="col-md-5">
+                                    <textarea class="form-control" name="depict">{$info.depict|default=''}</textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label font-primary">版本状态</label>
+                                <div class="col-md-2">
+                                    <select name="status" class="form-control select">
+                                        <option value="打开" {if condition="$info['status'] eq '打开'"}selected{/if}>打开</option>
+                                        <option value="关闭" {if condition="$info['status'] eq '关闭'"}selected{/if}>关闭</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label font-primary">版本类型</label>
+                                <div class="col-md-2">
+                                    <select name="type" class="form-control select">
+                                        <option value="正常版本" {if condition="$info['type'] eq '正常版本'"}selected{/if}>正常版本</option>
+                                        <option value="临时版本" {if condition="$info['type'] eq '临时版本'"}selected{/if}>临时版本</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label font-primary">所属计划</label>
+                                <div class="col-md-4">
+                                    <select name="planid" class="form-control select">
+                                        <option value="">--</option>
+                                        {volist name="plan" id="vo"}
+                                        <option value="{$vo.id}">{$vo.planName}</option>
+                                        {/volist}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label font-primary">开始测试时间</label>
+                                <div class="col-md-4">
+                                    <div class="input-group input-prepend " style="width: 100%;">
+                                        <span class="add-on input-group-addon">
+                                            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                                        </span>
+                                        <input class="finput layer-date" style="width: 100%;" id="start" name="StartTime" value="{$info.StartTime|default=''}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label font-primary">结束测试时间</label>
+                                <div class="col-md-4">
+                                    <div class="input-group input-prepend " style="width: 100%;">
+                                        <span class="add-on input-group-addon">
+                                            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                                        </span>
+                                        <input class="finput layer-date" style="width: 100%;" id="end" name="EndTime" value="{$info.EndTime|default=''}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-2 control-label font-primary">总耗时长（h）</label>
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control" name="countTime" onclick="getTime(this,'#end','#start')" value="{$info.countTime|default='0'}" />
+                                </div>
+                            </div>
+                        </form>
+                        <div class="col-md-5" style="margin: 20px 0; text-align: right">
+                            <a href="javascript:;" id='addversion' class="btn btn-primary" >确定</a>
+                            <a href="javascript:history.go(-1)" class="btn btn-default">取消</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{:IND_URL}plugins/laydate/laydate.js"></script>
+<script>
+    $(document).ready(function(){
+        $('head').append('<link  type="text/css" rel="stylesheet" href="{:IND_URL}plugins/laydate/skins/default/laydate.css" />');
+        $('head').append('<link  type="text/css" rel="stylesheet" href="{:IND_URL}plugins/laydate/need/laydate.css" />');
+        $('.tree-frame').css({'height':$('.row-default').height()});
+        $('.menu-dl').click(function(){
+            $(this).siblings().removeClass('active');
+            $(this).addClass('active');
+        });
+        $('select[name=planid]').val('{$planid}');
+        var start={elem:"#start",format:"YYYY-MM-DD hh:mm:ss",min:"2017-01-01 00:00:00",max:"2099-06-16 23:59:59",istime:true,istoday:true,choose:function(datas){end.min=datas;end.start=datas}};
+        var end={elem:"#end",format:"YYYY-MM-DD hh:mm:ss",min:"2017-01-01 00:00:00",max:"2099-06-16 23:59:59",istime:true,istoday:true,choose:function(datas){start.max=datas}};laydate(start);laydate(end);
+        $('#addversion').click(function(){
+            var data = $('#versionForm').serializeArray();
+            var postData = {};
+            $(data).each(function(i){
+                postData[this.name] = this.value;
+            });
+            $.ajax({
+                url:'../set/version?step=edit',
+                data:postData,
+                type:'post',
+                dataType: 'json',
+                success:function(data) {
+                    if(data.status == 1){
+                        layer.msg(data.msg,{icon:1},function(){
+                            top.location.href=data.url;
+                        })
+                    }
+                    else {
+                        layer.msg(data.msg,{icon:5});
+                    }
+                },
+                error:function() {
+                    return dialog.error('网络异常');
+                }
+            });
+
+
+        })
+    });
+
+</script>
+{include file="public:footer" /}

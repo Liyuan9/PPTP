@@ -1,0 +1,42 @@
+<footer class="footer" style="text-align: center;">
+    <strong>广东健客医药有限公司</strong>|版权所有<em style="font-size:10px;">&copy2017-{:date('Y')}</em>
+</footer>
+</div>
+<script type="text/javascript" src="{:IND_URL}js/global.js"></script>
+<script>
+    $(document).ready(function(){
+        $('.user-scroll').slimScroll({
+            height:'225px',
+            size: '3px',
+            color:'#203EB1'
+        });
+
+        $('.sidebar-collapse').slimScroll({
+            height:'100%',
+            size: '3px',
+            color:'#3C8DBC'
+        });
+		var projectID = "{:session('projectID')}";
+		if(projectID != ''){
+			$('.aside-default').mouseenter(function(){
+				$('.header').addClass('header-active');
+				$('.aside-default').addClass('aside-active');
+				$('.logo-sm').addClass('active-logo');
+				$('#wrapper').addClass('active-wrapper');
+			}).mouseleave(function(){
+				$('.header').removeClass('header-active');
+				$('.aside-default').removeClass('aside-active');
+				$('.logo-sm').removeClass('active-logo');
+				$('#wrapper').removeClass('active-wrapper');
+			});
+		}
+        var model = "{:session('model')}";
+        if(model){
+            model = '.'+model;
+            $(model).siblings().removeClass('active');
+            $(model).addClass('active');
+        }
+    });
+</script>
+</body>
+</html>

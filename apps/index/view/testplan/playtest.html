@@ -1,0 +1,314 @@
+{include file="public:header" /}
+<div class="row row-default">
+    <div class="col-md-12">
+            <div class="ibox-title" style="border: none; margin-top: 30px;">
+                <h5><span class="sign green ma-ri-10">PLAN</span>{$info.planName}<em class="ma-le-20">ID:{$info.id}</em><em class="ma-le-20">测试负责人：{$info.responsible}</em></h5>
+            </div>
+            <div class="row">
+                <div class="col-md-6 col-sm-6" style="line-height: 40px;">
+                    <a href="javascript:;" onclick="link_need(this)" attr_id="{$info.id}" class="btn btn-primary btn-xs ma-ri-20">选择待测需求</a>
+                    <a href="javascript:;" onclick="batch_execution()" class="btn btn-warning btn-xs ma-ri-20">批量执行</a>
+                    <a href="javascript:;" onclick="allocating_task()" class="btn btn-warning btn-xs ma-ri-20">批量分配</a>
+                    <a href="javascript:;" class="btn default btn-xs drop-search">筛选<i class="fa fa-angle-double-down"></i></a>
+                    <a href="{:url('Testplan/playtest')}?planid={$info.id}" class="btn default btn-xs">全部</i></a>
+                </div>
+                <div class="col-md-6 col-sm-6" style="line-height: 40px; text-align: right">
+                    <em style="color: green">通过：{$result.success}</em>&nbsp;|&nbsp;<em style="color: red">未通过：{$result.fail}</em>&nbsp;|&nbsp;阻塞：{$result.block}&nbsp;|&nbsp;未执行：{$result.noplay}&nbsp;（需求个数：{$info.needNum}&nbsp;&nbsp;用例个数：{$info.caseNum}&nbsp;&nbsp;测试执行进度：<em style="color: red">{$result.rate}</em>）
+                </div>
+            </div>
+    </div>
+    <form id="searchForm" method="post" >
+        <div class="drop-search-menu" style="display:none;">
+            <ul class="drop-search-menu-ul">
+                {php}$i=0;{/php}
+                {foreach name='data' item='v'}
+                {if condition="$i lt 2"}
+                {if condition="isset($v['children'])"}
+                <li><label>{$v.comment}</label>
+                    <select name="{$v.name}" class="fselect">
+                        {foreach name="v['children']" item="vo"}
+                        <option value="{$vo.id}">{$vo.name}</option>
+                        {/foreach}
+                    </select>
+                    <i class="fa fa-close del" style="margin-left:10px;color:#617CCD"></i>
+                </li>
+                {else /}
+                <li><label>{$v.comment}</label>
+                    <input type="text" name="{$v.name}" class="finput" value="">
+                    <i class="fa fa-close del" style="margin-left:10px;color:#617CCD"></i>
+                </li>
+                {/if}
+                {php}$i++;{/php}
+                {/if}
+                {/foreach}
+            </ul>
+            <div class="fbtn">
+                <span><a href="javascript:;" id="searchbutton">筛选</a></span>
+                <span><a href="javascript:;" id="morechose" attr-value ="">更多条件</a></span>
+            </div>
+        </div>
+    </form>
+    {include file="public:search"/}
+   <div class="tree-content tree-content-default">
+       <div class="tree-content-table">
+           <table class="table">
+               <thead>
+                   <tr>
+                       <th></th>
+                       <th><input type="checkbox" id="checkall" name="checkall"  value=""/></th>
+                       <th style="width: 30%"><i class="fa fa-minus-square font-ye alldown"></i>&nbsp;&nbsp;用例名称</th>
+                       <th>用例等级</th>
+                       <th>用例状态</th>
+                       <th>用例负责人</th>
+                       <th>最终结果</th>
+                       <th>执行次数</th>
+                       <th>关联缺陷</th>
+                       <th>最后执行人</th>
+                       <th style="width: 10%">操作</th>
+                   </tr>
+               </thead>
+               <tbody>
+                   {if condition="$need neq null"}
+                   {volist name='need' id='vo'}
+                   <tr class="need">
+                       <td></td>
+                       <td><input type="checkbox" class="chlist" name="checklist" value="{$vo.id}" data-id="{$info.id}"/></td>
+                       <td><i class="fa fa-minus-square font-ye clickdown" ></i>&nbsp;&nbsp;<span class="sign blue ma-ri-10">NEED</span><a href="{:url('need/desc')}?needid={$vo.id}">{$vo.needName}</a></td>
+                       <td>{$vo.level}</td>
+                       <td>{$vo.status}</td>
+                       <td></td>
+                       <td></td>
+                       <td>{$vo.play}</td>
+                       <td></td>
+                       <td>{$vo.endName}</td>
+                       <td class="dropdown" style="width: 10%;overflow: visible">
+                           <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-caret-square-o-down"></i></a>
+                           <ul class="dropdown-menu">
+							   <li><a href="{:url('Bugtrace/create')}?planid={$info.id}&needid={$vo.id}&caseid=">创建缺陷</a></li>
+                               <li><a href="javascript:void(0);" onclick="link_case(this)" attr_id="{$vo.id}">关联用例</a></li>
+                               <li><a href="javascript:void(0);" url='{:url("Cases/addcase")}' onclick="addoption(this,'cases')" attr_pid="{$vo.id}">新增用例</a></li>
+                               <li><a href="javascript:void(0);" onclick="cancelLink(this,'testplan','need')"  attr_id="{$info.id}" attr_cancelid="{$vo.id}" attr_msg="该需求将解除与当前测试计划的关系，确定继续？">解除关联</a></li>
+                           </ul>
+                       </td>
+                   </tr>
+                   {if condition="$vo['case'] neq null"}
+                       {volist name="$vo['case']" id="vi"}
+                       <tr class="test-case">
+                           <td></td>
+                           <td><input type="checkbox" class="chlist" name="checklist" value="{$vi.id}" data-id="{$vo.id}"/></td>
+                           <td style="padding-left: 30px;"><span class="sign gray  ma-ri-10">CASE</span><a href="{:url('Cases/desc')}?casesid={$vi.id}">{$vi.casesName}</a></td>
+                           <td>{$vi.grade}</td>
+                           <td>{$vi.status}</td>
+                           <td>{$vi.play_case_people}</td>
+                           <td>{$vi.testresult}</td>
+                           <td>{$vi.playnum}</td>
+                           <td>{$vi.bugnum}</td>
+                           <td>{$vi.run_people}</td>
+                           <td class="dropdown" style="width: 10%;overflow: visible">
+                               <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-caret-square-o-down"></i></a>
+                               <ul class="dropdown-menu">
+                                   <li><a href="javascript:void(0);" onclick="bm_play('{$info.id}','{$vo.id}','{$vi.id}','','')">执行</a></li>
+                                   <li><a href="{:url('Bugtrace/create')}?planid={$info.id}&needid={$vo.id}&caseid={$vi.id}">创建缺陷</a></li>
+                                   <li><a href="javascript:void(0);" onclick="bm_bug('{$info.id}','{$vo.id}','{$vi.id}')">关联缺陷</a></li>
+                                   <li><a href="javascript:void(0);" onclick="bm_result('{$info.id}','{$vo.id}','{$vi.id}')" >查看结果</a></li>
+                                   <li><a href="javascript:void(0);" onclick="cancelLink(this,'cases','need')"  attr_id="{$vi.id}" attr_cancelid="{$vo.id}" attr_msg="该用列将解除与当前测试计划的关系并移出测试计划，确定继续？">解除关联</a></li>
+                                   <li><a href="javascript:void(0);" onclick="removeplan(this)" attr_id="{$info.id}" attr_removeid="{$vi.id}" attr_need="{$vo.id}" attr_msg="该用列将移出当前测试计划，但不影响与需求的关联关系，确定继续？">移出计划</a></li>
+                               </ul>
+                           </td>
+                       </tr>
+                       {/volist}
+                   {/if}
+                   {/volist}
+                   {else /}
+                   <td colspan="10" style="text-align: center">没有可执行用例，请先关联需求</td>
+                   {/if}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    var SCOPE = {
+        'search_url' : "{:url('Need/search')}",//搜索路径接口
+        'search_jump_url' : "{:url('Testplan/playtest')}?planid={$info.id}" //搜索成功后跳原路径
+    };
+$(".clickdown").click(function(){
+    if($(this).hasClass('fa-plus-square')){
+        $(this).removeClass('fa-plus-square').addClass('fa-minus-square');
+        $(this).parents('tr').nextAll().each(function(){
+            if($(this).hasClass('test-case')){
+                $(this).slideDown();
+            }else{
+                return false;
+            }
+        })
+    }else{
+        $(this).parents('tr').nextAll().each(function(){
+            if($(this).hasClass('test-case')){
+                $(this).slideUp();
+            }else{
+                return false;
+            }
+
+        })
+        $(this).removeClass('fa-minus-square').addClass('fa-plus-square');
+    }
+});
+$(".alldown").click(function(){
+    if($(this).hasClass('fa-plus-square')){
+        $(this).removeClass('fa-plus-square').addClass('fa-minus-square');
+        $('tbody').slideDown();
+    }else{
+        $(this).removeClass('fa-minus-square').addClass('fa-plus-square');
+        $('tbody').slideUp();
+    }
+});
+$("#checkall").click(function(){
+    if($(this).is(":checked")){
+        $('.chlist').prop("checked",true);
+    }else{
+        $('.chlist').prop("checked",false);
+    }
+});
+
+$('.chlist').click(function(){
+    if($(this).is(':checked')){
+        if($(this).parents('tr').hasClass('need')){
+            $(this).parents('tr').nextAll().each(function(){
+                if($(this).hasClass('test-case')){
+                    $(this).children('td').children('.chlist').prop("checked",true);
+                }else{
+                    return false;
+                }
+            })
+        }
+    }else{
+        if($(this).parents('tr').hasClass('need')){
+            $(this).parents('tr').nextAll().each(function(){
+                if($(this).hasClass('test-case')){
+                    $(this).children('td').children('.chlist').prop("checked",false);
+                }else{
+                    return false;
+                }
+            })
+        }else{
+            $(this).parents('tr').prevAll('.need').eq(0).find('.chlist').prop("checked",false);
+            $('#checkall').prop("checked",false);
+        }
+    }
+});
+
+
+    function bm_result(planid,needid,caseid){
+        layer.open({
+            type: 2,
+            title: '用例执行结果',
+            shadeClose: true,
+            shade: 0.3,
+            area: ['50%', '65%'],
+            content: '../testplan/playresult?planid='+planid+'&needid='+needid+'&caseid='+caseid
+        });
+    }
+    function bm_bug(planid,needid,caseid){
+        layer.open({
+            type: 2,
+            title: '关联缺陷',
+            shadeClose: true,
+            shade: 0.3,
+            area: ['935px', '70%'],
+            content: '../testplan/linkbug?planid='+planid+'&needid='+needid+'&caseid='+caseid
+        });
+    }
+
+    function get_value(){
+        var obj = $('.test-case').find('.chlist:checked');
+        var data = {};
+        var info = {};
+        for( var i=0; i<obj.length; i++){
+            info[i] = {"caseID":obj[i].value , "needID":$(obj[i]).attr('data-id')};
+        }
+        if(info){
+            data['case'] = info;
+            data['num'] = i;
+        }else{
+            data['num'] = 0;
+        }
+        return data;
+    }
+    //批量执行
+    function batch_execution(){
+        var data = get_value();
+        if(data.num<=0){
+            layer.msg('请先选择用例',{icon:0});
+        }else{
+            layer.open({
+                title : '批量执行',
+                area : ['660px','410px'],
+                content: '<b style="line-height: 30px;">你已选中'+data.num+'个用例</b>'
+                        +'<div style="margin: 10px 0"><em style="display:inline-block;vertical-align: top; width: 110px;">测试结果：</em>'
+                        +'<select name="testresult" class="form-control select" id="testresult">'
+                        +'<option value="通过">通过</option>'
+                        +'<option value="不通过">不通过</option>'
+                        +'<option value="阻塞">阻塞</option>'
+                        +'</select></div>'
+                        +'<div><em style="display:inline-block; vertical-align: top;width: 110px">用例执行结果：</em>'
+                        +'<textarea name="realresult" id="realresult" class="form-control"></textarea></div>',
+                yes : function(){
+                    data['planID'] = "{$info.id}";
+                    data['sign'] = "play_result";
+                    data['testresult'] = $('#testresult').val();
+                    data['realresult'] = $('#realresult').val() ;
+                    handle(data);
+                }
+            })
+        }
+    }
+    //批量分配
+   function allocating_task(){
+        var data = get_value();
+        var user = {$user};
+        var opt = [];
+        if(data.num<=0){
+            layer.msg('请先选择用例',{icon:0});
+        }else{
+            $.each(user,function(i,name){
+               opt.push('<option value="'+name+'">'+name+'</option>');
+            });
+            layer.open({
+                title : '批量分配',
+                area : ['480px','230px'],
+                content: '<b style="line-height: 30px;">你已选中'+data.num+'个用例</b>'
+                        +'<div class="form-group row"><label class="col-sm-4 control-label">用例负责人：</label>'
+                        +'<select class="form-control select" style="width: 300px;" name="play_case_people">' +
+                        '<option value="">--</option>' + opt +'</select></div>',
+                yes : function(){
+                    data['planID'] = "{$info.id}";
+                    data['sign'] = "play_case_people";
+                    data['play_case_people'] = $('select[name=play_case_people]').val();
+                    handle(data);
+                }
+            })
+        }
+    }
+
+    function handle(data){
+        $.ajax({
+            url:"{:url('Testplan/playcase')}",
+            type:'post',
+            dataType:'json',
+            data:data,
+            success:function(result){
+                if(result.status==1){
+                    layer.msg(result.msg,{icon:1},function(){
+                        top.location.reload();
+                    });
+
+                }else{
+                    layer.msg(result.msg, {icon: 2});
+                }
+            }
+        })
+    }
+
+</script>
+{include file="public:footer" /}

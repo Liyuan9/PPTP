@@ -1,0 +1,135 @@
+{include file="public:header" /}
+<div class="row row-default bg-default">
+    <div class="col-sm-12 ">
+        <div class="ibox">
+            <div class="ibox-title" style="padding-left: 10%">
+                <h5>导入需求</h5>
+                <div class="ibox-tools">
+                    <a href="javascript:history.go(-1)"><i class="fa fa-reply"></i></a>
+                </div>
+            </div>
+            <div class="ibox-content ma-le-20 div-default" >
+                <div class="row m-b-sm m-t-sm">
+                    <div class="col-md-offset-1 col-md-11 col-sm-12">
+                        <input type="radio" name="loadtype" value="1" checked />批量导入新建
+                    </div>
+                </div>
+                <div class="col-md-offset-1 col-md-11 col-sm-12">
+                    <h5>①准备需求</h5>
+                    <p style="padding-left: 2em; line-height: 30px;">导入的需求条数需<strong>小于50</strong>,所有允许导入的需求字段请参考模板，<strong>需求字段不符合规则，整条需求不予以导入。</strong>字段导入规则如下：</p>
+                    <p style="padding-left: 2em; line-height: 30px;">
+                        1）“标题”为必填项；<br>
+                        2）“优先级”请填写：极高,高,中,低；<br>
+                        3）“父需求”请填写父需求ID，默认填写0，请满足如下条件：1、父需求在本项目下；2、父需求还未拆分任务；3、处于未关闭状态；4、不知父需求ID，请在需求首页列表中查找<br>
+                        4）人员类型字段请填写人员的名称；<br>
+                        5）日期型字段格式为：YYYY-MM-DD；<br>
+                        6）多选类型的自定义字段格式为：a|b|c，请用‘|’隔开多个选项；<br>
+                        7）其他字段请与项目中配置的值保持一致；<br>
+                        8）需求分类请填写分类ID，若未归类则填写-1，<a href="#needkind" data-toggle="modal" >查找分类ID&gt&gt</a><br>
+                        <a href="{:SITE_URL}/file/需求导入模板.xlsx" ><i class="fa fa-download"></i>下载导入模板</a>
+                    </p>
+                </div>
+                <div class="col-md-offset-1 col-md-11 col-sm-12">
+                    <h5>②上传数据文件</h5>
+                    <p style="padding-left: 2em; line-height: 30px;">
+                        目前支持的文件类型为：.xls,.xlsx；<br>
+                        <input type="text" hidden name="file" value="" />
+                    </p>
+                    <div id="uploader" class="wu-example">
+                        <!--用来存放文件信息-->
+                        <div id="thelist" class="uploader-list"></div>
+                        <div class="btns">
+                            <div id="picker" style="background-color: #00b7ee; width: 80px; text-align:center; border-radius: 3px"><i class="fa fa-plus"></i>添加文件</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-offset-1 col-md-11 col-sm-12" style="margin-top: 20px; margin-bottom: 20px;">
+                    <a href="javascript:;" id='inload' class="btn btn-primary">导入</a>
+                    <a href="javascript:history.go(-1)" class="btn btn-default">取消</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="needkind" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h5 class="modal-title" id="myModalLabel">需求分类ID查询</h5>
+                </div>
+                <div class="modal-body" ><ul id="treeview"></ul></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{:IND_URL}js/selecttree.js"></script>
+<script src="{:IND_URL}plugins/webuploader/dist/webuploader.js"></script>
+<script>
+    $('head').append('<link href="{:IND_URL}plugins/webuploader/css/webuploader.css" type="text/css" rel="stylesheet"/>');
+    var uploader = WebUploader.create({
+        swf: "{:IND_URL}plugins/webuploader" + '/dist/Uploader.swf',
+        // 文件接收服务端。
+        server: "{:url('Need/needUpload')}",
+        // 选择文件的按钮。可选。
+        pick: '#picker',
+        // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+        resize: false,
+        fileSizeLimit: 2* 1024 * 1024,
+        auto:false,
+        fileNumLimit: 1,
+        accept:{
+            title:'files',
+            extensions: 'xls,xlsx'
+        },
+        formData :{
+            loadtype : $("input[name='loadtype']:checked").val()
+        }
+    });
+    // 当有文件被添加进队列的时候
+    uploader.on( 'fileQueued', function( file ){
+        $('#thelist').append('<h5 class="info">已选择文件：' + file.name + '<i class="fa fa-times-circle font-red" id="dele"></i></h5>');
+        $("#dele").click(function(){
+            uploader.reset();
+            $(this).parent().remove();
+        });
+    });
+
+    uploader.on( 'uploadSuccess', function(file,response) {
+        if(response.status == 1){
+            $('input[name=file]').val(response.file);
+            layer.msg(response.msg,function(){
+                history.go(-1);
+            });
+        }else{
+            layer.msg(response.msg,{icon:2});
+        }
+    });
+
+    uploader.on( 'uploadError', function(file,reason) {
+        layer.msg(reason.msg,{icon:2});
+    });
+
+    uploader.on( 'uploadComplete', function( file ) {
+        $( '#'+file.id ).find('.progress').fadeOut();
+    });
+    uploader.on('error',function(type){
+        var msg;
+        if(type == 'Q_EXCEED_NUM_LIMIT'){
+            msg = '只能上传1个文件';
+        }else if(type == 'Q_TYPE_DENIED'){
+            msg = '请选择.xls或.xlsx文件';
+        }else{
+            msg = '文件大小不能超过2M';
+        }
+        layer.msg(msg,{icon:2});
+    });
+    $('#inload').click(function(){
+        uploader.upload();
+    });
+    var data = {$treelist};
+    $("#treeview").treeview({showBorder:!1,data:data,idable:1});
+</script>
+{include file="public:footer" /}

@@ -1,0 +1,107 @@
+{include file="public:header" /}
+<div class="row row-default" >
+    <div class="col-sm-12">
+        <div class="ibox">
+            <div class="ibox-title">
+                <h5>所有项目</h5>
+                <div class="ibox-tools">
+                    <em>（{$num}个项目）</em>
+                </div>
+            </div>
+            <div class="ibox-content">
+                <div class="row m-b-sm m-t-sm">
+                    <div class="col-md-12">
+                        <form method="post" action="{:url('Project/index')}" >
+                            <div class="input-group">
+                                <input type="text" name="projectName" placeholder="请输入项目名称" class="input-sm form-control" />
+                                <span class="input-group-btn">
+                                    <button type="submit" class="btn btn-sm btn-primary">搜索</button>
+                                </span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="project-list">
+                    <table class="table table-hover">
+                        <tbody>
+                            {volist name="info" id="vo"}
+                                <tr>
+                                    <td class="project-status" >
+                                        {switch name="$vo.status"}
+                                            {case value="进行中"} <span class="label label-primary">进行中</span>{/case}
+                                            {case value="已完成"} <span class="label label-success">已完成</span>{/case}
+											{case value="挂起"} <span class="label label-danger">挂起</span>{/case}
+											{case value="延期"} <span class="label label-warning">延期</span>{/case}
+											{case value="未开始"} <span class="label label-info">未开始</span>{/case}
+                                            {default /}<span class="label label-default">已取消</span>
+                                        {/switch}
+                                    </td>
+									<td class="inherit-table">
+										<table class="table table-default" style="background:none; margin:0;">
+											<tbody>
+												<tr><td colspan="2" class="project-title">
+														<span class="font-primary">{$vo.projectName}<small class="ma-le-10">创建于 {:date("Y-m-d",$vo['createTime'])}</small></span>
+														<div style="font-size: 12px;"><em class="dark">描述</em>
+														   {$vo.depict}
+														</div>
+													</td>
+													<!--<td class="project-completion">
+														<small>当前进度： 48%</small>
+														<div class="progress progress-mini">
+															<div style="width: 48%;" class="progress-bar"></div>
+														</div>
+													</td>-->
+													<td rowspan="2" class="project-people" style="vertical-align:middle;text-align:left">
+														【产品】
+														{foreach name="$vo['user']['product']" item='vi'}
+														<a href="javascript:;" {if condition="$vi['role'] neq 'common'"} class="font-red" {/if}} title="{$vi.position}">{$vi.username}</a>
+														<!--<a href="projects.html"><img alt="image" class="img-circle" src="{:IND_URL}img/user-icon.jpg"></a>-->
+														{/foreach}<br>
+														【研发】
+														{foreach name="$vo['user']['develop']" item='vi'}
+														<a href="javascript:;" {if condition="$vi['role'] neq 'common'"} class="font-red" {/if}} title="{$vi.position}">{$vi.username}</a>
+														<!--<a href="projects.html"><img alt="image" class="img-circle" src="{:IND_URL}img/user-icon.jpg"></a>-->
+														{/foreach}<br>
+														【测试】
+														{foreach name="$vo['user']['test']" item='vi'}
+														<a href="javascript:;" {if condition="$vi['role'] neq 'common'"} class="font-red" {/if}} title="{$vi.position}">{$vi.username}</a>
+														<!--<a href="projects.html"><img alt="image" class="img-circle" src="{:IND_URL}img/user-icon.jpg"></a>-->
+														{/foreach}<br>
+														【运维】
+														{foreach name="$vo['user']['opreation']" item='vi'}
+														<a href="javascript:;" {if condition="$vi['role'] neq 'common'"} class="font-red" {/if}} title="{$vi.position}">{$vi.username}</a>
+														<!--<a href="projects.html"><img alt="image" class="img-circle" src="{:IND_URL}img/user-icon.jpg"></a>-->
+														{/foreach}
+													</td>
+												</tr>
+												<tr>
+													<td class="project-title">
+														<div style="font-size: 12px;"><em class="dark">申请环境</em>
+														   {$vo.applyEnviro}
+														</div>
+													</td>
+													<td class="project-title">
+														<div style="font-size: 12px;"><em class="dark">配置环境</em>
+														   {$vo.configEnviro}
+														</div>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</td>
+                                    <td class="project-actions" >
+                                        <a href="../home/enterproject?projectId={$vo.id}" class="btn btn-white btn-sm"><i class="fa fa-send"></i> 进入项目 </a>
+                                    </td>
+                                </tr>
+                            {/volist}
+                        </tbody>
+                    </table>
+					<div class="page">
+						{$info->render()}
+					</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{include file="public:footer" /}

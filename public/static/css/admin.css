@@ -1,0 +1,8 @@
+body{ color:#333; font-size:13px;}
+input,select,textarea{color:#333;}
+.bg{ width:100%; height:100%; position:absolute; background:url(../img/bg.jpg) no-repeat; background-size:cover; }
+.panel{background:#fff;}
+form .form-group:last-child{padding-bottom:0;}
+.field-icon-right .icon{ bottom:0px;}
+.loginbox { background:url(../img/tmbg-white.png); border:0px;}
+/* 登陆页面 */

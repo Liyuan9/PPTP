@@ -1,0 +1,206 @@
+{include file="public:header" /}
+<div class="row row-default">
+    <div class="tree-frame" >
+        <div class="tree-menu">
+            <div class="tree-ibox">
+                <div class="tree-ibox-title" style="padding-left: 30px;">
+                    <strong style="line-height: 40px;">项目设置<i class="fa fa-ellipsis-v pull-right ma-ri-10" style="margin-top: 13px;color: #ddd"></i></strong>
+                </div>
+                <div class="tree-ibox-content">
+                    <dl class="menu-dl">
+                        <dt><a href="{:url('project/edit')}" style="color: #3C8DBC;">项目信息</a></dt>
+                    </dl>
+                    <dl class="menu-dl active">
+                        <dt><a href="javascript:;" style="color: #3C8DBC;">成员与权限</a></dt>
+                        <dd class="active"><a href="{:url('Set/user')}">项目成员<i class="fa fa-angle-right pull-right" style="padding: 3px 10px 3px 0;"></i></a></dd>
+                    </dl>
+                    <dl class="menu-dl">
+                        <dt><a href="javascript:;" style="color: #3C8DBC;">公共参数设置</a></dt>
+                        <dd><a href="{:url('Set/modular')}">模块设置</a></dd>
+                        <dd><a href="{:url('Set/version')}">版本设置</a></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="tree-content" >
+            <div class="tree-content-table">
+                <div class="container-fluid" style="padding: 20px;">
+                    <ul class="placeinfo">
+                        <li><i class="fa fa-location-arrow"></i>&nbsp;&nbsp;当前位置：</li>
+                        <li>项目设置&nbsp;&nbsp;&gt;</li>
+                        <li>&nbsp;&nbsp;成员与权限&nbsp;&nbsp;&gt;</li>
+                        <li>&nbsp;&nbsp;项目成员</li>
+                    </ul>
+                    <div class="row" style="padding: 0 20px;">
+                        <div class="col-sm-12">
+                            <div class="container-fluid" style="padding: 20px;">
+                                <div class="group">
+                                    <h5>用户角色</h5>
+                                    <a href="">所有<em>({$num.num})</em></a>
+                                    <a href="">管理员<em>({$num.admini})</em></a>
+                                    <a href="">普通成员<em>({$num.common})</em></a>
+                                </div>
+                                <div class="btn-tool">
+                                    <a href="javascript:;" onclick="delmore()"><i class="fa fa-trash"></i>批量删除</a>
+                                    <a href="javascript:;" onclick="open_user('join')"><i class="fa fa-upload"></i>批量加入成员</a>
+                                    {if condition="session('loginname.role') neq 'admin'"}<a href="javascript:;" onclick="open_user('add')"><i class="fa fa-plus ma-ri-5" style="color: #5CB85C;"></i>新建成员</a>{/if}
+                                    <span>({$num.num})成员</span>
+                                </div>
+                                <div class="table-default thead-default" style="margin-top: 10px;">
+                                    <table class="table table-hover">
+                                        <thead>
+                                        <th><input type="checkbox" class="checkall"/></th>
+                                        <th>域账号</th>
+                                        <th>成员名称</th>
+                                        <th>部门</th>
+                                        <th>职位</th>
+                                        <th>邮箱</th>
+                                        <th>用户角色</th>
+                                        <th>操作</th>
+                                        </thead>
+                                        <tbody>
+                                        {volist name="userlist" id="vo"}
+                                        <tr>
+                                            <td><input type="checkbox" name="id" class="checklist" value="{$vo.id}" /></td>
+                                            <td class="show-fa">
+                                                <div class="edit_pencil" style="width:200px;">
+                                                    <em class="edit">{$vo.namepy}</em>
+                                                    <a href="javascript:;" onclick="edit_pencil(this)" style="display: none; margin-left: 20px;" class="e-pen" ><i class="fa fa-pencil"></i></a>
+                                                </div>
+                                                <div class="edit_input" style="display: none;width:200px;">
+                                                    <input type="text" name="dealname" value="{$vo.namepy}" attr_id="{$vo.id}" onmouseout="hideObj(this)" onchange="editObj(this,'user')" style="width: 100%;" >
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="edit_pencil" style="width:100px;">
+                                                    <em class="edit">{$vo.dealname}</em>
+                                                    <a href="javascript:;" onclick="edit_pencil(this)" style="display: none; margin-left: 20px;" class="e-pen" ><i class="fa fa-pencil"></i></a>
+                                                </div>
+                                                <div class="edit_input" style="display: none;width:100px;">
+                                                    <input type="text" name="dealname" value="{$vo.dealname}" attr_id="{$vo.id}" onmouseout="hideObj(this)" onchange="editObj(this,'user')" style="width: 100%;" >
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="edit_pencil" style="width:100px;">
+                                                    <em class="edit">{$vo.bm}</em>
+                                                    <a href="javascript:;" onclick="edit_pencil(this)" style="display: none; margin-left: 20px;" class="e-pen" ><i class="fa fa-pencil"></i></a>
+                                                </div>
+                                                <div class="edit_input" style="display: none;width:100px;">
+                                                    <input type="text" name="position" value="{$vo.bm}" attr_id="{$vo.id}" onmouseout="hideObj(this)" onchange="editObj(this,'user')" style="width: 100%;" >
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="edit_pencil" style="width:100px;">
+                                                    <em class="edit">{$vo.position}</em>
+                                                    <a href="javascript:;" onclick="edit_pencil(this)" style="display: none; margin-left: 20px;" class="e-pen" ><i class="fa fa-pencil"></i></a>
+                                                </div>
+                                                <div class="edit_input" style="display: none;width:100px;">
+                                                    <input type="text" name="position" value="{$vo.position}" attr_id="{$vo.id}" onmouseout="hideObj(this)" onchange="editObj(this,'user')" style="width: 100%;" >
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="edit_pencil" style="width: 200px">
+                                                    <em class="edit">{$vo.email}</em>
+                                                    <a href="javascript:;" onclick="edit_pencil(this)" style="display: none; margin-left: 20px;" class="e-pen" ><i class="fa fa-pencil"></i></a>
+                                                </div>
+                                                <div class="edit_input" style="display: none; width: 200px;">
+                                                    <input type="text" name="email" value="{$vo.email}" attr_id="{$vo.id}" onmouseout="hideObj(this)" onchange="editObj(this,'user')" style="width: 100%;" >
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="edit_pencil" style="width:100px;">
+                                                    <em class="edit">{$vo.role}</em>
+                                                    <a href="javascript:;" onclick="edit_pencil(this)" class="e-pen" style="display: none; margin-left: 20px;" ><i class="fa fa-pencil"></i></a>
+                                                </div>
+                                                <div class="edit_input" style="display: none;width: 100px;">
+                                                    <select name="role" attr_id="{$vo.id}" onblur="hideObj(this)" onchange="editObj(this,'project_group')" style="width: 100%;" class="select" >
+                                                        <option value="--">--</option>
+                                                        <option value="管理员">管理员</option>
+                                                        <option value="普通成员">普通成员</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <a href="javascript:;" onclick="open_user('edit','{$vo.id}')" class="ma-ri-10" title="编辑"><i class="fa fa-pencil"></i></a>
+                                                <a href="javascript:;" onclick="del('project_group','{$vo.id}')" title="删除"><i class="fa fa-trash"></i></a>
+                                            </td>
+                                        </tr>
+                                        {/volist}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function(){
+        $('.tree-frame').css({'height':$('.row-default').height()});
+        $('.menu-dl').click(function(){
+            $(this).siblings().removeClass('active');
+            $(this).addClass('active');
+        });
+
+        $('.edit_pencil').mouseenter(function(){
+            $(this).css({'background-color':'#F0F5FA'});
+            $(this).find('.e-pen').show();
+        }).mouseleave(function(){
+            $(this).css({'background':'none'});
+            $(this).find('.e-pen').hide();
+        });
+        $('.checkall').click(function(){
+            if($(this).is(':checked')){
+                $('.checklist').prop('checked',true);
+            }else{
+                $('.checklist').prop('checked',false);
+            }
+        });
+        $('.checklist').click(function(){
+            if(!$(this).is(':checked')){
+                $('.checkall').prop('checked',false);
+            }
+        })
+    });
+
+    function delmore(){
+        var num = $('.checklist:checked').length;
+        if(num == 0){
+            return layer.msg('请先选择要移出项目的成员',{icon:0})
+        }
+        var user = '';
+        $('.checklist:checked').each(function(i){
+            user == ''?user = $(this).val():user = user+','+$(this).val();
+        })
+        layer.open({
+            content: '您确定要将这些成员从项目中移除吗？',
+            icon : 3,
+            btn : ['是','否'],
+            yes : function(){
+                $.ajax({
+                    url:'../set/deluser',
+                    data:{user:user},
+                    type:'post',
+                    dataType: 'json',
+                    success:function(data) {
+                        if(data.status == 1){
+                            layer.msg(data.msg,{icon:1},function(){
+                                location.reload();
+                            })
+                        }
+                        else {
+                            layer.msg(data.msg,{icon:2});
+                        }
+                    },
+                    error:function() {
+                        return dialog.error('网络异常');
+                    }
+                });
+            }
+        });
+    }
+</script>
+{include file="public:footer" /}

@@ -1,0 +1,95 @@
+{include file="public:header" /}
+<div class="row row-default">
+    <div class="tree-frame" style="height: 100%">
+        <div class="tree-menu">
+            <div class="tree-ibox">
+                <div class="tree-ibox-title" style="padding-left: 30px;">
+                    <strong style="line-height: 40px;">项目设置<i class="fa fa-ellipsis-v pull-right ma-ri-10" style="margin-top: 13px;color: #ddd"></i></strong>
+                </div>
+                <div class="tree-ibox-content">
+                    <dl class="menu-dl">
+                        <dt><a href="{:url('project/edit')}" style="color: #3C8DBC;">项目信息</a></dt>
+                    </dl>
+                    <dl class="menu-dl">
+                        <dt><a href="javascript:;" style="color: #3C8DBC;">成员与权限</a></dt>
+                        <dd><a href="{:url('Set/user')}">项目成员</a></dd>
+                    </dl>
+                    <dl class="menu-dl">
+                        <dt><a href="javascript:;" style="color: #3C8DBC;">公共参数设置</a></dt>
+                        <dd><a href="{:url('Set/modular')}">模块设置</a></dd>
+                        <dd><a href="{:url('Set/version')}">版本设置</a></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="tree-content" >
+            <div class="tree-content-table">
+                <div class="row row-default" style="padding:50px 20px 0 20px;">
+                    <div class="col-lg-5 col-md-5 col-sm-12">
+                        <div class="set-com">
+                            <i class="fa fa-users"></i>
+                            <span>成员与权限</span>
+                            <ul class="link">
+                                <li><a href="{:url('Set/user')}">项目成员</a></li>
+                                <li><a href="javascript:;">用户组权限</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-md-5 col-sm-12">
+                        <div class="set-com">
+                            <i class="fa fa-cogs"></i>
+                            <span>公共参数</span>
+                            <ul class="link">
+                                <li><a href="{:url('Set/modular')}">设置模块</a></li>
+                                <li><a href="{:url('Set/version')}">设置版本</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <!--<div class="col-lg-5 col-md-5 col-sm-12">
+                        <div class="set-com">
+                            <i class="fa fa-envelope-square"></i>
+                            <span>消息与报告</span>
+                            <ul class="link">
+                                <li><a href="javascript:;">消息通知</a></li>
+                                <li><a href="javascript:;">项目报告模板</a></li>
+                                <li><a href="javascript:;">定时报告</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-md-5 col-sm-12">
+                        <div class="set-com">
+                            <i class="fa fa-qrcode"></i>
+                            <span>应用设置</span>
+                            <ul class="link">
+                                <li><a href="javascript:;">需求</a></li>
+                                <li><a href="javascript:;">缺陷</a></li>
+                                <li><a href="javascript:;">迭代</a></li>
+                                <li><a href="javascript:;">任务</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-md-5 col-sm-12">
+                        <div class="set-com">
+                            <i class="fa fa-cogs"></i>
+                            <span>其他设置</span>
+                            <ul class="link">
+                                <li><a href="javascript:;">版本</a></li>
+                                <li><a href="javascript:;">基线</a></li>
+                            </ul>
+                        </div>
+                    </div>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+   $(document).ready(function(){
+        $('.tree-frame').css({'height':$('.row-default').height()});
+        $('.menu-dl').click(function(){
+            $(this).siblings().removeClass('active');
+            $(this).addClass('active');
+        });
+    });
+</script>
+{include file="public:footer" /}

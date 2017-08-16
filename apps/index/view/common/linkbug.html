@@ -1,0 +1,36 @@
+<div class="panel-body table-default" >
+    <!--<a href="" class="ma-ri-20"><i class="fa fa-plus-circle font-ye ma-ri-5"></i>快速添加缺陷</a>
+    <a href="javascript:;"><i class="fa fa-search-plus font-ye ma-ri-5"></i>关联缺陷</a>-->
+    <table class="table" id="linkbug">
+        <thead>
+        <tr>
+            <th>缺陷ID</th>
+            <th>名称</th>
+            <th>严重程度</th>
+            <th>优先级</th>
+            <th>缺陷类型</th>
+            <th>缺陷状态</th>
+            <th>当前处理人</th>
+            <th>创建人</th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {volist name="linkbug" id="vo"}
+        <tr>
+            <td>{$vo.id}</td>
+            <td><a href="{:url('Bugtrace/desc')}?bugid={$vo.id}">{$vo.bugName}</a></td>
+            <td>{$vo.serious}</td>
+            <td>{$vo.level}</td>
+            <td>{$vo.type}</td>
+            <td>{$vo.status}</td>
+            <td>{$vo.dealby}</td>
+            <td>{$vo.creatName}</td>
+            <td>
+                <a href="javascript:;" onclick="cancelLink(this,'bug','need')" attr_id="{$vo.id}" attr_cancelID="{$info.id}" title="取消关联"><i class="fa fa-chain-broken"></i></a>
+            </td>
+        </tr>
+        {/volist}
+        </tbody>
+    </table>
+</div>

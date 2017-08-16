@@ -1,0 +1,224 @@
+{include file="public:header" /}
+<div class="row row-default bg-default">
+<div class="tree-frame" >
+<div class="tree-menu">
+    <div class="tree-ibox">
+        <div class="tree-ibox-title" style="padding-left: 30px;">
+            <strong style="line-height: 40px;">项目设置<i class="fa fa-ellipsis-v pull-right ma-ri-10" style="margin-top: 13px;color: #ddd"></i></strong>
+        </div>
+        <div class="tree-ibox-content">
+            <dl class="menu-dl">
+                <dt><a href="{:url('project/edit')}" style="color: #3C8DBC;">项目信息</a></dt>
+            </dl>
+            <dl class="menu-dl">
+                <dt><a href="javascript:;" style="color: #3C8DBC;">成员与权限</a></dt>
+                <dd><a href="{:url('Set/user')}">项目成员</a></dd>
+            </dl>
+            <dl class="menu-dl active">
+                <dt><a href="javascript:;" style="color: #3C8DBC;">公共参数设置</a></dt>
+                <dd><a href="{:url('Set/modular')}">模块设置</a></dd>
+                <dd class="active"><a href="{:url('Set/version')}">版本设置<i class="fa fa-angle-right pull-right" style="padding: 3px 10px 3px 0;"></i></a></dd>
+            </dl>
+        </div>
+    </div>
+</div>
+<div class="tree-content" >
+    <div class="tree-content-table">
+        <div class="container-fluid" style="padding: 20px;">
+            <ul class="placeinfo">
+                <li><i class="fa fa-location-arrow"></i>&nbsp;&nbsp;当前位置：</li>
+                <li>项目设置&nbsp;&nbsp;&gt;</li>
+                <li>&nbsp;&nbsp;公共参数设置&nbsp;&nbsp;&gt;</li>
+                <li>&nbsp;&nbsp;版本设置&nbsp;&nbsp;&gt;</li>
+                <li>&nbsp;&nbsp;申请{$title}</li>
+            </ul>
+            <div class="row">
+                <div class="ibox div-default">
+                    <div class="col-sm-10 ibox-content" >
+                        <form id="Form" method="post" class="form-horizontal" enctype="multipart/form-data">
+                            <input type="text" name="id" value="{$ionfo.id|default=''}" hidden/>
+                            <input type="text" name="iterationID" value="{$iterationID}" hidden/>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label font-primary">版本名称<em class="ma-le-5 font-red">*</em></label>
+                                <div class="col-sm-8">
+                                    <input type="text" name="title" class="form-control" value="{$info.title}" disabled/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label font-primary">版本描述</label>
+                                <div class="col-sm-8">
+                                    <textarea  name="depict" id="editor" style="width: 100%;" disabled >{$info.depict}</textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label font-primary">测试类型<em class="ma-le-5 font-red">*</em></label>
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control wi-160" value="{$title}" disabled style="float: left" />
+                                </div>
+                            </div>
+                            {switch name="title"}
+                            {case value="功能测试"}
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label font-primary">提测范围<em class="ma-le-5 font-red">*</em></label>
+                                <div class="col-sm-8">
+                                    <div id="testneed" style="height: auto;line-height: 30px; margin:10px 0">
+                                        {if condition="$info['testneed'] neq null"}
+                                        <span>已选择需求：</span>
+                                        {volist name="$info['testneed']" id="vo"}
+                                    <span class="ma-le-20" style="border: 1px solid #bacee7; padding: 2px 3px">
+                                        <em class="fa-title" style="font-size: 10px;">{$vo.needName}</em>
+
+                                    </span>
+                                        {/volist}
+                                        {else /}<span class="font-red">没有选择测试需求</span>
+                                        {/if}
+                                    </div>
+                                    <div id="testbug" style="height: auto;line-height: 30px;">
+                                        {if condition="$info['testbug'] neq null"}
+                                        <span>已选择缺陷：</span>
+                                        {volist name="$info['testbug']" id="vo"}
+                                    <span class="ma-le-20" style="border: 1px solid #bacee7; padding: 2px 3px">
+                                        <em class="fa-title" style="font-size: 10px;">{$vo.bugName}</em>
+
+                                    </span>
+                                        {/volist}
+                                        {else /}<span class="font-red">没有选择测试缺陷</span>
+                                        {/if}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label font-primary">自测描述<em class="ma-le-5 font-red">*</em></label>
+                                <div class="col-sm-8">
+                                    <textarea name="selftestdesc" class="form-control" disabled>{$info.selftestdesc}</textarea>
+                                </div>
+                                <div class="col-sm-2 no-padding">
+                                    <em class="line-h-30 font-red">*</em>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label font-primary">代码地址</label>
+                                <div class="col-sm-8">
+                                    <input type="text" name="codeadd" class="form-control" disabled value="{$info.codeadd}"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label font-primary">关联系统</label>
+                                <div class="col-sm-8">
+                                    <input type="text" name="linksystem" class="form-control" disabled value="{$info.linksystem}"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label font-primary">数据库表说明</label>
+                                <div class="col-sm-8">
+                                    <input type="text" name="dbtext" class="form-control" disabled value="{$info.dbtext}"/>
+                                </div>
+                            </div>
+                            {/case}
+                            {case value="性能测试"}
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label font-primary">性能要求</label>
+                                <div class="col-sm-8">
+                                    <textarea  name="perform" class="form-control" disabled>{$info.perform}</textarea>
+                                </div>
+                            </div>
+                            {/case}
+                            {case value="接口测试"}
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label font-primary">自测描述</label>
+                                <div class="col-sm-8">
+                                    <textarea name="selftestdesc" class="form-control" disabled>{$info.selftestdesc}</textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label font-primary">代码地址</label>
+                                <div class="col-sm-8">
+                                    <input type="text" name="codeadd" class="form-control" disabled value="{$info.codeadd}"/>
+                                </div>
+                            </div>
+                            {/case}
+                            {case value="兼容性测试"}
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label font-primary">提测范围</label>
+                                <div class="col-sm-8" >
+                                    <div id="testneed" style="height: auto;line-height: 30px; margin:10px 0">
+                                        {if condition="$info['testneed'] neq null"}
+                                        <span>已选择需求：</span>
+                                        {volist name="$info['testneed']" id="vo"}
+                                    <span class="ma-le-20" style="border: 1px solid #bacee7; padding: 2px 3px">
+                                        <em class="fa-title" style="font-size: 10px;">{$vo.needName}</em>
+                                    </span>
+                                        {/volist}
+                                        {else /}<span class="font-red">没有选择测试需求</span>
+                                        {/if}
+                                    </div>
+                                    <div id="testbug" style="height: auto;line-height: 30px;">
+                                        {if condition="$info['testbug'] neq null"}
+                                        <span class="font-red>已选择缺陷：</span>
+                                        {volist name="$info['testbug']" id="vo"}
+                                    <span class="ma-le-20" style="border: 1px solid #bacee7; padding: 2px 3px">
+                                        <em class="fa-title" style="font-size: 10px;">{$vo.bugName}</em>
+                                    </span>
+                                        {/volist}
+                                        {else /}<span class="font-red">没有选择测试缺陷</span>
+                                        {/if}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label font-primary">自测描述</label>
+                                <div class="col-sm-8">
+                                    <textarea name="selftestdesc" class="form-control" disabled>{$info.selftestdesc}</textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label font-primary">兼容性要求</label>
+                                <div class="col-sm-8">
+                                    <textarea  class="form-control" name="compatibility" disabled >{$info.compatibility}</textarea>
+                                </div>
+                            </div>
+                            {/case}
+                            {default /}
+                            {/switch}
+                            <div class="col-sm-12 form-group">
+                                <label class="col-sm-2 control-label font-primary">附件</label>
+                                <div class="col-sm-8">
+                                    {foreach name="uploads" item="vo"}
+                                    {foreach name="vo" item="vv"}
+                                    <p>
+                                        <a href="{$vv.path}{$vv.title}" style="padding: 7px 10px;">{$vv.title}</a>
+                                        <em class="ma-le-20">{$vv.upby}</em>
+                                        <em class="ma-le-20">{$vv.size}</em>
+                                        <em class="ma-le-20">{$vv.uptime}</em>
+
+                                    </p>
+                                    {/foreach}
+                                    {/foreach}
+                                </div>
+                            </div>
+                        </form>
+                        <div class="col-sm-10" style="margin: 20px 0; text-align: right">
+                            <a href="../set/applytest?step=edit&version={$info.id}" class="btn btn-primary" >前往编辑</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+<script src="{:IND_URL}plugins/ueditor/ueditor.config.js"></script>
+<script src="{:IND_URL}plugins/ueditor/ueditor.all.js"></script>
+<script src="{:IND_URL}plugins/ueditor/ueditor.all.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('.tree-frame').css({'height':$('.row-default').height()});
+        var ue = UE.getEditor('editor');
+        ue.addListener('ready', function () {
+            ue.setDisabled();
+        });
+    });
+</script>
+{include file="public:footer" /}

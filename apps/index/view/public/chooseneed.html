@@ -1,0 +1,114 @@
+<div class="modal fade" id="choose" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" style="margin-top: 100px; width: 820px; height: 600px;">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #337AB7">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h4 class="modal-title" style="color: #fff">选择需求</h4>
+            </div>
+            <div class="modal-body" style="height: 444px; padding:0 20px;">
+                <!--<div class="modal-body-top">
+                    <!---引入筛选条件--->
+                   <!-- <form id="searchForm" method="post" >
+                        <div class="drop-search-menu" >
+                            <ul class="drop-search-menu-ul">
+                                {php}$i=0;{/php}
+                                {foreach name='data' item='v'}
+                                    {if condition="$i lt 2"}
+                                        {if condition="isset($v['children'])"}
+                                        <li><label>{$v.comment}</label>
+                                            <select name="{$v.name}" class="fselect">
+                                                {foreach name="v['children']" item="vo"}
+                                                <option value="{$vo.id}">{$vo.name}</option>
+                                                {/foreach}
+                                            </select>
+                                            <i class="fa fa-close del" style="margin-left:10px;color:#617CCD"></i>
+                                        </li>
+                                        {else /}
+                                        <li><label>{$v.comment}</label>
+                                            <input type="text" name="{$v.name}" class="finput" value="">
+                                            <i class="fa fa-close del" style="margin-left:10px;color:#617CCD"></i>
+                                        </li>
+                                        {/if}
+                                        {php}$i++;{/php}
+                                    {/if}
+                                {/foreach}
+                            </ul>
+                            <div class="fbtn">
+                                <span><a href="javascript:;" id="searchbutton">筛选</a></span>
+                                <span><a href="javascript:;" id="morechose" attr-value ="">更多条件</a></span>
+                            </div>
+                        </div>
+                    </form>
+                    { file="Public:search" /}-->
+                    <!-----end---->
+                <!--</div>-->
+                <div class="modal-body-content" style="height:444px; border-top: 0;">
+                    <table class="table" style="margin-bottom: 0; ">
+                        <thead>
+                        <tr>
+                            <th style="width: 5%"></th>
+                            <th style="width: 15%">需求ID</th>
+                            <th style="width: 45%">需求名称</th>
+                            <th style="width: 15%">当前处理人</th>
+                            <th style="width: 20%">需求状态</th>
+                        </tr>
+                        </thead>
+                    </table>
+                    <div class="modal-body-scroll">
+                        <table class="table table-hover">
+                            <tbody>
+                            {volist name="needList" id="vo"}
+                                <tr>
+                                    <td style="width: 5%">
+                                        <input type="radio" class="checka" value="{$vo.id}" attr-text="{$vo.needName}" name="need-fa"/>
+                                    </td>
+                                    <td style="width: 15%">{$vo.id}</td>
+                                    <td style="width: 45%">
+                                        <a href="" title="{$vo.needName}">{$vo.needName}</a>
+                                    </td>
+                                    <td style="width: 15%">{$vo.dealname}</td>
+                                    <td style="width: 20%">{$vo.status}</td>
+                                </tr>
+                            {/volist}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="javascript:void(0);" id="needsure" class="btn btn-primary" data-dismiss="modal">确定</a>
+                <a href="javascript:;" class="btn btn-default" data-dismiss="modal">取消</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('#needsure').click(function(){
+        var needid = $('input[type=radio]:checked').val();
+        var title = $('input[type=radio]:checked').attr('attr-text');
+        var spanitem = $('#need');
+        var template = {
+            item: '<span class="ma-le-20"></span>',
+            emitem: '<em class="fa-title"></em>',
+            icon: '<i class="fa fa-close font-red ma-le-10 clearneed" attr-id = "" style="cursor: pointer"></i>'
+        };
+        $('#need').find('span').remove();
+        spanitem
+                .append($(template.item)
+                        .append($(template.emitem)
+                                .append(title)
+                        )
+                        .append($(template.icon)
+                                .attr('attr-id',needid)
+                        )
+                );
+
+        $('#need').append(spanitem);
+        $('input[name=pidNeed]').val(needid);
+        $('.clearneed').click(function(){
+            $(this).parent().remove();
+            var needid = '';
+            $('input[name=pidNeed]').val(needid);
+        });
+    })
+</script>

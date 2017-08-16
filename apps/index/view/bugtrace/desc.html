@@ -1,0 +1,375 @@
+{include file="public/header" /}
+<div class="row row-default bg-default">
+<div class="col-sm-12">
+<div class="ibox">
+<div class="ibox-title">
+    <h5><span class="sign red ma-ri-10">BUG</span>{$info.bugName}<em class="ma-le-20">ID:{$info.id}</em></h5>
+    <div class="ibox-tools">
+        <a href="{:url('Bugtrace/create')}?bugid={$info.id}" class="ma-ri-10" title="编辑"><i class="fa fa-pencil"></i></a>
+        <!--<a href="javascript:;" onclick="" class="ma-ri-10" title="复制"><i class="fa fa-copy"></i></a>-->
+        <a href="javascript:;" onclick="del('bug','{$info.id}')" class="ma-ri-10" title="删除"><i class="fa fa-trash"></i></a>
+        <a href="{:url('Bugtrace/desc')}?bugid={$prev}" class="ma-ri-10" style="font-size: 12px;">上一条</a>
+        <a href="{:url('Bugtrace/desc')}?bugid={$next}" class="ma-ri-10" style="font-size: 12px;">下一条</a>
+    </div>
+</div>
+<div class="ibox-content">
+    <div class="row">
+        <div class="col-md-9 col-sm-12">
+            <div class="tabs-container">
+                <ul class="nav nav-tabs ">
+                    <li class="bg-gray active">
+                        <a data-toggle="tab" href="#Detail-div" aria-expanded="true" >详细信息</a>
+                    </li>
+                    <li class="bg-gray">
+                        <a data-toggle="tab" href="#SubStory-div" aria-expanded="true">需求（{$info.neednum}）</a>
+                    </li>
+                    <li class="bg-gray">
+                        <a data-toggle="tab" href="#LinkCases-div" aria-expanded="false">测试用例（{$info.casesnum}）</a>
+                    </li>
+                    <li class="bg-gray">
+                        <a data-toggle="tab" href="#History-div" aria-expanded="false">变更历史（{$info.historynum}）</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div id="Detail-div" class="tab-pane active" style="min-height: 300px;">
+                        {include file="bugtrace:detail" /}
+                    </div>
+                    <div id="SubStory-div" class="tab-pane" style="min-height: 300px;">
+                        {include file="bugtrace:substory" /}
+                    </div>
+                    <div id="LinkCases-div" class="tab-pane" style="min-height: 300px;">
+                        {include file="bugtrace:cases" /}
+                    </div>
+                    <div id="History-div" class="tab-pane" style="min-height: 300px;">
+                        {include file="bugtrace:history" /}
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div id="uploader" class="wu-example col-sm-12" style="padding: 20px 0 10px 40px;">
+                    <span style="font-size:18px;width: 40px; display: inline-block;line-height: 30px; vertical-align: top">附件</span>
+                    <div id="picker" style="display: inline-block; height: 30px;"><i class="fa fa-plus-circle font-ye ma-le-10" style="font-size: 12px">添加附件</i></div>
+                    <div id="thelist" class="uploader-list"></div>
+                    <a id="upFile" class="btn btn-warning btn-sm" style="display: none">上传</a>
+                    <input name="files" type="text" value="" hidden/>
+                </div>
+                <div class="col-sm-12" id="files" style="line-height: 30px; vertical-align: middle; padding-left: 50px;">
+                    {foreach name="filelist" item="vo"}
+                    {foreach name="vo" item="vv"}
+                    <p>
+                        <a href="{$vv.path}{$vv.title}" style="padding: 7px 10px;">{$vv.title}</a>
+                        <em class="ma-le-20">{$vv.upby}</em>
+                        <em class="ma-le-20">{$vv.size}</em>
+                        <em class="ma-le-20">{$vv.uptime}</em>
+                    </p>
+                    {/foreach}
+                    {/foreach}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12" style="padding: 20px 0px 10px 40px;">
+                    <span style="font-size:18px;width: 80px">评论</span>
+                    <a href="javascript:;" onclick="openframe('{$info.id}','bug')"><i class="fa fa-pencil font-ye ma-le-10" style="font-size: 12px">添加/查看更多评论</i></a>
+                </div>
+				<div class="col-sm-12">
+                    <div class="chat-discussion">
+                        {foreach name="commentlist" item="vo"}
+                        <div class="chat-message">
+                            {if $vo['header'] neq null}
+                            <img class="message-avatar" src="{$vo.header}">
+                            {else/}
+                            <img class="message-avatar" src="{:IND_URL}img/user-icon.jpg">
+                            {/if}
+                            <div class="message">
+                                <em class="message-author font-primary">{$vo.user}{$vo.addwhere}</em>
+                                <span class="message-date"> {$vo.time} </span>
+                                <span class="message-content">
+                                    {$vo.comment}
+                                </span>
+                            </div>
+                        </div>
+                        {/foreach}            
+                    </div>        
+                </div>
+            </div>
+			<div class="row"  >
+            <div class="col-sm-12" style="padding: 20px 0 10px 40px;">
+				<h5 style="font-size:18px;width: 80px">下一状态</h5>
+			</div>
+            <div class="col-sm-12" style="padding-left: 50px; background-color: #F9F9F9">
+                <form id="typeHandel" method="post">
+                    <input type="text" name="creatName" value="{$info.creatName}" hidden />
+                    <input type="text" name="id" value="{$info.id}" hidden/>
+                    <input type="text" name="oldstatus" value="{$info.status}" hidden />
+                    <input type="text" name="olddeal" value="{$info.dealby}" hidden />
+                    <div class="col-md-offset-1 col-md-11" style="line-height: 40px;">
+						{foreach name="status" item="sta"}
+						<input type="radio" name="status" onclick="checkBugstatus(this,'{$info.status}','{$info.dealmethod}')" {if condition="$info['status'] eq $sta['value']"}checked{/if} value="{$sta.value}" /><em class="ma-ri-20">{$sta.name}</em>
+						{/foreach}
+                    </div>
+                    <div class="col-sm-12 form-group">
+                        <label class="col-md-1 control-label font-primary" style="text-align: right">流转给</label>
+                        <div class="col-sm-6 dropdown">
+                            <input type="text" class="dropdown-toggle form-control" data-toggle="dropdown" id="dealby" name="dealby" value="{$info.dealby}"/>
+                            <ul class="dropdown-menu" style="left: 15px;">
+                                {foreach name="names" item="na"}
+                                <li><a href="javascript:;" onclick="selectOneuser(this,'#dealby')">{$na}</a></li>
+                                {/foreach}
+                            </ul>
+                        </div>
+                        <div class="col-sm-5 no-padding">
+                            <em class="line-h-30 font-red">*</em>
+							{if condition="$info['status'] eq '拒绝原因评审中'"}
+								{if condition="$info['dealmethod'] eq 'BUG转需求'"}
+									<span class="tips">如果你是项目负责人请将您的意见流转给产品负责人，如果你是产品负责人请将你的意见流转给测试负责人</span>
+								{else/}
+									<span class="tips">请将你的意见流转给测试负责人</span>
+								{/if}
+							{/if}
+                        </div>
+                    </div>
+					{if condition="$info['status'] eq '拒绝解决' or $info['status'] eq '拒绝原因评审中'"}
+					<div class="col-sm-12 form-group dealmethod" >
+						<label class="col-md-1 control-label font-primary" style="text-align: right">解决方法</label>
+						<div class="col-sm-6">
+                            <select name="dealmethod" class="form-control select" style="background-color:#fff;">
+								<option value="">--</option>
+								<option value="修改需求">修改需求</option>
+								<option value="设计如此">设计如此</option>
+								<option value="不予解决">不予解决</option>
+								<option value="删除需求">删除需求</option>
+								<option value="重复BUG">重复BUG</option>
+								<option value="无法实现">无法实现</option>
+								<option value="外部环境">外部环境</option>
+								<option value="BUG转需求">BUG转需求</option>
+							</select>
+                        </div>
+                        <div class="col-sm-5 no-padding">
+                            <em class="line-h-30 font-red">*</em>
+                        </div>
+					</div>
+					<script>$('select[name=dealmethod]').val('{$info.dealmethod}')</script>
+					{/if}
+                    <div class="col-sm-12 form-group">
+                        <label class="col-md-1 control-label font-primary" style="text-align: right">评论或处理意见</label>
+                        <div class="col-sm-6">
+                            <textarea name="comment" class="form-control"></textarea>
+                        </div>
+                    </div>
+                </form>                
+                <div class="col-md-offset-1 col-md-11 form-group">
+                    <button type="button" class="btn btn-primary" onclick="typeHandel('bug')">流转</button>
+                </div>
+            </div>                
+        </div>
+        </div>                                
+        <div class="col-md-3 col-sm-12">
+            <div class="panel panel-default">
+                <div class="panel-heading" style="background-color: #F9FAFC">
+                    <i class="fa fa-info-circle ma-ri-10"></i>基本信息
+                </div>
+                <div class="panel-body">
+                    <dl class="dl-horizontal dl-default">
+                        <dt>状态：</dt>
+                        <dd>
+							{switch name="$info['status']" }
+								{case value="已解决"}<span class="label label-success ">{$info.status}</span>{/case}
+								{case value="拒绝解决"}<span class="label label-danger ">{$info.status}</span>{/case}
+								{case value="拒绝原因评审中"}<span class="label label-info">{$info.status}</span>{/case}
+								{case value="已关闭"}<span class="label label-default ">{$info.status}</span>{/case}
+								{case value="重新激活"}<span class="label label-warning ">{$info.status}</span>{/case}
+								{default /}<span class="label label-primary ">{$info.status}</span>
+							{/switch}
+                        </dd>
+                        <dt>发现版本：</dt>
+                        <dd>{$info.title}</dd>
+                        <dt>模块：</dt>
+                        <dd>{$info.modularName}</dd>
+                        <dt>优先级：</dt>
+                        <dd>
+                            <div class="edit_pencil" style="width: 100%;">
+                                {if condition="$info['level'] eq '紧急'"}<em class="edit font-red">{$info.level}</em>{else/}<em class="edit">{$info.level}</em>{/if}
+								<a href="javascript:;" onclick="edit_pencil(this)" style="display: none; margin-left: 20px;" ><i class="fa fa-pencil"></i></a>
+                            </div>
+                            <div class="edit_input" style="display: none; width: 100%">
+                                <select name="level" attr_id="{$info.id}" onblur="hideObj(this)" onchange="editObj(this,'bug')" style="width: 100%" >
+                                    <option value="--">--</option>
+                                    <option value="紧急">紧急</option>
+                                    <option value="高">高</option>
+                                    <option value="中">中</option>
+                                    <option value="低">低</option>
+                                </select>
+                            </div>
+                        </dd>
+                        <dt>严重程度：</dt>
+                        <dd>
+                            <div class="edit_pencil" style="width: 100%;">
+                                <em class="edit">{$info.serious}</em><a href="javascript:;" onclick="edit_pencil(this)" style="display: none; margin-left: 20px;" ><i class="fa fa-pencil"></i></a>
+                            </div>
+                            <div class="edit_input" style="display: none; width: 100%">
+                                <select name="serious" attr_id="{$info.id}" onblur="hideObj(this)" onchange="editObj(this,'bug')" style="width: 100%" >
+                                    <option value="--">--</option>
+                                    <option value="致命级">致命级</option>
+                                    <option value="严重级">严重级</option>
+                                    <option value="一般级">一般级</option>
+                                    <option value="轻微级">轻微级</option>
+                                </select>
+                            </div>
+                        </dd>
+                        <dt>缺陷类型：</dt>
+                        <dd>
+                            <div class="edit_pencil" style=" width: 100%">
+                                <em class="edit">{$info.type}</em><a href="javascript:;" onclick="edit_pencil(this)" style="display: none; margin-left: 20px;" ><i class="fa fa-pencil"></i></a>
+                            </div>
+                            <div class="edit_input"  style="display: none;width: 100%">
+                                <select name="type" attr_id="{$info.id}" onblur="hideObj(this)" onchange="editObj(this,'bug')" style="width: 100%" >
+                                    <option value="--">--</option>
+                                    <option value="代码错误">代码错误</option>
+                                    <option value="界面优化">界面优化</option>
+                                    <option value="设计缺陷">设计缺陷</option>
+                                    <option value="配置相关">配置相关</option>
+                                    <option value="安装部署">安装部署</option>
+                                    <option value="安全相关">安全相关</option>
+                                    <option value="性能问题">性能问题</option>
+                                    <option value="标准规范">标准规范</option>
+                                    <option value="接口错误">接口错误</option>
+                                </select>
+                            </div>
+                        </dd>
+                        <dt>运行平台：</dt>
+                        <dd>{$info.platform}</dd>
+                        <dt>操作系统：</dt>
+                        <dd>{$info.system}</dd>
+                        <dt>创建人：</dt>
+                        <dd>{$info.creatName}</dd>
+                        <dt>创建于：</dt>
+                        <dd>{$info.creatTime}</dd>
+                        <dt>修复人：</dt>
+                        <dd>{$info.restorer}</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+<script src="{:IND_URL}plugins/webuploader/dist/webuploader.js"></script>
+<script>
+	$(document).ready(function(){
+        $('head').append('<link href="{:IND_URL}plugins/webuploader/css/webuploader.css" type="text/css" rel="stylesheet"/>');
+		$('.edit_pencil').mouseenter(function(){
+			$(this).css({'background-color':'#F0F5FA'});
+			$(this).find('a').show();
+		}).mouseleave(function(){
+			$(this).css({'background':'none'});
+			$(this).find('a').hide();
+		});
+
+        var maxwidth = $('.panel-body').width();
+        $('.panel-body').find('img').each(function(){
+            if($(this).width() > maxwidth){
+                $(this).css({'width':'100%'},{'max-width':maxwidth});
+            }
+        });
+    });
+   
+
+    var uploader = WebUploader.create({
+        swf: "{:IND_URL}plugins/webuploader" + '/dist/Uploader.swf',
+        // 文件接收服务端。
+        server: "../action/webuploader",
+        // 选择文件的按钮。可选。
+        pick: '#picker',
+        // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+        resize: false,
+        fileSizeLimit: 15* 1024 * 1024,
+        auto:true,
+        fileNumLimit: 2,
+        accept:{
+            title:'files',
+            extensions: 'xls,xlsx,doc,docx,txt,pdf,jpg,png,rar'
+        },
+        formData :{
+            ta: 'bug'
+        }
+    });
+    // 当有文件被添加进队列的时候
+    uploader.on( 'fileQueued', function( file ){
+        $('#thelist').append('<h5 class="info">已选择文件：' + file.name + '<i class="fa fa-times-circle font-red ma-le-10 dele" style="cursor: pointer"></i></h5>');
+        $(".dele").click(function(){
+            uploader.reset();
+            if(uploader.getFiles().length<1){
+                $('#upFile').hide();
+            }
+            $(this).parent().remove();
+        });
+        $('#upFile').show();
+    });
+    // 文件上传过程中创建进度条实时显示。
+    uploader.on( 'uploadProgress', function( file, percentage ){
+        var $li = $( '#'+file.id ),
+                $percent = $li.find('.progress .progress-bar');
+        // 避免重复创建
+        if ( !$percent.length ){
+            $percent = $('<div class="progress progress-striped active">' +
+                    '<div class="progress-bar" role="progressbar" style="width: 0%">' +
+                    '</div>' +
+                    '</div>').appendTo( $li ).find('.progress-bar');
+        }
+        $percent.css( 'width', percentage * 100 + '%' );
+    });
+
+    uploader.on( 'uploadSuccess', function(file,response) {
+        if(response.status == 1){
+            var files='';
+            var $data;
+            files = $('input[name=files]').val();
+            if(response.data){
+                $data = JSON.stringify(response.data);
+                if(files == ''){
+                    $('input[name=files]').val($data);
+                }else{
+                    files = files + '|' + $data;
+                    $('input[name=files]').val(files);
+                }
+            }
+        }else{
+            layer.msg(response.msg,{icon:2});
+        }
+    });
+
+    uploader.on( 'uploadError', function(file,reason) {
+        layer.msg(reason.msg,{icon:2});
+    });
+
+    uploader.on( 'uploadComplete', function( file ) {
+        $( '#'+file.id ).find('.progress').fadeOut();
+    });
+    uploader.on('error',function(type){
+        var msg;
+        if(type == 'Q_EXCEED_NUM_LIMIT'){
+            msg = '上传文件个数受限';
+        }else if(type == 'Q_TYPE_DENIED'){
+            msg = '请选择xls,xlsx,doc,docx,txt,pdf,jpg,png,rar格式的文件';
+        }else{
+            msg = '文件大小不能超过15M';
+        }
+        layer.msg(msg,{icon:2});
+    });
+    $("#upFile").click(function(){
+        var data = {};
+        data['upload'] = $('input[name=files]').val();
+        data['id'] = '{$info.id}';
+        data['ta'] = 'bug';
+        if(data['upload']){
+            var jump_url = '../bugtrace/desc?bugid='+'{$info.id}';
+            var up_url = '../common/addfile';
+            handelData(up_url,data,jump_url)
+        }
+    });
+
+
+</script>
+{include file="public:footer" /}
